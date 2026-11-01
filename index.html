@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b211b">
+<meta name="description" content="DEENI HISAB - Islamic calculators, inheritance, Zakat and Islamic knowledge.">
+<title>DEENI HISAB | دینی حساب</title>
+
+<style>
+:root {
+  --green:#0b211b;
+  --green2:#12382c;
+  --gold:#c9a45c;
+  --goldlight:#ead5a4;
+  --cream:#f8f6ef;
+  --text:#1c2b25;
+  --muted:#68766e;
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html { scroll-behavior:smooth; }
+
+body {
+  background:var(--cream);
+  color:var(--text);
+  font-family:"Noto Naskh Arabic","Noto Sans Arabic",serif;
+  line-height:1.9;
+}
+
+body[dir="ltr"] {
+  font-family:Arial,sans-serif;
+}
+
+a {
+  text-decoration:none;
+  color:inherit;
+}
+
+button,select {
+  font:inherit;
+  cursor:pointer;
+}
+
+.container {
+  width:min(1160px,92%);
+  margin:auto;
+}
+
+.topbar {
+  background:#071812;
+  color:var(--goldlight);
+  text-align:center;
+  padding:7px;
+  font-size:13px;
+}
+
+header {
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:var(--green);
+  color:white;
+  border-bottom:1px solid #705b32;
+}
+
+.navbar {
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand-icon {
+  width:43px;
+  height:43px;
+  border:1px solid var(--gold);
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  color:var(--goldlight);
+  font-size:25px;
+}
+
+.brand-name {
+  font:bold 19px Georgia,serif;
+  letter-spacing:2px;
+}
+
+.brand-sub {
+  font-size:13px;
+  color:var(--goldlight);
+}
+
+.nav-links {
+  display:flex;
+  gap:23px;
+  align-items:center;
+}
+
+.nav-links a {
+  font-size:14px;
+  color:#e9eee9;
+}
+
+.nav-links a:hover {
+  color:var(--goldlight);
+}
+
+.nav-actions {
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.language-select {
+  background:#17382d;
+  color:white;
+  border:1px solid #9c814b;
+  border-radius:8px;
+  padding:8px;
+}
+
+.menu-btn {
+  display:none;
+  background:transparent;
+  color:white;
+  border:1px solid #718277;
+  border-radius:8px;
+  padding:5px 11px;
+  font-size:22px;
+}
+
+.hero {
+  color:white;
+  padding:95px 0 100px;
+  background:
+  radial-gradient(circle at 12% 20%,#c9a45c30,transparent 30%),
+  radial-gradient(circle at 90% 90%,#22674970,transparent 35%),
+  linear-gradient(120deg,#091b15,#12382c 65%,#0b211b);
+  position:relative;
+  overflow:hidden;
+}
+
+.hero:before {
+  content:"۞";
+  position:absolute;
+  left:3%;
+  top:-100px;
+  font-size:350px;
+  color:#ffffff08;
+}
+
+.hero-content {
+  max-width:760px;
+  position:relative;
+}
+
+.eyebrow {
+  display:inline-block;
+  color:var(--goldlight);
+  border:1px solid #c9a45c80;
+  background:#c9a45c12;
+  border-radius:30px;
+  padding:5px 16px;
+  margin-bottom:18px;
+}
+
+.hero h1 {
+  font-size:clamp(36px,6vw,62px);
+  line-height:1.4;
+  margin-bottom:15px;
+}
+
+.hero h1 span {
+  color:var(--goldlight);
+}
+
+.hero p {
+  font-size:18px;
+  color:#d4e0d8;
+  max-width:650px;
+  margin-bottom:27px;
+}
+
+.hero-buttons {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:11px 23px;
+  border-radius:9px;
+  font-weight:bold;
+  transition:.2s;
+  border:1px solid transparent;
+}
+
+.btn-gold {
+  background:var(--gold);
+  color:#17251c;
+}
+
+.btn-outline {
+  border-color:#ffffff70;
+  color:white;
+}
+  .btn:hover {
+  transform:translateY(-2px);
+}
+
+.section {
+  padding:75px 0;
+}
+
+.section-heading {
+  text-align:center;
+  max-width:700px;
+  margin:0 auto 38px;
+}
+
+.section-heading .small-title {
+  color:#a17d39;
+  font-weight:bold;
+  font-size:14px;
+}
+
+.section-heading h2 {
+  color:var(--green);
+  font-size:clamp(27px,4vw,38px);
+  margin:8px 0;
+}
+
+.section-heading p {
+  color:var(--muted);
+}
+
+.calculator-section {
+  background:#f2f0e8;
+}
+
+.calculator-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.calc-card {
+  background:white;
+  border:1px solid #e6e1d3;
+  border-radius:15px;
+  padding:25px;
+  box-shadow:0 7px 24px #17251c08;
+  transition:.25s;
+}
+
+.calc-card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 12px 30px #17251c12;
+  border-color:var(--gold);
+}
+
+.calc-icon {
+  width:52px;
+  height:52px;
+  border-radius:13px;
+  background:#f4eedf;
+  color:#92702f;
+  display:grid;
+  place-items:center;
+  font-size:27px;
+  margin-bottom:15px;
+}
+
+.calc-card h3 {
+  color:var(--green);
+  font-size:20px;
+  margin-bottom:7px;
+}
+
+.calc-card p {
+  color:var(--muted);
+  font-size:14px;
+  margin-bottom:17px;
+}
+
+.coming-soon {
+  display:inline-block;
+  background:#f4f0e5;
+  color:#8a6b32;
+  border-radius:20px;
+  padding:4px 12px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.about-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:45px;
+  align-items:center;
+}
+
+.about-symbol {
+  min-height:300px;
+  border-radius:20px;
+  background:
+    radial-gradient(circle,#c9a45c30,transparent 55%),
+    linear-gradient(135deg,#0b211b,#194635);
+  display:grid;
+  place-items:center;
+  color:var(--goldlight);
+  font-size:110px;
+  border:1px solid #c9a45c70;
+}
+
+.about-content h2 {
+  color:var(--green);
+  font-size:32px;
+  margin-bottom:15px;
+}
+
+.about-content p {
+  color:var(--muted);
+  margin-bottom:13px;
+}
+
+.trust-section {
+  background:#0b211b;
+  color:white;
+  padding:60px 0;
+}
+
+.trust-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  text-align:center;
+}
+
+.trust-item {
+  padding:15px;
+}
+
+.trust-item .symbol {
+  color:var(--goldlight);
+  font-size:32px;
+  margin-bottom:8px;
+}
+
+.trust-item h3 {
+  color:var(--goldlight);
+  margin-bottom:7px;
+}
+
+.trust-item p {
+  color:#c6d2ca;
+  font-size:14px;
+}
+
+.disclaimer {
+  background:#fff8e9;
+  border-right:4px solid var(--gold);
+  padding:18px 22px;
+  border-radius:8px;
+  color:#665536;
+  font-size:14px;
+  margin-top:30px;
+}
+
+.cta-section {
+  text-align:center;
+  padding:70px 0;
+  background:#f2f0e8;
+}
+
+.cta-section h2 {
+  color:var(--green);
+  font-size:32px;
+  margin-bottom:10px;
+}
+
+.cta-section p {
+  color:var(--muted);
+  margin-bottom:22px;
+}
+
+footer {
+  background:#071812;
+  color:#d9e1da;
+  padding:35px 0 18px;
+}
+
+.footer-main {
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:25px;
+  padding-bottom:25px;
+}
+
+.footer-brand h3 {
+  color:var(--goldlight);
+  letter-spacing:2px;
+  font-family:Georgia,serif;
+}
+
+.footer-brand p {
+  color:#aab9ae;
+  font-size:13px;
+  max-width:330px;
+  margin-top:8px;
+}
+
+.footer-links {
+  display:flex;
+  flex-wrap:wrap;
+  gap:18px;
+  align-items:center;
+  font-size:13px;
+}
+
+.footer-links a:hover {
+  color:var(--goldlight);
+}
+
+.footer-bottom {
+  border-top:1px solid #ffffff20;
+  padding-top:15px;
+  text-align:center;
+  color:#91a198;
+  font-size:12px;
+}
+
+@media(max-width:850px) {
+  .nav-links {
+    display:none;
+    position:absolute;
+    top:76px;
+    right:0;
+    left:0;
+    background:#0b211b;
+    padding:20px 5%;
+    flex-direction:column;
+    align-items:flex-start;
+    border-top:1px solid #ffffff20;
+  }
+
+  .nav-links.show {
+    display:flex;
+  }
+
+  .menu-btn {
+    display:block;
+  }
+
+  .calculator-grid {
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px) {
+  .hero {
+    padding:65px 0 70px;
+  }
+
+  .hero p {
+    font-size:16px;
+  }
+
+  .calculator-grid,
+  .about-grid,
+  .trust-grid {
+    grid-template-columns:1fr;
+  }
+
+  .section {
+    padding:55px 0;
+  }
+
+  .about-symbol {
+    min-height:220px;
+  }
+
+  .footer-main {
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar" id="topbar">
+  علم، امانت اور آسان رہنمائی — DEENI HISAB
+</div>
+
+<header>
+  <div class="container navbar">
+
+    <a href="#" class="brand">
+      <div class="brand-icon">۞</div>
+      <div>
+        <div class="brand-name">DEENI HISAB</div>
+        <div class="brand-sub" id="brand-sub">دینی حساب</div>
+      </div>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#home" data-i18n="navHome">Home</a>
+      <a href="#calculators" data-i18n="navCalculators">Calculators</a>
+      <a href="#about" data-i18n="navAbout">About Us</a>
+      <a href="#contact" data-i18n="navContact">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <select class="language-select" id="languageSelect"
+              aria-label="Select language">
+        <option value="ur">اردو</option>
+        <option value="hi">हिन्दी</option>
+        <option value="en">English</option>
+      </select>
+
+      <button class="menu-btn" id="menuBtn"
+              aria-label="Open menu">☰</button>
+    </div>
+
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="home">
+  <div class="container">
+    <div class="hero-content">
+
+      <div class="eyebrow" data-i18n="heroEyebrow">
+        Islamic Knowledge & Useful Tools
+      </div>
+
+      <h1>
+        <span data-i18n="heroTitle1">Your Trusted</span><br>
+        <span data-i18n="heroTitle2">Islamic Calculation</span>
+      </h1>
+
+      <p data-i18n="heroDescription">
+        A simple platform for Islamic calculations, authentic knowledge
+        and useful guidance in one place.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="#calculators" class="btn btn-gold"
+           data-i18n="heroButton1">Explore Calculators</a>
+
+        <a href="#about" class="btn btn-outline"
+           data-i18n="heroButton2">Learn More</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section calculator-section" id="calculators">
+  <div class="container">
+
+    <div class="section-heading">
+      <div class="small-title" data-i18n="calcSmall">
+        OUR SERVICES
+      </div>
+
+      <h2 data-i18n="calcHeading">
+        Islamic Calculators & Tools
+      </h2>
+
+      <p data-i18n="calcDescription">
+        Useful Islamic tools designed to make calculations easier.
+      </p>
+    </div>
+
+    <div class="calculator-grid">
+
+      <div class="calc-card">
+        <div class="calc-icon">⚖</div>
+        <h3 data-i18n="inheritanceTitle">Inheritance Calculator</h3>
+        <p data-i18n="inheritanceDesc">
+          Calculate Islamic inheritance shares according to the rules
+          of Islamic jurisprudence.
+        </p>
+        <span class="coming-soon" data-i18n="comingSoon">
+          Coming Soon
+        </span>
+      </div>
+
+      <div class="calc-card">
+        <div class="calc-icon">☪</div>
+        <h3 data-i18n="zakatTitle">Zakat Calculator</h3>
+        <p data-i18n="zakatDesc">
+          Estimate your Zakat on eligible wealth and assets.
+        </p>
+        <span class="coming-soon" data-i18n="comingSoon">
+          Coming Soon
+        </span>
+      </div>
+
+      <div class="calc-card">
+        <div class="calc-icon">🌾</div>
+        <h3 data-i18n="ushrTitle">Ushr Calculator</h3>
+        <p data-i18n="ushrDesc">
+          A helpful tool for estimating Ushr on agricultural produce.
+        </p>
+        <span class="coming-soon" data-i18n="comingSoon">
+          Coming Soon
+        </span>
+      </div>
+
+      <div class="calc-card">
+        <div class="calc-icon">📖</div>
+        <h3 data-i18n="fidyaTitle">Fidya & Kaffara</h3>
+        <p data-i18n="fidyaDesc">
+          Learn about Fidya and Kaffara with a guided calculation tool.
+        </p>
+        <span class="coming-soon" data-i18n="comingSoon">
+          Coming Soon
+        </span>
+      </div>
+
+      <div class="calc-card">
+        <div class="calc-icon">🌙</div>
+        <h3 data-i18n="hijriTitle">Hijri Calendar</h3>
+        <p data-i18n="hijriDesc">
+          Explore Islamic months and important Hijri dates.
+        </p>
+        <span class="coming-soon" data-i18n="comingSoon">
+          Coming Soon
+        </span>
+      </div>
+
+      <div class="calc-card">
+        <div class="calc-icon">✒</div>
+        <h3 data-i18n="articlesTitle">Islamic Articles</h3>
+        <p data-i18n="articlesDesc">
+          Read useful articles and educational Islamic content.
+        </p>
+        <span class="coming-soon" data-i18n="comingSoon">
+          Coming Soon
+        </span>
+      </div>
+
+    </div>
+  </div>
+</section>
+<section class="section" id="about">
+  <div class="container">
+
+    <div class="about-grid">
+
+      <div class="about-symbol">۞</div>
+
+      <div class="about-content">
+        <div class="small-title" data-i18n="aboutSmall">
+          ABOUT OUR PLATFORM
+        </div>
+
+        <h2 data-i18n="aboutHeading">
+          Knowledge with Trust
+        </h2>
+
+        <p data-i18n="aboutPara1">
+          DEENI HISAB is a platform created to make useful Islamic
+          calculations and educational resources easier to access.
+        </p>
+
+        <p data-i18n="aboutPara2">
+          Our aim is to present information in a clear, simple and
+          responsible way, while respecting Islamic scholarship.
+        </p>
+
+        <a href="#calculators" class="btn btn-gold"
+           data-i18n="aboutButton">Explore Our Tools</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="trust-section">
+  <div class="container">
+
+    <div class="section-heading">
+      <div class="small-title" data-i18n="trustSmall">
+        OUR COMMITMENT
+      </div>
+
+      <h2 style="color:white" data-i18n="trustHeading">
+        Built on Responsibility
+      </h2>
+    </div>
+
+    <div class="trust-grid">
+
+      <div class="trust-item">
+        <div class="symbol">✦</div>
+        <h3 data-i18n="trust1Title">Clarity</h3>
+        <p data-i18n="trust1Desc">
+          Simple and understandable information for everyone.
+        </p>
+      </div>
+
+      <div class="trust-item">
+        <div class="symbol">۞</div>
+        <h3 data-i18n="trust2Title">Islamic Scholarship</h3>
+        <p data-i18n="trust2Desc">
+          Religious matters should be checked with qualified scholars.
+        </p>
+      </div>
+
+      <div class="trust-item">
+        <div class="symbol">✓</div>
+        <h3 data-i18n="trust3Title">Responsibility</h3>
+        <p data-i18n="trust3Desc">
+          We aim to provide careful and transparent guidance.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="disclaimer" data-i18n="disclaimer">
+      Important: This website is an educational resource. Its
+      calculations should not replace a qualified Mufti's guidance.
+      Complex inheritance matters must be reviewed by a qualified
+      Islamic scholar before distributing any estate.
+    </div>
+
+  </div>
+</section>
+
+<section class="cta-section" id="contact">
+  <div class="container">
+
+    <h2 data-i18n="ctaHeading">
+      Learn. Calculate. Understand.
+    </h2>
+
+    <p data-i18n="ctaDescription">
+      Explore Islamic knowledge and useful tools with DEENI HISAB.
+    </p>
+
+    <a href="mailto:contact@deenihisab.com"
+       class="btn btn-gold" data-i18n="contactButton">
+      Contact Us
+    </a>
+
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+
+    <div class="footer-main">
+
+      <div class="footer-brand">
+        <h3>DEENI HISAB</h3>
+        <p data-i18n="footerDescription">
+          Islamic calculations, knowledge and guidance in one place.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#home" data-i18n="navHome">Home</a>
+        <a href="#calculators" data-i18n="navCalculators">Calculators</a>
+        <a href="#about" data-i18n="navAbout">About Us</a>
+        <a href="#contact" data-i18n="navContact">Contact</a>
+        <a href="privacy.html" data-i18n="privacy">Privacy Policy</a>
+        <a href="disclaimer.html" data-i18n="legalDisclaimer">
+          Disclaimer
+        </a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © <span id="currentYear"></span> DEENI HISAB.
+      <span data-i18n="copyright">All Rights Reserved.</span>
+    </div>
+
+  </div>
+</footer>
+<script>
+const translations = {
+
+  ur: {
+    topbar:"علم، امانت اور آسان رہنمائی — DEENI HISAB",
+    brandSub:"دینی حساب",
+    navHome:"صفحۂ اول",
+    navCalculators:"اسلامی کیلکولیٹر",
+    navAbout:"ہمارے بارے میں",
+    navContact:"رابطہ",
+    heroEyebrow:"اسلامی معلومات اور مفید سہولیات",
+    heroTitle1:"آپ کا قابلِ اعتماد",
+    heroTitle2:"اسلامی حساب",
+    heroDescription:"اسلامی حسابات، مستند معلومات اور مفید رہنمائی کے لیے ایک آسان پلیٹ فارم۔",
+    heroButton1:"کیلکولیٹر دیکھیں",
+    heroButton2:"مزید جانیں",
+    calcSmall:"ہماری سہولیات",
+    calcHeading:"اسلامی کیلکولیٹر اور ٹولز",
+    calcDescription:"اسلامی حسابات کو آسان بنانے کے لیے مفید سہولیات۔",
+    inheritanceTitle:"وراثت کیلکولیٹر",
+    inheritanceDesc:"اسلامی فقہ کے اصولوں کے مطابق وراثت کے حصوں کا حساب۔",
+    zakatTitle:"زکوٰۃ کیلکولیٹر",
+    zakatDesc:"اپنے مال اور اثاثوں پر زکوٰۃ کا اندازہ لگائیں۔",
+    ushrTitle:"عشر کیلکولیٹر",
+    ushrDesc:"زرعی پیداوار پر عشر کا حساب لگانے کی سہولت۔",
+    fidyaTitle:"فدیہ اور کفارہ",
+    fidyaDesc:"فدیہ اور کفارہ سے متعلق رہنمائی اور حساب۔",
+    hijriTitle:"ہجری کیلنڈر",
+    hijriDesc:"اسلامی مہینوں اور اہم تاریخوں کی معلومات۔",
+    articlesTitle:"اسلامی مضامین",
+    articlesDesc:"مفید اسلامی مضامین اور تعلیمی مواد پڑھیں۔",
+    comingSoon:"جلد آرہا ہے",
+    aboutSmall:"ہمارے پلیٹ فارم کے بارے میں",
+    aboutHeading:"علم کے ساتھ اعتماد",
+    aboutPara1:"دینی حساب ایک ایسا پلیٹ فارم ہے جس کا مقصد اسلامی حسابات اور تعلیمی مواد تک رسائی آسان بنانا ہے۔",
+    aboutPara2:"ہماری کوشش ہے کہ معلومات آسان، واضح اور ذمہ دارانہ انداز میں پیش کی جائیں۔",
+    aboutButton:"سہولیات دیکھیں",
+    trustSmall:"ہماری ذمہ داری",
+    trustHeading:"ذمہ داری کی بنیاد پر",
+    trust1Title:"وضاحت",
+    trust1Desc:"ہر شخص کے لیے آسان اور قابلِ فہم معلومات۔",
+    trust2Title:"علمائے اسلام",
+    trust2Desc:"دینی مسائل کی تصدیق مستند اہلِ علم سے ضروری ہے۔",
+    trust3Title:"ذمہ داری",
+    trust3Desc:"محتاط اور شفاف رہنمائی فراہم کرنے کی کوشش۔",
+    disclaimer:"اہم: یہ ویب سائٹ تعلیمی مقصد کے لیے ہے۔ اس کے حسابات کسی مستند مفتی کی رہنمائی کا متبادل نہیں ہیں۔ وراثت کی تقسیم سے پہلے معاملے کی تصدیق مستند عالم سے ضرور کروائیں۔",
+    ctaHeading:"سیکھیں۔ حساب کریں۔ سمجھیں۔",
+    ctaDescription:"دینی حساب کے ساتھ اسلامی معلومات اور مفید سہولیات سے فائدہ اٹھائیں۔",
+    contactButton:"رابطہ کریں",
+    footerDescription:"اسلامی حسابات، معلومات اور رہنمائی ایک جگہ۔",
+    privacy:"پرائیویسی پالیسی",
+    legalDisclaimer:"ڈس کلیمر",
+    copyright:"جملہ حقوق محفوظ ہیں۔"
+  },
+
+  hi: {
+    topbar:"ज्ञान, अमानत और आसान मार्गदर्शन — DEENI HISAB",
+    brandSub:"दीनी हिसाब",
+    navHome:"होम",
+    navCalculators:"कैलकुलेटर",
+    navAbout:"हमारे बारे में",
+    navContact:"संपर्क",
+    heroEyebrow:"इस्लामी जानकारी और उपयोगी सुविधाएँ",
+    heroTitle1:"आपका भरोसेमंद",
+    heroTitle2:"इस्लामी हिसाब",
+    heroDescription:"इस्लामी गणना, उपयोगी जानकारी और मार्गदर्शन के लिए एक आसान प्लेटफॉर्म।",
+    heroButton1:"कैलकुलेटर देखें",
+    heroButton2:"और जानें",
+    calcSmall:"हमारी सुविधाएँ",
+    calcHeading:"इस्लामी कैलकुलेटर और टूल्स",
+    calcDescription:"इस्लामी गणनाओं को आसान बनाने के लिए उपयोगी सुविधाएँ।",
+    inheritanceTitle:"विरासत कैलकुलेटर",
+    inheritanceDesc:"इस्लामी फिक्ह के अनुसार विरासत के हिस्सों की गणना।",
+    zakatTitle:"ज़कात कैलकुलेटर",
+    zakatDesc:"अपने माल और संपत्ति पर ज़कात का अनुमान लगाएँ।",
+    ushrTitle:"उश्र कैलकुलेटर",
+    ushrDesc:"कृषि उपज पर उश्र की गणना की सुविधा।",
+    fidyaTitle:"फिद्या और कफ्फारा",
+    fidyaDesc:"फिद्या और कफ्फारा से संबंधित जानकारी और गणना।",
+    hijriTitle:"हिजरी कैलेंडर",
+    hijriDesc:"इस्लामी महीनों और महत्वपूर्ण तारीखों की जानकारी।",
+    articlesTitle:"इस्लामी लेख",
+    articlesDesc:"उपयोगी इस्लामी लेख और शैक्षिक सामग्री पढ़ें।",
+    comingSoon:"जल्द आ रहा है",
+    aboutSmall:"हमारे प्लेटफॉर्म के बारे में",
+    aboutHeading:"ज्ञान के साथ भरोसा",
+    aboutPara1:"दीनी हिसाब एक ऐसा प्लेटफॉर्म है जिसका उद्देश्य इस्लामी गणनाओं और शैक्षिक सामग्री तक पहुँच आसान बनाना है।",
+    aboutPara2:"हमारी कोशिश है कि जानकारी सरल, स्पष्ट और जिम्मेदारी के साथ प्रस्तुत की जाए।",
+    aboutButton:"हमारी सुविधाएँ देखें",
+    trustSmall:"हमारी प्रतिबद्धता",
+    trustHeading:"जिम्मेदारी के साथ",
+    trust1Title:"स्पष्टता",
+    trust1Desc:"हर व्यक्ति के लिए आसान और समझने योग्य जानकारी।",
+    trust2Title:"इस्लामी विद्वत्ता",
+    trust2Desc:"दिनी मामलों की पुष्टि योग्य विद्वानों से करें।",
+    trust3Title:"जिम्मेदारी",
+    trust3Desc:"सावधानी और पारदर्शिता के साथ मार्गदर्शन देने का प्रयास।",
+    disclaimer:"महत्वपूर्ण: यह वेबसाइट शैक्षिक उद्देश्य के लिए है। इसकी गणनाएँ किसी योग्य मुफ्ती की सलाह का विकल्प नहीं हैं। विरासत बाँटने से पहले किसी योग्य इस्लामी विद्वान से जाँच अवश्य करवाएँ।",
+    ctaHeading:"सीखें। गणना करें। समझें।",
+    ctaDescription:"दीनी हिसाब के साथ इस्लामी जानकारी और उपयोगी सुविधाओं का लाभ उठाएँ।",
+    contactButton:"संपर्क करें",
+    footerDescription:"इस्लामी गणना, जानकारी और मार्गदर्शन एक जगह।",
+    privacy:"प्राइवेसी पॉलिसी",
+    legalDisclaimer:"डिस्क्लेमर",
+    copyright:"सर्वाधिकार सुरक्षित।"
+  },
+
+  en: {
+    topbar:"Knowledge, Trust & Simple Guidance — DEENI HISAB",
+    brandSub:"Islamic Calculations",
+    navHome:"Home",
+    navCalculators:"Calculators",
+    navAbout:"About Us",
+    navContact:"Contact",
+    heroEyebrow:"Islamic Knowledge & Useful Tools",
+    heroTitle1:"Your Trusted",
+    heroTitle2:"Islamic Calculations",
+    heroDescription:"A simple platform for Islamic calculations, useful knowledge and responsible guidance.",
+    heroButton1:"Explore Calculators",
+    heroButton2:"Learn More",
+    calcSmall:"OUR SERVICES",
+    calcHeading:"Islamic Calculators & Tools",
+    calcDescription:"Useful Islamic tools designed to make calculations easier.",
+    inheritanceTitle:"Inheritance Calculator",
+    inheritanceDesc:"Calculate inheritance shares according to Islamic jurisprudence.",
+    zakatTitle:"Zakat Calculator",
+    zakatDesc:"Estimate Zakat on your eligible wealth and assets.",
+    ushrTitle:"Ushr Calculator",
+    ushrDesc:"A helpful tool for estimating Ushr on agricultural produce.",
+    fidyaTitle:"Fidya & Kaffara",
+    fidyaDesc:"Guidance and calculations related to Fidya and Kaffara.",
+    hijriTitle:"Hijri Calendar",
+    hijriDesc:"Explore Islamic months and important Hijri dates.",
+    articlesTitle:"Islamic Articles",
+    articlesDesc:"Read useful articles and educational Islamic content.",
+    comingSoon:"Coming Soon",
+    aboutSmall:"ABOUT OUR PLATFORM",
+    aboutHeading:"Knowledge with Trust",
+    aboutPara1:"DEENI HISAB is a platform created to make useful Islamic calculations and educational resources easier to access.",
+    aboutPara2:"Our aim is to present information in a clear, simple and responsible way.",
+    aboutButton:"Explore Our Tools",
+    trustSmall:"OUR COMMITMENT",
+    trustHeading:"Built on Responsibility",
+    trust1Title:"Clarity",
+    trust1Desc:"Simple and understandable information for everyone.",
+    trust2Title:"Islamic Scholarship",
+    trust2Desc:"Religious matters should be checked with qualified scholars.",
+    trust3Title:"Responsibility",
+    trust3Desc:"We aim to provide careful and transparent guidance.",
+    disclaimer:"Important: This website is an educational resource. Its calculations should not replace a qualified Mufti's guidance. Complex inheritance matters must be reviewed by a qualified Islamic scholar before distributing any estate.",
+    ctaHeading:"Learn. Calculate. Understand.",
+    ctaDescription:"Explore Islamic knowledge and useful tools with DEENI HISAB.",
+    contactButton:"Contact Us",
+    footerDescription:"Islamic calculations, knowledge and guidance in one place.",
+    privacy:"Privacy Policy",
+    legalDisclaimer:"Disclaimer",
+    copyright:"All Rights Reserved."
+  }
+};
+
+function changeLanguage(language) {
+  const words = translations[language] || translations.ur;
+
+  document.documentElement.lang = language;
+  document.documentElement.dir = language === "en" ? "ltr" : "rtl";
+  document.body.dir = language === "en" ? "ltr" : "rtl";
+
+  document.querySelectorAll("[data-i18n]").forEach(element => {
+    const key = element.getAttribute("data-i18n");
+    if (words[key]) {
+      element.textContent = words[key];
+    }
+  });
+
+  document.getElementById("topbar").textContent = words.topbar;
+  document.getElementById("brand-sub").textContent = words.brandSub;
+
+  try {
+    localStorage.setItem("deeniHisabLanguage", language);
+  } catch (error) {
+    // Language selection will still work without local storage.
+  }
+}
+
+const languageSelect = document.getElementById("languageSelect");
+
+languageSelect.addEventListener("change", function() {
+  changeLanguage(this.value);
+});
+
+const menuBtn = document.getElementById("menuBtn");
+const navLinks = document.getElementById("navLinks");
+
+menuBtn.addEventListener("click", function() {
+  navLinks.classList.toggle("show");
+});
+
+navLinks.querySelectorAll("a").forEach(link => {
+  link.addEventListener("click", function() {
+    navLinks.classList.remove("show");
+  });
+});
+
+document.getElementById("currentYear").textContent =
+  new Date().getFullYear();
+
+let savedLanguage = "ur";
+
+try {
+  savedLanguage = localStorage.getItem("deeniHisabLanguage") || "ur";
+} catch (error) {
+  savedLanguage = "ur";
+}
+
+languageSelect.value = savedLanguage;
+changeLanguage(savedLanguage);
+</script>
+
+</body>
+</html> 
