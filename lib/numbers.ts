@@ -28,7 +28,9 @@ export function sanitizeDecimal(raw: string): string {
     firstDot === -1
       ? cleaned
       : cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, "");
-  return single.slice(0, 15);
+  // "0100" -> "100", but keep "0" and "0.5"
+  const noLeadingZeros = single.replace(/^0+(?=\d)/, "");
+  return noLeadingZeros.slice(0, 15);
 }
 
 export function parseAmount(value: string): number {
