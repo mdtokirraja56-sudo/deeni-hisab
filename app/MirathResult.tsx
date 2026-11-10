@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { AlertTriangle, CheckCircle2, Download, Info, RotateCcw } from "lucide-react";
 import { fracText, fracValue, type HeirRow, type MirathResult } from "../lib/mirath";
-import type { Copy2 } from "../lib/copy2";
-import type { HeirKey } from "../lib/heirs";
+import { copy2, type Copy2 } from "../lib/copy2";
+import { copy3 } from "../lib/copy3";
+import type { HeirKey, Lang } from "../lib/heirs";
+import { MirathSolution } from "./MirathSolution";
 
 interface Props {
   result: MirathResult;
@@ -19,6 +22,10 @@ interface Props {
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
 
 export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel }: Props) {
+  const [view, setView] = useState<"brief" | "full">("brief");
+  // The language is found from the text object that was passed in, so page.tsx needs no change.
+  const lang = ((Object.keys(copy2) as Lang[]).find((l) => copy2[l] === t2) ?? "ur") as Lang;
+  const t3 = copy3[lang];
   if (result.status === "noheirs") {
     return <div role="alert" className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800">{t2.noHeirs}</div>;
   }
@@ -71,6 +78,15 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
       </div>
       <p className="mt-2 rounded-xl bg-amber-50 p-3 text-[11px] leading-5 text-amber-900">{t2.betaNote}</p>
 
+      <div role="group" aria-label={t3.viewLabel} className="mt-4 grid grid-cols-2 gap-1 rounded-2xl bg-white p-1 shadow-sm ring-1 ring-slate-900/5 print:hidden">
+        <button type="button" aria-pressed={view === "brief"} onClick={() => setView("brief")} className={`rounded-xl px-3 py-3 text-sm font-extrabold transition ${view === "brief" ? "bg-deen text-white shadow" : "text-slate-500 hover:bg-emerald-50"}`}>{t3.briefTab}</button>
+        <button type="button" aria-pressed={view === "full"} onClick={() => setView("full")} className={`rounded-xl px-3 py-3 text-sm font-extrabold transition ${view === "full" ? "bg-deen text-white shadow" : "text-slate-500 hover:bg-emerald-50"}`}>{t3.fullTab}</button>
+      </div>
+
+      {view === "full" ? (
+        <MirathSolution result={result} t2={t2} t3={t3} money={money} distributable={distributable} heirLabel={heirLabel} />
+      ) : (
+      <>
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-5">
         {steps.map((s) => (
           <div key={s.label} className="rounded-2xl bg-white p-3 text-center shadow-sm ring-1 ring-slate-900/5">
@@ -151,6 +167,8 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
           ))}
         </ul>
       )}
+      </>
+      )}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 print:hidden">
         <button type="button" onClick={onPrint} className="flex items-center justify-center gap-2 rounded-2xl border border-deen/20 bg-white px-5 py-3 text-sm font-extrabold text-deen transition hover:bg-emerald-50"><Download size={17} />{printLabel}</button>
@@ -159,4 +177,4 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
       <p className="mt-3 flex items-start gap-2 text-[11px] leading-5 text-slate-400"><AlertTriangle size={13} className="mt-0.5 shrink-0" />{t2.betaNote}</p>
     </section>
   );
-          }
+}
