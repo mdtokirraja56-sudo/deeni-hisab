@@ -4,12 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen, Calculator, ChevronDown, ChevronUp, CircleHelp, Download,
   Facebook, HeartHandshake, Instagram, MoonStar, Plus, Minus,
-  ShieldCheck, Youtube, MessageCircle, Sparkles, Coins, Scale, Landmark
+  ShieldCheck, Youtube, MessageCircle, Sparkles, Coins, Scale, Landmark, Target, CheckCircle2, AlertTriangle, RotateCcw
 } from "lucide-react";
 import { calculateZakat, ZAKAT_RULES, type NisabBasis, type ZakatInput, type ZakatResult } from "../lib/zakat";
 import { parseAmount, sanitizeDecimal } from "../lib/numbers";
 import { copy } from "../lib/copy";
-import { HEIRS, HEIR_DEFS, HEIR_GROUPS, initialHeirs, type HeirDef, type HeirKey, type Lang } from "../lib/heirs";
+import { copy2 } from "../lib/copy2";
+import { HEIR_DEFS, HEIR_GROUPS, initialHeirs, type HeirDef, type HeirKey, type Lang } from "../lib/heirs";
+import { MAX_COUNT, calculateMirath, wouldBeBlocked, type BlockCode, type Counts, type MirathResult } from "../lib/mirath";
+import { MirathResultView } from "./MirathResult";
 
 type ZakatField = "cash" | "goldGrams" | "silverGrams" | "goldPricePerGram" | "silverPricePerGram" | "businessStock" | "receivables" | "otherZakatable" | "debtsDueNow";
 
@@ -18,7 +21,10 @@ const initialZakat: Record<ZakatField, string> = {
   businessStock: "", receivables: "", otherZakatable: "", debtsDueNow: ""
 };
 
-const heirMax = Object.fromEntries(HEIRS.map(h => [h.key, h.max])) as Record<HeirKey, number>;
+// Only facts that are certain are limited (4 wives; one husband, father, mother, grandfather). Going past the limit shows an alert.
+const heirLimit = (key: string): number => MAX_COUNT[key] ?? 99;
+
+type BlockInfo = { by: HeirKey[]; code: BlockCode } | null;
 
 const LANGS: { id: Lang; label: string }[] = [
   { id: "ur", label: "اردو" },
@@ -35,6 +41,7 @@ const SOCIAL_LINKS: { label: string; url: string; Icon: typeof Facebook }[] = [
   { label: "WhatsApp", url: "", Icon: MessageCircle },
   { label: "Instagram", url: "", Icon: Instagram }
 ];
+
 
 const isLang = (v: string | null): v is Lang => v === "ur" || v === "hi" || v === "roman" || v === "en";
 
@@ -55,9 +62,19 @@ export default function Home() {
   const [nisabBasis, setNisabBasis] = useState<NisabBasis>(ZAKAT_RULES.defaultNisabBasis);
   const [hawl, setHawl] = useState(false);
   const [zakatResult, setZakatResult] = useState<ZakatResult | null>(null);
-  const [review, setReview] = useState<"none" | "ok" | "noheirs">("none");
+  const [mirathResult, setMirathResult] = useState<MirathResult | null>(null);
+  const [alertMsg, setAlertMsg] = useState("");
   const [demoOpen, setDemoOpen] = useState(false);
   const t = copy[lang];
+  const t2 = copy2[lang];
+  const heirLabel = (key: HeirKey): string => HEIR_DEFS.find(d => d.key === key)?.label[lang] ?? key;
+  // Live "mahjub" status for every heir, from the same engine that makes the result.
+  const blockInfo = useMemo(() => {
+    const counts = heirs as Counts;
+    const out: Partial<Record<HeirKey, BlockInfo>> = {};
+    for (const d of HEIR_DEFS) out[d.key as HeirKey] = wouldBeBlocked(gender, counts, d.key as HeirKey);
+    return out;
+  }, [gender, heirs]);
   const money = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(n);
   const heirTotal = useMemo(() => Object.values(heirs).reduce((a, b) => a + b, 0), [heirs]);
 
@@ -73,9 +90,20 @@ export default function Home() {
     try { localStorage.setItem("deeni-hisab-lang", lang); } catch { /* ignore */ }
   }, [lang]);
 
+  useEffect(() => {
+    if (!alertMsg) return;
+    const id = setTimeout(() => setAlertMsg(""), 4500);
+    return () => clearTimeout(id);
+  }, [alertMsg]);
+
   const updateHeir = (key: HeirKey, delta: number) => {
-    setHeirs(prev => ({ ...prev, [key]: Math.max(0, Math.min(heirMax[key], prev[key] + delta)) }));
-    setReview("none");
+    const limit = heirLimit(key);
+    if (delta > 0 && heirs[key] >= limit) {
+      setAlertMsg(key === "wives" ? t2.alertWives : `${heirLabel(key)}: ${t2.alertSingle}`);
+      return;
+    }
+    setHeirs(prev => ({ ...prev, [key]: Math.max(0, Math.min(limit, prev[key] + delta)) }));
+    setMirathResult(null);
   };
   const chooseGender = (g: "male" | "female") => {
     setGender(g);
@@ -85,10 +113,11 @@ export default function Home() {
       for (const d of HEIR_DEFS) if (d.onlyFor && d.onlyFor !== g) next[d.key as HeirKey] = 0;
       return next;
     });
-    setReview("none");
+    setMirathResult(null);
   };
   const heirDisabled = (def: HeirDef) => def.onlyFor !== undefined && def.onlyFor !== gender;
-  const reviewCase = () => setReview(heirTotal === 0 ? "noheirs" : "ok");
+  const reviewCase = () => setMirathResult(calculateMirath(gender, heirs as Counts));
+  const resetMirath = () => { setHeirs(initialHeirs); setMirathResult(null); setAlertMsg(""); };
 
   const printReport = () => window.print();
 
@@ -154,6 +183,18 @@ export default function Home() {
         </div>
       </section>
 
+      <section aria-label={t2.howTitle} className="mx-auto max-w-7xl px-4 pt-8 md:px-8 print:hidden">
+        <h2 className="mb-3 text-sm font-extrabold text-deen">{t2.howTitle}</h2>
+        <ol className="grid gap-3 sm:grid-cols-3">
+          {t2.how.map((step, i) => (
+            <li key={step} className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-soft ring-1 ring-slate-900/5">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-deen text-sm font-black text-white">{i + 1}</span>
+              <span className="text-xs font-semibold leading-6 text-slate-700">{step}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 md:grid-cols-[290px_1fr] md:px-8 md:py-10">
         <aside className="space-y-5">
           <div className="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-900/5">
@@ -168,6 +209,13 @@ export default function Home() {
               </div>}
               <p className="mt-3 inline-block rounded-full bg-amber-50 px-3 py-1 text-[10px] font-bold text-amber-800">{t.reviewStatus}</p>
             </div>
+          </div>
+          <div className="rounded-3xl border border-emerald-900/10 bg-white p-5 shadow-soft">
+            <div className="flex items-center gap-2 text-deen"><Target size={18}/><span className="text-sm font-extrabold">{t2.missionTitle}</span></div>
+            <p className="mt-3 text-xs leading-6 text-slate-600">{t2.missionText}</p>
+            <ul className="mt-3 space-y-2">
+              {t2.principles.map(p => <li key={p} className="flex items-start gap-2 text-xs font-semibold leading-5 text-slate-700"><CheckCircle2 size={15} className="mt-0.5 shrink-0 text-deen"/><span>{p}</span></li>)}
+            </ul>
           </div>
           <div className="rounded-3xl border border-emerald-900/10 bg-white p-5 shadow-soft">
             <div className="flex items-center gap-2 text-deen"><ShieldCheck size={18}/><span className="text-sm font-extrabold">{t.note}</span></div>
@@ -209,23 +257,27 @@ export default function Home() {
               <div className="mb-5 flex items-center justify-between"><div><h3 className="text-lg font-extrabold text-deen">{t.heirs}</h3><p className="mt-1 text-xs text-slate-400">{heirTotal} {t.selected}</p></div><div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-deen"><HeartHandshake size={20}/></div></div>
               <div className="space-y-5">
                 <p className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 text-xs leading-6 text-emerald-900">{t.heirNote}</p>
-                {HEIR_GROUPS.map(g => <HeirGroup key={g.id} title={g.title[lang]} defs={HEIR_DEFS.filter(d => d.group === g.id)} lang={lang} heirs={heirs} update={updateHeir} disabled={heirDisabled} naText={t.notApplicable} decLabel={t.dec} incLabel={t.inc} open={openGroups[g.id]} toggle={() => setOpenGroups(prev => ({ ...prev, [g.id]: !prev[g.id] }))}/>)}
+                {HEIR_GROUPS.map(g => <HeirGroup key={g.id} title={g.title[lang]} defs={HEIR_DEFS.filter(d => d.group === g.id)} lang={lang} heirs={heirs} update={updateHeir} disabled={heirDisabled} blockInfo={blockInfo} blockedWord={t2.blockedWord} blockTexts={t2.blocks} heirLabel={heirLabel} naText={t.notApplicable} decLabel={t.dec} incLabel={t.inc} open={openGroups[g.id]} toggle={() => setOpenGroups(prev => ({ ...prev, [g.id]: !prev[g.id] }))}/>)}
               </div>
+              {alertMsg && <div role="alert" className="sticky bottom-3 z-30 mt-4 flex items-start gap-2 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm font-bold leading-6 text-red-800 shadow-lg"><AlertTriangle size={18} className="mt-0.5 shrink-0"/><span>{alertMsg}</span></div>}
               <div className="mt-7 grid gap-3 sm:grid-cols-2 print:hidden">
-                <button type="button" onClick={reviewCase} className="flex items-center justify-center gap-2 rounded-2xl bg-deen px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-emerald-900/20 transition hover:bg-emerald-800"><Calculator size={18}/>{t.calculate}</button>
-                <button type="button" onClick={printReport} className="flex items-center justify-center gap-2 rounded-2xl border border-deen/20 bg-emerald-50 px-5 py-4 text-sm font-extrabold text-deen transition hover:bg-emerald-100"><Download size={18}/>{t.report}</button>
+                <button type="button" onClick={reviewCase} className="flex items-center justify-center gap-2 rounded-2xl bg-deen px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-emerald-900/20 transition hover:bg-emerald-800"><Calculator size={18}/>{t2.divide}</button>
+                <button type="button" onClick={resetMirath} className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50"><RotateCcw size={18}/>{t2.reset}</button>
               </div>
-              {review === "noheirs" && <div role="alert" className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800">{t.needHeir}</div>}
-              {review === "ok" && <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>{t.reviewTitle}</strong><p className="mt-1 text-xs">{t.reviewText}</p><p className="mt-2 text-xs">{t.sumEstate}: {money(estateNum)} · {t.gold}: {gold || "0"} · {t.silver}: {silver || "0"} · {heirTotal} {t.sumHeirs}</p>
-                <ul className="mt-3 space-y-1.5 text-xs">
-                  <li className="flex justify-between gap-3"><span>{t.netAfterDebts}</span><span className="font-bold tabular-nums">{money(netEstate)}</span></li>
-                  <li className="flex justify-between gap-3"><span>{t.bequestCap}</span><span className="font-bold tabular-nums">{money(bequestCap)}</span></li>
-                  <li className="flex justify-between gap-3"><span>{t.bequestCounted}</span><span className="font-bold tabular-nums">{money(bequestCounted)}</span></li>
-                  <li className="flex justify-between gap-3 border-t border-amber-200 pt-1.5"><span>{t.remaining}</span><span className="font-bold tabular-nums">{money(remainingForHeirs)}</span></li>
-                </ul>
-                {costsNum > estateNum && <p className="mt-2 text-xs font-bold text-red-700">{t.costsExceed}</p>}
-                {parseAmount(bequest) > bequestCap && <p className="mt-2 text-xs font-bold text-red-700">{t.bequestOver}</p>}
-              </div>}
+              {mirathResult && <>
+                <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+                  <p className="text-xs">{t.sumEstate}: {money(estateNum)} · {t.gold}: {gold || "0"} · {t.silver}: {silver || "0"} · {heirTotal} {t.sumHeirs}</p>
+                  <ul className="mt-3 space-y-1.5 text-xs">
+                    <li className="flex justify-between gap-3"><span>{t.netAfterDebts}</span><span className="font-bold tabular-nums">{money(netEstate)}</span></li>
+                    <li className="flex justify-between gap-3"><span>{t.bequestCap}</span><span className="font-bold tabular-nums">{money(bequestCap)}</span></li>
+                    <li className="flex justify-between gap-3"><span>{t.bequestCounted}</span><span className="font-bold tabular-nums">{money(bequestCounted)}</span></li>
+                    <li className="flex justify-between gap-3 border-t border-amber-200 pt-1.5"><span>{t.remaining}</span><span className="font-bold tabular-nums">{money(remainingForHeirs)}</span></li>
+                  </ul>
+                        {costsNum > estateNum && <p className="mt-2 text-xs font-bold text-red-700">{t.costsExceed}</p>}
+                  {parseAmount(bequest) > bequestCap && <p className="mt-2 text-xs font-bold text-red-700">{t.bequestOver}</p>}
+                </div>
+                <MirathResultView result={mirathResult} t2={t2} money={money} distributable={remainingForHeirs} heirLabel={heirLabel} onPrint={printReport} onReset={resetMirath} printLabel={t.report}/>
+              </>}
             </div>
           </div> : <div className="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-900/5 md:p-7">
             <div className="mb-6 flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-deen"><Coins size={24}/></div><div><h2 className="text-xl font-extrabold text-deen">{t.zakat}</h2><p className="text-xs text-slate-400">{t.zakatSub}</p></div></div>
@@ -247,7 +299,8 @@ export default function Home() {
               <Field label={t.zReceivables} value={zk.receivables} setValue={v => setZ("receivables", v)} prefix="₹" error={zError("receivables")}/>
               <Field label={t.zOther} value={zk.otherZakatable} setValue={v => setZ("otherZakatable", v)} prefix="₹" error={zError("otherZakatable")}/>
             </div>
-<h3 className="mb-3 mt-6 border-b border-slate-100 pb-2 text-sm font-extrabold text-slate-700">{t.zLiabilities}</h3>
+
+            <h3 className="mb-3 mt-6 border-b border-slate-100 pb-2 text-sm font-extrabold text-slate-700">{t.zLiabilities}</h3>
             <Field label={t.zDebts} value={zk.debtsDueNow} setValue={v => setZ("debtsDueNow", v)} prefix="₹" error={zError("debtsDueNow")}/>
 
             <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-950">
@@ -293,7 +346,7 @@ function Field({ label, value, setValue, prefix, suffix, error, hint }: { label:
   return <label className="block"><span className="mb-2 block text-xs font-bold text-slate-600">{label}</span><div className={`flex items-center rounded-2xl border bg-slate-50 px-3 transition focus-within:bg-white focus-within:ring-4 ${error ? "border-red-400 focus-within:border-red-500 focus-within:ring-red-500/10" : "border-slate-200 focus-within:border-emerald-700 focus-within:ring-emerald-700/10"}`}>{prefix && <span className="text-sm font-bold text-slate-400">{prefix}</span>}<input inputMode="decimal" value={value} onChange={e => setValue(e.target.value)} aria-invalid={error ? true : undefined} className="min-w-0 w-full bg-transparent px-2 py-3.5 text-sm font-semibold outline-none" placeholder="0"/>{suffix && <span className="text-xs font-bold text-slate-400">{suffix}</span>}</div>{error ? <span role="alert" className="mt-1 block text-[11px] font-bold text-red-600">{error}</span> : hint ? <span className="mt-1 block text-[11px] text-slate-400">{hint}</span> : null}</label>;
 }
 
-function HeirGroup({ title, defs, lang, heirs, update, disabled, naText, decLabel, incLabel, open, toggle }: { title: string; defs: HeirDef[]; lang: Lang; heirs: Record<HeirKey, number>; update: (key: HeirKey, delta: number) => void; disabled: (def: HeirDef) => boolean; naText: string; decLabel: string; incLabel: string; open: boolean; toggle: () => void }) {
+function HeirGroup({ title, defs, lang, heirs, update, disabled, blockInfo, blockedWord, blockTexts, heirLabel, naText, decLabel, incLabel, open, toggle }: { title: string; defs: HeirDef[]; lang: Lang; heirs: Record<HeirKey, number>; update: (key: HeirKey, delta: number) => void; disabled: (def: HeirDef) => boolean; blockInfo: Partial<Record<HeirKey, BlockInfo>>; blockedWord: string; blockTexts: Record<BlockCode, string>; heirLabel: (key: HeirKey) => string; naText: string; decLabel: string; incLabel: string; open: boolean; toggle: () => void }) {
   const count = defs.reduce((sum, d) => sum + heirs[d.key as HeirKey], 0);
   return <div>
     <button type="button" onClick={toggle} aria-expanded={open} className="mb-3 flex w-full items-center justify-between border-b border-slate-100 pb-2 text-start text-sm font-extrabold text-slate-700">
@@ -302,15 +355,20 @@ function HeirGroup({ title, defs, lang, heirs, update, disabled, naText, decLabe
     </button>
     {open && <div className="grid gap-3 sm:grid-cols-2">{defs.map(def => {
       const key = def.key as HeirKey; const off = disabled(def); const label = def.label[lang];
-      return <div key={key} className={`flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/80 px-3 py-3 ${off ? "opacity-50" : ""}`}>
-        <span className="text-sm font-semibold text-slate-700">{label}{off && <span className="block text-[10px] font-normal text-slate-400">{naText}</span>}</span>
+      const blk = off ? null : blockInfo[key] ?? null;
+      const blockedNow = blk !== null;
+      const cannotAdd = off || (blockedNow && heirs[key] === 0);
+      return <div key={key} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-3 ${off || (blockedNow && heirs[key] === 0) ? "border-slate-100 bg-slate-100/70 opacity-60" : blockedNow ? "border-amber-200 bg-amber-50/70" : "border-slate-100 bg-slate-50/80"}`}>
+        <span className="text-sm font-semibold text-slate-700">{label}
+          {off && <span className="block text-[10px] font-normal text-slate-400">{naText}</span>}
+          {blk && <span className="block text-[10px] font-normal leading-4 text-amber-800">{blockedWord} — {blockTexts[blk.code]}{blk.by.length > 0 ? ` (${blk.by.slice(0, 2).map(heirLabel).join(" / ")})` : ""}</span>}
+        </span>
         <div className="flex shrink-0 items-center gap-2">
           <button type="button" disabled={off || heirs[key] <= 0} onClick={() => update(key, -1)} aria-label={`${decLabel}: ${label}`} className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-deen hover:text-deen disabled:cursor-not-allowed disabled:opacity-40"><Minus size={14}/></button>
           <span className="w-6 text-center text-sm font-extrabold tabular-nums text-deen">{heirs[key]}</span>
-          <button type="button" disabled={off || heirs[key] >= heirMax[key]} onClick={() => update(key, 1)} aria-label={`${incLabel}: ${label}`} className="grid h-8 w-8 place-items-center rounded-lg bg-deen text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"><Plus size={14}/></button>
+          <button type="button" disabled={cannotAdd} onClick={() => update(key, 1)} aria-label={`${incLabel}: ${label}`} className="grid h-8 w-8 place-items-center rounded-lg bg-deen text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"><Plus size={14}/></button>
         </div>
       </div>;
     })}</div>}
   </div>;
 }
-            
