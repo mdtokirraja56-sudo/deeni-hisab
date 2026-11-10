@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen, Calculator, ChevronDown, ChevronUp, CircleHelp, Download,
   Facebook, HeartHandshake, Instagram, MoonStar, Plus, Minus,
-  ShieldCheck, Youtube, MessageCircle, Sparkles, Coins, Scale, Landmark, Target, CheckCircle2, AlertTriangle, RotateCcw
+  ShieldCheck, Youtube, MessageCircle, Sparkles, Coins, Scale, Landmark, Target, CheckCircle2, AlertTriangle, RotateCcw, Info
 } from "lucide-react";
 import { calculateZakat, ZAKAT_RULES, type NisabBasis, type ZakatInput, type ZakatResult } from "../lib/zakat";
 import { parseAmount, sanitizeDecimal } from "../lib/numbers";
@@ -13,6 +13,8 @@ import { copy2 } from "../lib/copy2";
 import { HEIR_DEFS, HEIR_GROUPS, initialHeirs, type HeirDef, type HeirKey, type Lang } from "../lib/heirs";
 import { MAX_COUNT, calculateMirath, wouldBeBlocked, type BlockCode, type Counts, type MirathResult } from "../lib/mirath";
 import { MirathResultView } from "./MirathResult";
+import { AboutDialog } from "./AboutDialog";
+import { copyAbout } from "../lib/copyAbout";
 
 type ZakatField = "cash" | "goldGrams" | "silverGrams" | "goldPricePerGram" | "silverPricePerGram" | "businessStock" | "receivables" | "otherZakatable" | "debtsDueNow";
 
@@ -65,6 +67,7 @@ export default function Home() {
   const [mirathResult, setMirathResult] = useState<MirathResult | null>(null);
   const [alertMsg, setAlertMsg] = useState("");
   const [demoOpen, setDemoOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const t = copy[lang];
   const t2 = copy2[lang];
   const heirLabel = (key: HeirKey): string => HEIR_DEFS.find(d => d.key === key)?.label[lang] ?? key;
@@ -163,6 +166,7 @@ export default function Home() {
           </a>
           <div className="flex items-center gap-2">
             <LangSwitch lang={lang} setLang={setLang} label={t.langLabel} className="hidden rounded-full border border-slate-200 bg-white p-1 sm:flex"/>
+            <button type="button" onClick={() => setAboutOpen(true)} aria-label={copyAbout[lang].menu} className="flex items-center gap-1.5 rounded-full border border-emerald-900/20 px-3 py-2.5 text-xs font-bold text-deen transition hover:bg-emerald-50 sm:px-4 sm:py-2"><Info size={15}/><span className="hidden sm:inline">{copyAbout[lang].menu}</span></button>
             <button type="button" onClick={() => setDemoOpen(true)} className="rounded-full border border-red-400 px-3 py-2 text-xs font-bold text-red-600 transition hover:bg-red-50 sm:px-4">{t.demo}</button>
           </div>
         </div>
@@ -197,19 +201,6 @@ export default function Home() {
 
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 md:grid-cols-[290px_1fr] md:px-8 md:py-10">
         <aside className="space-y-5">
-          <div className="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-900/5">
-            <div className="h-20 bg-gradient-to-r from-deen to-emerald-700"/>
-            <div className="-mt-11 px-5 pb-5">
-              <div className="grid h-20 w-20 place-items-center rounded-full border-4 border-white bg-amber-50 text-2xl font-black text-deen shadow-md">TR</div>
-              <h2 className="mt-3 text-lg font-extrabold text-deen">{t.ownerName}</h2>
-              <p className="text-xs font-semibold text-slate-500">{t.ownerRole}</p>
-              <p className="mt-2 text-xs leading-6 text-slate-500">{t.profileText}</p>
-              {socials.length > 0 && <div className="mt-4 flex flex-wrap gap-2">
-                {socials.map(({ label, url, Icon }) => <a key={label} href={url} target="_blank" rel="noopener noreferrer" aria-label={label} className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-50 text-deen transition hover:bg-deen hover:text-white"><Icon size={16}/></a>)}
-              </div>}
-              <p className="mt-3 inline-block rounded-full bg-amber-50 px-3 py-1 text-[10px] font-bold text-amber-800">{t.reviewStatus}</p>
-            </div>
-          </div>
           <div className="rounded-3xl border border-emerald-900/10 bg-white p-5 shadow-soft">
             <div className="flex items-center gap-2 text-deen"><Target size={18}/><span className="text-sm font-extrabold">{t2.missionTitle}</span></div>
             <p className="mt-3 text-xs leading-6 text-slate-600">{t2.missionText}</p>
@@ -273,7 +264,7 @@ export default function Home() {
                     <li className="flex justify-between gap-3"><span>{t.bequestCounted}</span><span className="font-bold tabular-nums">{money(bequestCounted)}</span></li>
                     <li className="flex justify-between gap-3 border-t border-amber-200 pt-1.5"><span>{t.remaining}</span><span className="font-bold tabular-nums">{money(remainingForHeirs)}</span></li>
                   </ul>
-                        {costsNum > estateNum && <p className="mt-2 text-xs font-bold text-red-700">{t.costsExceed}</p>}
+                  {costsNum > estateNum && <p className="mt-2 text-xs font-bold text-red-700">{t.costsExceed}</p>}
                   {parseAmount(bequest) > bequestCap && <p className="mt-2 text-xs font-bold text-red-700">{t.bequestOver}</p>}
                 </div>
                 <MirathResultView result={mirathResult} t2={t2} money={money} distributable={remainingForHeirs} heirLabel={heirLabel} onPrint={printReport} onReset={resetMirath} printLabel={t.report}/>
@@ -281,8 +272,7 @@ export default function Home() {
             </div>
           </div> : <div className="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-900/5 md:p-7">
             <div className="mb-6 flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-deen"><Coins size={24}/></div><div><h2 className="text-xl font-extrabold text-deen">{t.zakat}</h2><p className="text-xs text-slate-400">{t.zakatSub}</p></div></div>
-
-            <h3 className="mb-3 text-sm font-extrabold text-slate-700">{t.zNisabBasis}</h3>
+                 <h3 className="mb-3 text-sm font-extrabold text-slate-700">{t.zNisabBasis}</h3>
             <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
               <button type="button" aria-pressed={nisabBasis === "silver"} onClick={() => { setNisabBasis("silver"); setZakatResult(null); }} className={`rounded-xl py-3 text-sm font-bold ${nisabBasis === "silver" ? "bg-deen text-white shadow" : "text-slate-500"}`}>{t.zSilver}</button>
               <button type="button" aria-pressed={nisabBasis === "gold"} onClick={() => { setNisabBasis("gold"); setZakatResult(null); }} className={`rounded-xl py-3 text-sm font-bold ${nisabBasis === "gold" ? "bg-deen text-white shadow" : "text-slate-500"}`}>{t.zGold}</button>
@@ -333,6 +323,8 @@ export default function Home() {
 
       <footer className="border-t border-emerald-900/10 bg-white px-4 py-7 text-center text-xs text-slate-400">{t.footer}<div className="mt-2 font-bold tracking-[.2em] text-deen">DEENI HISAB</div></footer>
 
+      <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} lang={lang} appName={t.title} closeLabel={t.closeBtn} socials={socials}/>
+
       {demoOpen && <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/60 p-4 print:hidden" onClick={() => setDemoOpen(false)}><div role="dialog" aria-modal="true" className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={e => e.stopPropagation()}><div className="mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-deen"><BookOpen size={24}/></div><h3 className="text-lg font-extrabold text-deen">{t.demo}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{t.demoText}</p><button type="button" onClick={() => setDemoOpen(false)} className="mt-5 w-full rounded-xl bg-deen py-3 text-sm font-bold text-white">{t.closeBtn}</button></div></div>}
     </main>
   );
@@ -372,3 +364,4 @@ function HeirGroup({ title, defs, lang, heirs, update, disabled, blockInfo, bloc
     })}</div>}
   </div>;
 }
+            
