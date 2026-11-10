@@ -19,6 +19,14 @@ interface Props {
   printLabel: string;
 }
 
+// Small texts for the printed report header (4 languages)
+const REPORT: Record<Lang, { title: string; sub: string; date: string }> = {
+  en: { title: "Inheritance (Mirath) Report", sub: "Hanafi fiqh · Al-Sirajiyya", date: "Date" },
+  roman: { title: "Mirath (Wirasat) ki Report", sub: "Fiqh-e-Hanafi · Sirajiyya", date: "Tareekh" },
+  ur: { title: "رپورٹ میراث (ترکے کی تقسیم)", sub: "فقہِ حنفی · سراجیہ", date: "تاریخ" },
+  hi: { title: "मीरास (विरासत) रिपोर्ट", sub: "फ़िक़्ह-ए-हनफ़ी · सिराजिय्या", date: "तारीख़" }
+};
+
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
 
 export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel }: Props) {
@@ -26,6 +34,8 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
   // The language is found from the text object that was passed in, so page.tsx needs no change.
   const lang = ((Object.keys(copy2) as Lang[]).find((l) => copy2[l] === t2) ?? "ur") as Lang;
   const t3 = copy3[lang];
+  const rp = REPORT[lang];
+  const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
   if (result.status === "noheirs") {
     return <div role="alert" className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800">{t2.noHeirs}</div>;
   }
@@ -175,6 +185,17 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
         <button type="button" onClick={onReset} className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50"><RotateCcw size={17} />{t2.reset}</button>
       </div>
       <p className="mt-3 flex items-start gap-2 text-[11px] leading-5 text-slate-400"><AlertTriangle size={13} className="mt-0.5 shrink-0" />{t2.betaNote}</p>
+
+      {/* Printed / PDF report: always the full solution. Hidden on screen. */}
+      <div className="print-area hidden print:block" aria-hidden="true">
+        <div className="mb-4 border-b-2 border-deen pb-3 text-center">
+          <div className="text-xl font-black tracking-wide text-deen">DEENI HISAB | دینی حساب</div>
+          <div className="mt-1 text-base font-extrabold text-slate-800">{rp.title}</div>
+          <div className="mt-1 text-xs text-slate-500">{rp.sub} · {rp.date}: {today}</div>
+        </div>
+        <MirathSolution result={result} t2={t2} t3={t3} money={money} distributable={distributable} heirLabel={heirLabel} />
+        <p className="mt-4 border-t border-slate-300 pt-2 text-[11px] leading-5 text-slate-600">{t2.betaNote}</p>
+      </div>
     </section>
   );
-}
+                  }
