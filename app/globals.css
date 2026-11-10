@@ -51,5 +51,14 @@ input { direction: ltr; text-align: left; }
 @media print {
   header, footer, aside, button { display: none !important; }
   body, main { background: white !important; }
-  .shadow-soft { box-shadow: none !important; }
+  .shadow-soft, .shadow-sm { box-shadow: none !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Mirath report: when a result is shown, print ONLY the report block (.print-area) */
+  body:has(.print-area) *:not(:has(.print-area)):not(.print-area):not(.print-area *) { display: none !important; }
+  body:has(.print-area) :has(.print-area):not(.print-area) {
+    display: block !important; margin: 0 !important; padding: 0 !important; border: 0 !important;
+    background: transparent !important; box-shadow: none !important; max-width: none !important; min-height: 0 !important;
+  }
+  .print-area section, .print-area tr { break-inside: avoid; }
 }
