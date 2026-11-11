@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { GraduationCap, MoonStar, ShieldCheck, User, X } from "lucide-react";
+import { GraduationCap, ShieldCheck, User, X } from "lucide-react";
 import { copyAbout } from "../lib/copyAbout";
 import type { Lang } from "../lib/heirs";
 
@@ -44,7 +44,7 @@ export function AboutDialog({ open, onClose, lang, appName, closeLabel, socials 
       <div role="dialog" aria-modal="true" aria-label={a.title} className="max-h-[92vh] w-full overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:max-w-lg sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
         <div className="relative bg-deen px-6 pb-8 pt-6 text-center text-white">
           <button type="button" onClick={onClose} aria-label={closeLabel} className="absolute end-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20"><X size={18} /></button>
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/25"><MoonStar size={32} /></div>
+          <img src="/deeni-hisab-logo.webp" alt={appName} width={128} height={128} className="mx-auto h-32 w-32 rounded-full shadow-lg ring-2 ring-amber-400/70" />
           <h2 className="mt-4 text-2xl font-extrabold">{appName}</h2>
           <p className="mt-1 text-[11px] font-semibold uppercase tracking-[.22em] text-emerald-100/80">DEENI HISAB</p>
           <p className="mx-auto mt-3 max-w-xs text-xs leading-6 text-emerald-50">{a.tagline}</p>
