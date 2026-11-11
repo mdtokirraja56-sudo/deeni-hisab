@@ -161,7 +161,7 @@ export default function Home() {
       <header className="sticky top-0 z-40 border-b border-emerald-900/10 bg-white/90 backdrop-blur-xl print:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-8">
           <a href="#" className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-deen text-white shadow-lg shadow-emerald-900/20"><MoonStar size={24}/></div>
+            <img src="/deeni-hisab-logo.webp" alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-full shadow-md ring-1 ring-amber-400/60"/>
             <div><div className="text-lg font-extrabold tracking-tight text-deen">{t.title}</div><div className="text-[10px] font-semibold uppercase tracking-[.22em] text-slate-400">DEENI HISAB</div></div>
           </a>
           <div className="flex items-center gap-2">
@@ -181,6 +181,7 @@ export default function Home() {
           <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold text-emerald-50"><Sparkles size={14}/> {t.chip}</div>
           <p className="mb-3 font-urdu text-xl text-amber-100 md:text-2xl">{t.bismillah}</p>
           <p className="mb-6 font-urdu text-sm text-emerald-100">{t.durood}</p>
+          <img src="/deeni-hisab-logo.webp" alt="DEENI HISAB | دینی حساب" width={320} height={320} className="mx-auto mb-6 h-60 w-60 rounded-full drop-shadow-[0_18px_40px_rgba(0,0,0,0.45)] sm:h-72 sm:w-72 md:h-80 md:w-80"/>
           <h1 className={`text-4xl font-bold leading-tight md:text-6xl ${lang === "hi" ? "font-hindi" : "font-urdu"}`}>{t.title}</h1>
           <p className="mt-4 text-sm text-emerald-100 md:text-base">{t.subtitle}</p>
           <p className="mx-auto mt-3 max-w-2xl text-xs leading-6 text-emerald-100/80 md:text-sm">{t.intro}</p>
