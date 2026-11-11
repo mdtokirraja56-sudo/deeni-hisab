@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Nastaliq_Urdu, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
+import { PwaRegister } from "./PwaRegister";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const urdu = Noto_Nastaliq_Urdu({ subsets: ["arabic"], variable: "--font-urdu", display: "swap" });
@@ -21,7 +22,8 @@ export const metadata: Metadata = {
     siteName: "DEENI HISAB",
     type: "website"
   },
-  robots: { index: true, follow: true }
+  robots: { index: true, follow: true },
+  appleWebApp: { capable: true, title: "Deeni Hisab", statusBarStyle: "default" }
 };
 
 export const viewport: Viewport = {
@@ -33,7 +35,14 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ur" className={`${inter.variable} ${urdu.variable} ${hindi.variable}`}>
-      <body>{children}</body>
+      <head>
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </head>
+      <body>
+        {children}
+        <PwaRegister />
+      </body>
     </html>
   );
 }
