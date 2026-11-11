@@ -1,0 +1,127 @@
+// lib/copyExtra.ts
+// Text for Fidya, Kaffarah, Mahr, Qurbani and Qaza-e-Umri, in 4 languages.
+import type { Lang } from "./heirs";
+
+const en = {
+  chipMahr: "Mahr", chipQurbani: "Qurbani", chipQaza: "Qaza-e-Umri",
+  errQty: "Enter a whole number, 1 or more.", errRate: "Enter the price per kg.", errAge: "The age you started praying must be higher than your age of puberty.",
+  errExcused: "This must be less than 354 days.", errShares: "Shares must be a whole number from 1 to 7.", errPrice: "Enter the price.",
+  // shared per-person rate
+  rateTitle: "Amount for one poor person (same as Sadaqah-e-Fitr)", wheatPrice: "Wheat price per kg", rateIs: "Amount per poor person",
+  // Fidya
+  fidyaTitle: "Fidya", fidyaSub: "For missed fasts or prayers that cannot be made up",
+  fidyaKind: "Fidya for", fKFasts: "Missed fasts", fKPrayers: "Missed prayers",
+  fidyaQtyFasts: "Number of fasts", fidyaQtyDays: "Number of days of missed prayers", fidyaDaysHint: "6 prayers per day: 5 fard prayers + witr",
+  fidyaUnitsFasts: "Total fasts", fidyaUnitsPrayers: "Total prayers", fidyaTotal: "Total fidya", 
+  fidyaCond: "Fidya is for a person who can never fast (extreme old age, incurable illness), or on behalf of a deceased person according to his will. A person who can make up the fasts later must make them up. Ask your scholar whether fidya applies to you.",
+  // Kaffarah
+  kaffaraTitle: "Kaffarah", kaffaraSub: "Expiation for a broken fast, zihar or a broken oath",
+  kKind: "Kaffarah for", kFast: "Ramadan fast broken on purpose", kZihar: "Zihar", kOath: "Broken oath (qasam)",
+  kCount: "Number of kaffarahs due", poorPer: "Poor people per kaffarah", poorAll: "Total poor people to feed", fastAlt: "Fasting days per kaffarah (instead of feeding, only where permitted)", kTotal: "Total cost of feeding",
+  kOrder: "Order matters. For a fast broken on purpose or zihar, 60 fasts in a row come first, and feeding is only for one who cannot fast. For an oath, feeding or clothing 10 poor people comes first, and 3 fasts only if unable. Ask your scholar which applies to you and how many kaffarahs are due.",
+  // Mahr
+  mahrTitle: "Mahr", mahrSub: "Minimum mahr and Mahr-e-Fatimi in today's silver price",
+  silverPrice: "Silver price per gram", agreedMahr: "Mahr agreed (optional)",
+  minMahr: "Minimum mahr (10 dirham)", fatimi: "Mahr-e-Fatimi (500 dirham)", grams: "silver",
+  mahrAbove: "The agreed mahr is not below the minimum.", mahrBelow: "The agreed mahr is below the minimum. Ask your scholar.",
+  mahrNote: "In Hanafi fiqh the minimum mahr is 10 dirham of silver. There is no maximum. Check the exact weight of a dirham with your scholar.",
+  // Qurbani
+  qurbaniTitle: "Qurbani share", qurbaniSub: "Cost of each share in a large animal",
+  animalPrice: "Price of the animal", shares: "Number of shares (1 to 7)", extra: "Other costs (feed, transport, butcher) optional", perShare: "Cost per share",
+  qurbaniNote: "A goat or sheep is for one person. A cow, buffalo or camel may be shared by up to 7, and every partner must intend qurbani or worship. Age and conditions of the animal: ask your scholar.",
+  // Qaza
+  qazaTitle: "Qaza-e-Umri counter", qazaSub: "Count missed prayers and fasts of past years",
+  bulugh: "Age when prayer became obligatory (puberty)", start: "Age when you started praying regularly (or your age today)",
+  excused: "Excused days per year (for example menstruation), optional", fastsYear: "Fasts missed per year (optional)",
+  qYears: "Years missed", qDays: "Days", qPrayers: "Total prayers (with witr)", qEach: "Of each of the 5 fard prayers and witr", qFasts: "Fasts",
+  qazaNote: "This is an estimate using a 354-day year. Puberty is known by its signs; if none appear, scholars say 15 lunar years. The method and order of making up: ask your scholar."
+};
+export type CopyExtra = typeof en;
+
+export const copyExtra: Record<Lang, CopyExtra> = {
+  en,
+  roman: {
+    chipMahr: "Mahr", chipQurbani: "Qurbani", chipQaza: "Qaza-e-Umri",
+    errQty: "Poora number likhein, 1 ya zyada.", errRate: "Fi kilo qeemat likhein.", errAge: "Namaz shuru karne ki umr, baaligh hone ki umr se zyada honi chahiye.",
+    errExcused: "Ye 354 din se kam hona chahiye.", errShares: "Hisse 1 se 7 tak poora number hon.", errPrice: "Qeemat likhein.",
+    rateTitle: "Ek miskeen ki raqam (Sadaqah-e-Fitr wali)", wheatPrice: "Gehun ki qeemat fi kilo", rateIs: "Ek miskeen ki raqam",
+    fidyaTitle: "Fidya", fidyaSub: "Chhute hue rozon ya namazon ka, jo qaza nahi ho sakte",
+    fidyaKind: "Fidya kis ka", fKFasts: "Chhute roze", fKPrayers: "Chhutin namazein",
+    fidyaQtyFasts: "Rozon ki tadaad", fidyaQtyDays: "Chhutin namazon ke dinon ki tadaad", fidyaDaysHint: "Roz 6 namazein: 5 farz + witr",
+    fidyaUnitsFasts: "Kul roze", fidyaUnitsPrayers: "Kul namazein", fidyaTotal: "Kul fidya",
+    fidyaCond: "Fidya us shakhs ke liye hai jo kabhi roza nahi rakh sakta (bahut budhapa, na-qabil-e-ilaj bimari) ya marhoom ki taraf se uski wasiyat par. Jo baad mein roze rakh sakta ho wo roze qaza kare. Aap par fidya laagu hai ya nahi, aalim se poochein.",
+    kaffaraTitle: "Kaffara", kaffaraSub: "Roza todne, zihar ya qasam todne ka",
+    kKind: "Kaffara kis ka", kFast: "Ramzan ka roza jaan bujh kar toda", kZihar: "Zihar", kOath: "Qasam todi",
+    kCount: "Kitne kaffare wajib hain", poorPer: "Har kaffare mein miskeen", poorAll: "Kul miskeen jinhein khilana hai", fastAlt: "Har kaffare ke roze (khilane ki jagah, sirf jahan ijazat ho)", kTotal: "Khilane ka kul kharch",
+    kOrder: "Tarteeb zaroori hai. Roza jaan bujh kar todne ya zihar mein pehle lagatar 60 roze hain, khilana sirf us ke liye jo roza na rakh sake. Qasam mein pehle 10 miskeen ko khilana ya kapde dena hai, 3 roze sirf aajizi mein. Aap par kya laagu hai aur kitne kaffare, aalim se poochein.",
+    mahrTitle: "Mahr", mahrSub: "Kam az kam mahr aur Mahr-e-Fatimi, aaj ki chaandi ke bhaav se",
+    silverPrice: "Chaandi ki qeemat fi gram", agreedMahr: "Tay shuda mahr (marzi)",
+    minMahr: "Kam az kam mahr (10 dirham)", fatimi: "Mahr-e-Fatimi (500 dirham)", grams: "chaandi",
+    mahrAbove: "Tay shuda mahr kam az kam se kam nahi.", mahrBelow: "Tay shuda mahr kam az kam se kam hai. Aalim se poochein.",
+    mahrNote: "Fiqh-e-Hanafi mein kam az kam mahr 10 dirham chaandi hai. Zyada ki koi had nahi. Dirham ka sahi wazan aalim se pooch lein.",
+    qurbaniTitle: "Qurbani ka hissa", qurbaniSub: "Bade jaanwar mein har hisse ka kharch",
+    animalPrice: "Jaanwar ki qeemat", shares: "Hisson ki tadaad (1 se 7)", extra: "Dusre kharch (chaara, kiraya, qasai) marzi", perShare: "Har hisse ka kharch",
+    qurbaniNote: "Bakri ya bhed ek shakhs ki taraf se hoti hai. Gaay, bhains ya oont mein 7 tak hisse ho sakte hain aur har sharik ki niyyat qurbani ya ibadat ki ho. Jaanwar ki umr aur sharaait aalim se poochein.",
+    qazaTitle: "Qaza-e-Umri ginti", qazaSub: "Guzre saalon ki chhutin namazon aur rozon ka andaza",
+    bulugh: "Namaz farz hone ki umr (baaligh hone ki)", start: "Jis umr se baqaidgi se namaz shuru ki (ya aaj ki umr)",
+    excused: "Saal mein ma'zoori ke din (jaise haiz), marzi", fastsYear: "Saal mein chhute roze (marzi)",
+    qYears: "Chhute saal", qDays: "Din", qPrayers: "Kul namazein (witr samet)", qEach: "5 farz namazon mein se har ek aur witr", qFasts: "Roze",
+    qazaNote: "Ye 354 din ke saal par andaza hai. Baaligh hona alamaton se maloom hota hai, koi alamat na aaye to ulama 15 qamari saal kehte hain. Qaza ka tareeqa aur tarteeb aalim se poochein."
+  },
+  ur: {
+    chipMahr: "مہر", chipQurbani: "قربانی", chipQaza: "قضائے عمری",
+    errQty: "پورا نمبر لکھیں، 1 یا زیادہ۔", errRate: "فی کلو قیمت لکھیں۔", errAge: "نماز شروع کرنے کی عمر بالغ ہونے کی عمر سے زیادہ ہونی چاہیے۔",
+    errExcused: "یہ 354 دن سے کم ہونا چاہیے۔", errShares: "حصے 1 سے 7 تک پورا نمبر ہوں۔", errPrice: "قیمت لکھیں۔",
+    rateTitle: "ایک مسکین کی رقم (صدقۂ فطر والی)", wheatPrice: "گیہوں کی قیمت فی کلو", rateIs: "ایک مسکین کی رقم",
+    fidyaTitle: "فدیہ", fidyaSub: "چھوٹے ہوئے روزوں یا نمازوں کا، جو قضا نہیں ہو سکتے",
+    fidyaKind: "فدیہ کس کا", fKFasts: "چھوٹے روزے", fKPrayers: "چھوٹی نمازیں",
+    fidyaQtyFasts: "روزوں کی تعداد", fidyaQtyDays: "چھوٹی نمازوں کے دنوں کی تعداد", fidyaDaysHint: "روز 6 نمازیں: 5 فرض + وتر",
+    fidyaUnitsFasts: "کل روزے", fidyaUnitsPrayers: "کل نمازیں", fidyaTotal: "کل فدیہ",
+    fidyaCond: "فدیہ اس شخص کے لیے ہے جو کبھی روزہ نہیں رکھ سکتا (بہت بڑھاپا، ناقابلِ علاج بیماری) یا مرحوم کی طرف سے اس کی وصیت پر۔ جو بعد میں روزے رکھ سکتا ہو وہ روزے قضا کرے۔ آپ پر فدیہ لاگو ہے یا نہیں، عالم سے پوچھیں۔",
+    kaffaraTitle: "کفارہ", kaffaraSub: "روزہ توڑنے، ظہار یا قسم توڑنے کا",
+    kKind: "کفارہ کس کا", kFast: "رمضان کا روزہ جان بوجھ کر توڑا", kZihar: "ظہار", kOath: "قسم توڑی",
+    kCount: "کتنے کفارے واجب ہیں", poorPer: "ہر کفارے میں مسکین", poorAll: "کل مسکین جنہیں کھلانا ہے", fastAlt: "ہر کفارے کے روزے (کھلانے کی جگہ، صرف جہاں اجازت ہو)", kTotal: "کھلانے کا کل خرچ",
+    kOrder: "ترتیب ضروری ہے۔ روزہ جان بوجھ کر توڑنے یا ظہار میں پہلے لگاتار 60 روزے ہیں، کھلانا صرف اس کے لیے جو روزہ نہ رکھ سکے۔ قسم میں پہلے 10 مسکینوں کو کھلانا یا کپڑے دینا ہے، 3 روزے صرف عاجزی میں۔ آپ پر کیا لاگو ہے اور کتنے کفارے، عالم سے پوچھیں۔",
+    mahrTitle: "مہر", mahrSub: "کم از کم مہر اور مہرِ فاطمی، آج کی چاندی کے بھاؤ سے",
+    silverPrice: "چاندی کی قیمت فی گرام", agreedMahr: "طے شدہ مہر (اختیاری)",
+    minMahr: "کم از کم مہر (10 درہم)", fatimi: "مہرِ فاطمی (500 درہم)", grams: "چاندی",
+    mahrAbove: "طے شدہ مہر کم از کم سے کم نہیں۔", mahrBelow: "طے شدہ مہر کم از کم سے کم ہے۔ عالم سے پوچھیں۔",
+    mahrNote: "فقہِ حنفی میں کم از کم مہر 10 درہم چاندی ہے۔ زیادہ کی کوئی حد نہیں۔ درہم کا صحیح وزن عالم سے پوچھ لیں۔",
+    qurbaniTitle: "قربانی کا حصہ", qurbaniSub: "بڑے جانور میں ہر حصے کا خرچ",
+    animalPrice: "جانور کی قیمت", shares: "حصوں کی تعداد (1 سے 7)", extra: "دوسرے خرچ (چارہ، کرایہ، قصاب) اختیاری", perShare: "ہر حصے کا خرچ",
+    qurbaniNote: "بکری یا بھیڑ ایک شخص کی طرف سے ہوتی ہے۔ گائے، بھینس یا اونٹ میں 7 تک حصے ہو سکتے ہیں اور ہر شریک کی نیت قربانی یا عبادت کی ہو۔ جانور کی عمر اور شرائط عالم سے پوچھیں۔",
+    qazaTitle: "قضائے عمری گنتی", qazaSub: "گزرے سالوں کی چھوٹی نمازوں اور روزوں کا اندازہ",
+    bulugh: "نماز فرض ہونے کی عمر (بالغ ہونے کی)", start: "جس عمر سے باقاعدگی سے نماز شروع کی (یا آج کی عمر)",
+    excused: "سال میں معذوری کے دن (جیسے حیض)، اختیاری", fastsYear: "سال میں چھوٹے روزے (اختیاری)",
+    qYears: "چھوٹے سال", qDays: "دن", qPrayers: "کل نمازیں (وتر سمیت)", qEach: "5 فرض نمازوں میں سے ہر ایک اور وتر", qFasts: "روزے",
+    qazaNote: "یہ 354 دن کے سال پر اندازہ ہے۔ بالغ ہونا علامات سے معلوم ہوتا ہے، کوئی علامت نہ آئے تو علماء 15 قمری سال کہتے ہیں۔ قضا کا طریقہ اور ترتیب عالم سے پوچھیں۔"
+  },
+  hi: {
+    chipMahr: "मह्र", chipQurbani: "क़ुर्बानी", chipQaza: "क़ज़ा-ए-उम्री",
+    errQty: "पूरा नंबर लिखें, 1 या ज़्यादा।", errRate: "फ़ी किलो क़ीमत लिखें।", errAge: "नमाज़ शुरू करने की उम्र, बालिग़ होने की उम्र से ज़्यादा होनी चाहिए।",
+    errExcused: "यह 354 दिन से कम होना चाहिए।", errShares: "हिस्से 1 से 7 तक पूरा नंबर हों।", errPrice: "क़ीमत लिखें।",
+    rateTitle: "एक मिस्कीन की रक़म (सदक़ा-ए-फ़ित्र वाली)", wheatPrice: "गेहूँ की क़ीमत फ़ी किलो", rateIs: "एक मिस्कीन की रक़म",
+    fidyaTitle: "फ़िदया", fidyaSub: "छूटे हुए रोज़ों या नमाज़ों का, जो क़ज़ा नहीं हो सकते",
+    fidyaKind: "फ़िदया किसका", fKFasts: "छूटे रोज़े", fKPrayers: "छूटी नमाज़ें",
+    fidyaQtyFasts: "रोज़ों की तादाद", fidyaQtyDays: "छूटी नमाज़ों के दिनों की तादाद", fidyaDaysHint: "रोज़ 6 नमाज़ें: 5 फ़र्ज़ + वित्र",
+    fidyaUnitsFasts: "कुल रोज़े", fidyaUnitsPrayers: "कुल नमाज़ें", fidyaTotal: "कुल फ़िदया",
+    fidyaCond: "फ़िदया उस शख़्स के लिए है जो कभी रोज़ा नहीं रख सकता (बहुत बुढ़ापा, ला-इलाज बीमारी) या मरहूम की तरफ़ से उसकी वसिय्यत पर। जो बाद में रोज़े रख सकता हो वह रोज़े क़ज़ा करे। आप पर फ़िदया लागू है या नहीं, आलिम से पूछें।",
+    kaffaraTitle: "कफ़्फ़ारा", kaffaraSub: "रोज़ा तोड़ने, ज़िहार या क़सम तोड़ने का",
+    kKind: "कफ़्फ़ारा किसका", kFast: "रमज़ान का रोज़ा जान-बूझकर तोड़ा", kZihar: "ज़िहार", kOath: "क़सम तोड़ी",
+    kCount: "कितने कफ़्फ़ारे वाजिब हैं", poorPer: "हर कफ़्फ़ारे में मिस्कीन", poorAll: "कुल मिस्कीन जिन्हें खिलाना है", fastAlt: "हर कफ़्फ़ारे के रोज़े (खिलाने की जगह, सिर्फ़ जहाँ इजाज़त हो)", kTotal: "खिलाने का कुल ख़र्च",
+    kOrder: "तर्तीब ज़रूरी है। रोज़ा जान-बूझकर तोड़ने या ज़िहार में पहले लगातार 60 रोज़े हैं, खिलाना सिर्फ़ उसके लिए जो रोज़ा न रख सके। क़सम में पहले 10 मिस्कीनों को खिलाना या कपड़े देना है, 3 रोज़े सिर्फ़ आजिज़ी में। आप पर क्या लागू है और कितने कफ़्फ़ारे, आलिम से पूछें।",
+    mahrTitle: "मह्र", mahrSub: "कम से कम मह्र और मह्र-ए-फ़ातिमी, आज की चाँदी के भाव से",
+    silverPrice: "चाँदी की क़ीमत फ़ी ग्राम", agreedMahr: "तय किया हुआ मह्र (मर्ज़ी)",
+    minMahr: "कम से कम मह्र (10 दिरहम)", fatimi: "मह्र-ए-फ़ातिमी (500 दिरहम)", grams: "चाँदी",
+    mahrAbove: "तय किया हुआ मह्र कम से कम से कम नहीं।", mahrBelow: "तय किया हुआ मह्र कम से कम से कम है। आलिम से पूछें।",
+    mahrNote: "फ़िक़्ह-ए-हनफ़ी में कम से कम मह्र 10 दिरहम चाँदी है। ज़्यादा की कोई हद नहीं। दिरहम का सही वज़न आलिम से पूछ लें।",
+    qurbaniTitle: "क़ुर्बानी का हिस्सा", qurbaniSub: "बड़े जानवर में हर हिस्से का ख़र्च",
+    animalPrice: "जानवर की क़ीमत", shares: "हिस्सों की तादाद (1 से 7)", extra: "दूसरे ख़र्च (चारा, किराया, क़स्साब) मर्ज़ी", perShare: "हर हिस्से का ख़र्च",
+    qurbaniNote: "बकरी या भेड़ एक शख़्स की तरफ़ से होती है। गाय, भैंस या ऊँट में 7 तक हिस्से हो सकते हैं और हर शरीक की नीयत क़ुर्बानी या इबादत की हो। जानवर की उम्र और शर्तें आलिम से पूछें।",
+    qazaTitle: "क़ज़ा-ए-उम्री गिनती", qazaSub: "गुज़रे सालों की छूटी नमाज़ों और रोज़ों का अंदाज़ा",
+    bulugh: "नमाज़ फ़र्ज़ होने की उम्र (बालिग़ होने की)", start: "जिस उम्र से बाक़ायदगी से नमाज़ शुरू की (या आज की उम्र)",
+    excused: "साल में मा'ज़ूरी के दिन (जैसे हैज़), मर्ज़ी", fastsYear: "साल में छूटे रोज़े (मर्ज़ी)",
+    qYears: "छूटे साल", qDays: "दिन", qPrayers: "कुल नमाज़ें (वित्र समेत)", qEach: "5 फ़र्ज़ नमाज़ों में से हर एक और वित्र", qFasts: "रोज़े",
+    qazaNote: "यह 354 दिन के साल पर अंदाज़ा है। बालिग़ होना अलामतों से मालूम होता है, कोई अलामत न आए तो उलमा 15 क़मरी साल कहते हैं। क़ज़ा का तरीक़ा और तर्तीब आलिम से पूछें।"
+  }
+};
