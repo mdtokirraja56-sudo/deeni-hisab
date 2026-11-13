@@ -61,4 +61,5 @@ input { direction: ltr; text-align: left; }
     background: transparent !important; box-shadow: none !important; max-width: none !important; min-height: 0 !important;
   }
   .print-area section, .print-area tr { break-inside: avoid; }
-}
+} 
+
