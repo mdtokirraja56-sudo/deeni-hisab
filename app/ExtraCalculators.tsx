@@ -127,7 +127,7 @@ export function MahrCalc({ t, x, money }: { t: CopyMore; x: CopyExtra; money: Mo
           lines={[`${x.minMahr}: ${money(res.minValue)} (${num(res.minGrams)} g)`, `${x.fatimi}: ${money(res.fatimiValue)} (${num(res.fatimiGrams)} g)`]}
           how={[
             { label: x.minMahr, formula: `${EXTRA_RULES.minMahrDirham} × ${EXTRA_RULES.dirhamSilverGrams} g = ${num(res.minGrams)} g → × ${money(parseAmount(silver))} = ${money(res.minValue)}` },
-            { label: x.fatimi, formula: `${EXTRA_RULES.fatimiMahrDirham} × ${EXTRA_RULES.dirhamSilverGrams} g = ${num(res.fatimiGrams)} g → × ${money(parseAmount(silver))} = ${money(res.fatimiValue)}` }
+            { label: x.fatimi, formula: `${EXTRA_RULES.fatimiMithqal} × ${EXTRA_RULES.MithqalGrams} g = ${num(res.fatimiGrams)} g → × ${money(parseAmount(silver))} = ${money(res.fatimiValue)}` }
           ]}>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Tile label={`${x.minMahr} · ${num(res.minGrams)} g ${x.grams}`} value={money(res.minValue)} />
