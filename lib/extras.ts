@@ -4,9 +4,10 @@
 // Where the rule is not settled, the code returns a count and the UI says "ask your scholar". Nothing is guessed.
 
 export const EXTRA_RULES = {
-  dirhamSilverGrams: 3.0618, // 1 shar'i dirham
+  dirhamSilverGrams: 3.26592, // 1 shar'i dirham
   minMahrDirham: 10, // minimum mahr (Hanafi)
-  fatimiMahrDirham: 500, // Mahr-e-Fatimi
+  mithqalGrams: 4.6656, // 4.5 masha
+  fatimiMithqal: 400, // Mahr-e-Fatimi = 400 mithqal silver = 1866.24 g (Muntakhab Fatawe, p. 22)
   prayersPerDay: 6, // 5 fard + witr
   kaffaraFeed: { fast: 60, zihar: 60, oath: 10 } as Record<KaffaraKind, number>,
   kaffaraFastDays: { fast: 60, zihar: 60, oath: 3 } as Record<KaffaraKind, number>,
@@ -83,7 +84,7 @@ export function calculateMahr(i: MahrInput): MahrResult {
   for (const f of ["silverPricePerGram", "agreedMahr"] as const) if (bad(i[f])) errors.push({ field: f, code: "number" });
   if (!errors.length && i.silverPricePerGram <= 0) errors.push({ field: "silverPricePerGram", code: "price_required" });
   const minGrams = EXTRA_RULES.minMahrDirham * EXTRA_RULES.dirhamSilverGrams;
-  const fatimiGrams = EXTRA_RULES.fatimiMahrDirham * EXTRA_RULES.dirhamSilverGrams;
+  const fatimiGrams = EXTRA_RULES.fatimiMithqal * EXTRA_RULES.mithqalGrams;
   if (errors.length) return { status: "invalid", errors, minGrams, minValue: 0, fatimiGrams, fatimiValue: 0, agreed: "unknown" };
   const minValue = minGrams * i.silverPricePerGram;
   return {
