@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { CheckCircle2, Sprout, HandCoins, Scale, Gift, Beef, History, Heart } from "lucide-react";
+import { Sprout, HandCoins, Scale, Gift, Beef, History, Heart } from "lucide-react";
 import { copyMore, type CopyMore } from "../lib/copyMore";
 import { calculateUshr, type Irrigation, type UshrResult, type UshrUnit } from "../lib/ushr";
 import { calculateFitr, FITR_RULES, type FitrGrain, type FitrResult } from "../lib/fitr";
 import { parseAmount, sanitizeDecimal } from "../lib/numbers";
 import type { Lang } from "../lib/heirs";
-import { Field, Choice, Tile, Note, Actions } from "./calcUi";
+import { Field, Choice, Tile, Note, Actions, ResultBox } from "./calcUi";
 import { FidyaCalc, KaffaraCalc, MahrCalc, QurbaniCalc, QazaCalc } from "./ExtraCalculators";
 import { copyExtra } from "../lib/copyExtra";
 import { WeightConverter } from "./WeightConverter";
@@ -50,8 +50,13 @@ function UshrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
       <Actions onCalc={run} onReset={clear} t={t} />
 
       {res && res.status !== "invalid" && (
-        <section role="status" className="rounded-3xl border border-emerald-900/10 bg-emerald-50/50 p-4 md:p-5">
-          <h4 className="flex items-center gap-2 text-base font-extrabold text-deen"><CheckCircle2 size={18} />{t.result}</h4>
+        <ResultBox t={t} title={t.ushrTitle}
+          lines={res.status === "needs_ruling" ? [t.ushrEqual] : [`${t.ushrRate}: ${res.rate === 0.1 ? t.ushrRainShort : t.ushrPaidShort}`, `${t.ushrDueQty}: ${kg(res.ushrKg)}`, ...(res.hasPrice ? [`${t.ushrDueValue}: ${money(res.ushrValue)}`] : []), `${t.ushrRemain}: ${kg(res.remainingKg)}`]}
+          how={res.status === "needs_ruling" ? [] : [
+            { label: t.ushrDueQty, formula: `${kg(res.produceKg)} × ${res.rate === 0.1 ? "1/10" : "1/20"} = ${kg(res.ushrKg)}` },
+            ...(res.hasPrice ? [{ label: t.ushrDueValue, formula: `${kg(res.ushrKg)} × ₹${parseAmount(price)} = ${money(res.ushrValue)}` }] : []),
+            { label: t.ushrRemain, formula: `${kg(res.produceKg)} − ${kg(res.ushrKg)} = ${kg(res.remainingKg)}` }
+          ]}>
           {res.status === "needs_ruling" ? (
             <div className="mt-3 space-y-2"><Note tone="warn">{t.ushrEqual}</Note></div>
           ) : (
@@ -68,8 +73,7 @@ function UshrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
               </div>
             </>
           )}
-          <p className="mt-3 text-[11px] leading-5 text-amber-900">{t.review}</p>
-        </section>
+        </ResultBox>
       )}
     </div>
   );
@@ -116,8 +120,13 @@ function FitrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
       <Actions onCalc={run} onReset={clear} t={t} />
 
       {res && res.status === "ok" && (
-        <section role="status" className="rounded-3xl border border-emerald-900/10 bg-emerald-50/50 p-4 md:p-5">
-          <h4 className="flex items-center gap-2 text-base font-extrabold text-deen"><CheckCircle2 size={18} />{t.result}</h4>
+        <ResultBox t={t} title={t.fitrTitle}
+          lines={[`${t.perPersonQty}: ${kg(res.gramsPerPerson / 1000)}`, `${t.perPersonAmt}: ${money(res.amountPerPerson)}`, `${t.total} (${parseAmount(persons)} ${t.forPersons}): ${money(res.total)}`]}
+          how={[
+            { label: t.perPersonQty, formula: `${grams} g × ${FITR_RULES.multiplier[grain]} = ${res.gramsPerPerson} g` },
+            { label: t.perPersonAmt, formula: `${res.gramsPerPerson / 1000} kg × ₹${parseAmount(price)} = ${money(res.amountPerPerson)}` },
+            { label: t.total, formula: `${money(res.amountPerPerson)} × ${parseAmount(persons)} = ${money(res.total)}` }
+          ]}>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Tile label={t.perPersonQty} value={kg(res.gramsPerPerson / 1000)} />
             <Tile label={t.perPersonAmt} value={money(res.amountPerPerson)} />
@@ -130,8 +139,7 @@ function FitrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
             {res.nisab !== "unknown" && <p className="text-[11px] text-slate-500">{t.nisabValueLine}: <span className="font-bold tabular-nums text-deen">{money(res.nisabValue)}</span></p>}
             <Note tone="warn">{t.weightDiffers}</Note>
           </div>
-          <p className="mt-3 text-[11px] leading-5 text-amber-900">{t.review}</p>
-        </section>
+        </ResultBox>
       )}
     </div>
   );
@@ -185,5 +193,4 @@ export function MoreCalculators({ lang, money }: Props) {
         : <QazaCalc t={t} x={x} />}
     </div>
   );
-      }
-            
+}
