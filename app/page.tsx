@@ -13,6 +13,7 @@ import { copy2 } from "../lib/copy2";
 import { HEIR_DEFS, HEIR_GROUPS, initialHeirs, type HeirDef, type HeirKey, type Lang } from "../lib/heirs";
 import { MAX_COUNT, calculateMirath, wouldBeBlocked, type BlockCode, type Counts, type MirathResult } from "../lib/mirath";
 import { MirathResultView } from "./MirathResult";
+import { ZakatCalculator } from "./ZakatCalculator";
 import { AboutDialog } from "./AboutDialog";
 import { MoreCalculators } from "./MoreCalculators";
 import { copyMore } from "../lib/copyMore";
@@ -48,7 +49,6 @@ const SOCIAL_LINKS: { label: string; url: string; Icon: typeof Facebook }[] = [
 
 
 const isLang = (v: string | null): v is Lang => v === "ur" || v === "hi" || v === "roman" || v === "en";
-
 export default function Home() {
   const [lang, setLang] = useState<Lang>("ur");
   const [tab, setTab] = useState<"mirath" | "zakat" | "more">("mirath");
@@ -224,7 +224,7 @@ export default function Home() {
             <button type="button" aria-pressed={tab === "more"} onClick={() => setTab("more")} className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-extrabold transition ${tab === "more" ? "bg-deen text-white shadow-md" : "text-slate-500 hover:bg-emerald-50"}`}><Calculator size={18}/>{copyMore[lang].tab}</button>
           </div>
 
-          {tab === "more" ? <MoreCalculators lang={lang} money={money}/> : tab === "mirath" ? <div className="space-y-5">
+          {tab === "zakat" ? <ZakatCalculator lang={lang} money={money}/> : tab === "more" ? <MoreCalculators lang={lang} money={money}/> : tab === "mirath" ? <div className="space-y-5">
             <div className="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-900/5 md:p-7">
               <div className="mb-6 flex items-center justify-between gap-3"><div><h2 className="text-xl font-extrabold text-deen">{t.mirath}</h2><p className="mt-1 text-xs text-slate-400">{t.mirathSub}</p></div><div className="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-50 text-deen"><Landmark size={22}/></div></div>
               <div className="grid gap-4 sm:grid-cols-3">
