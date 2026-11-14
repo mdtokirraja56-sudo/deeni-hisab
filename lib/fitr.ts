@@ -13,7 +13,7 @@ export const FITR_RULES = {
   // Barley, dates and raisins: one full sa' = twice the wheat weight.
   multiplier: { wheat: 1, barley: 2, dates: 2, raisins: 2 } as Record<FitrGrain, number>,
   // Silver nisab (same figure as the Zakat module).
-  nisabSilverGrams: 612.36,
+  nisabSilverGrams: 653.184,
   verified: false
 } as const;
 
