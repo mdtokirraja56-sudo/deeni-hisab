@@ -1,19 +1,27 @@
 // lib/weights.ts
 // Tola / Masha / Ratti <-> gram converter for gold and silver. Pure functions, no UI.
 // 1 tola = 12 masha, 1 masha = 8 ratti (so 1 tola = 96 ratti).
-// The tola weight (11.664 g) is the same figure that gives the nisab values used in the Zakat module
-// (52.5 tola = 612.36 g silver, 7.5 tola = 87.48 g gold). `verified: false`: a scholar should confirm it.
+// Values follow the fatwa of Mufti Muhammad Saleh Qadri Noori Bareilvi (Muntakhab Fatawe, pp. 18-31, 86-95):
+//   1 ratti = 0.1296 g, 1 masha = 8 ratti = 1.0368 g, 1 tola = 12 masha = 12.4416 g.
+//   The English silver rupee weighs 11.25 masha = 11.664 g ("rupay bhar"). This is NOT the same as the tola.
+//   The "7.5 tola" and "52.5 tola" of the nisab mean 8 and 56 rupee-weights: 93.312 g gold, 653.184 g silver.
+// `verified: false` stays until the site's scholar confirms it.
 
 export const WEIGHT_RULES = {
-  tolaGrams: 11.664,
+  tolaGrams: 12.4416,
   mashaPerTola: 12,
   rattiPerMasha: 8,
+  mashaGrams: 1.0368,
+  rattiGrams: 0.1296,
+  rupeeGrams: 11.664, // English silver rupee = 11.25 masha
+  mithqalGrams: 4.6656, // 4.5 masha
+  dirhamGrams: 3.26592, // shar'i dirham
   verified: false
 } as const;
 
 const RATTI_PER_TOLA = WEIGHT_RULES.mashaPerTola * WEIGHT_RULES.rattiPerMasha; // 96
-export const GRAMS_PER_RATTI = WEIGHT_RULES.tolaGrams / RATTI_PER_TOLA; // 0.1215
-export const GRAMS_PER_MASHA = WEIGHT_RULES.tolaGrams / WEIGHT_RULES.mashaPerTola; // 0.972
+export const GRAMS_PER_RATTI = WEIGHT_RULES.tolaGrams / RATTI_PER_TOLA; // 0.1296
+export const GRAMS_PER_MASHA = WEIGHT_RULES.tolaGrams / WEIGHT_RULES.mashaPerTola; // 1.0368
 
 export interface TolaParts { tola: number; masha: number; ratti: number }
 
