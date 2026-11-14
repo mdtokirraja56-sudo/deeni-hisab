@@ -12,9 +12,9 @@ const en = {
   tolaWord: "tola", mashaWord: "masha", rattiWord: "ratti",
   priceTitle: "Value (optional)", price: "Price per gram", value: "Value",
   tableTitle: "Quick reference",
-  refLine: "1 tola = 12 masha · 1 masha = 8 ratti · 1 tola = 11.664 g · 1 masha = 0.972 g · 1 ratti = 0.1215 g",
+  refLine: "1 tola = 12 masha · 1 masha = 8 ratti · 1 tola = 12.4416 g · 1 masha = 1.0368 g · 1 ratti = 0.1296 g",
   nisabGold: "Gold nisab (7.5 tola)", nisabSilver: "Silver nisab (52.5 tola)",
-  note: "The tola weight 11.664 g is the commonly used figure. Please have it confirmed by your own scholar (Aalim)."
+  note: "Per the fatwa of Mufti Muhammad Saleh Qadri Noori Bareilvi: 1 tola = 12.4416 g. The English silver rupee (\"rupay bhar\") is 11.664 g and is not the same as the tola. Please have it confirmed by your own scholar."
 };
 export type CopyWeights = typeof en;
 
@@ -31,9 +31,9 @@ export const copyWeights: Record<Lang, CopyWeights> = {
     tolaWord: "tola", mashaWord: "masha", rattiWord: "ratti",
     priceTitle: "Qeemat (marzi)", price: "Qeemat fi gram", value: "Qeemat",
     tableTitle: "Fauri hawala",
-    refLine: "1 tola = 12 masha · 1 masha = 8 ratti · 1 tola = 11.664 g · 1 masha = 0.972 g · 1 ratti = 0.1215 g",
+    refLine: "1 tola = 12 masha · 1 masha = 8 ratti · 1 tola = 12.4416 g · 1 masha = 1.0368 g · 1 ratti = 0.1296 g",
     nisabGold: "Sone ka nisab (7.5 tola)", nisabSilver: "Chaandi ka nisab (52.5 tola)",
-    note: "Tola ka wazan 11.664 g aam taur par istemal hota hai. Apne aalim se tasdeeq karwa lein."
+    note: "Mufti Muhammad Saleh Qadri Noori Bareilvi ke fatwe ke mutabiq 1 tola = 12.4416 g. Angrezi chaandi ka rupaya (\"rupay bhar\") 11.664 g hai aur tola se alag hai. Apne aalim se tasdeeq karwa lein."
   },
   ur: {
     chip: "تولہ · ماشہ · گرام",
@@ -46,9 +46,9 @@ export const copyWeights: Record<Lang, CopyWeights> = {
     tolaWord: "تولہ", mashaWord: "ماشہ", rattiWord: "رتی",
     priceTitle: "قیمت (اختیاری)", price: "قیمت فی گرام", value: "قیمت",
     tableTitle: "فوری حوالہ",
-    refLine: "1 تولہ = 12 ماشہ · 1 ماشہ = 8 رتی · 1 تولہ = 11.664 گرام · 1 ماشہ = 0.972 گرام · 1 رتی = 0.1215 گرام",
+    refLine: "1 تولہ = 12 ماشہ · 1 ماشہ = 8 رتی · 1 تولہ = 12.4416 گرام · 1 ماشہ = 1.0368 گرام · 1 رتی = 0.1296 گرام",
     nisabGold: "سونے کا نصاب (7.5 تولہ)", nisabSilver: "چاندی کا نصاب (52.5 تولہ)",
-    note: "تولہ کا وزن 11.664 گرام عام طور پر استعمال ہوتا ہے۔ اپنے عالم سے تصدیق کروا لیں۔"
+    note: "مفتی محمد صالح قادری نوری بریلوی کے فتوے کے مطابق 1 تولہ = 12.4416 گرام۔ انگریزی چاندی کا روپیہ (\"روپے بھر\") 11.664 گرام ہے اور تولہ سے الگ ہے۔ اپنے عالم سے تصدیق کروا لیں۔"
   },
   hi: {
     chip: "तोला · माशा · ग्राम",
@@ -61,8 +61,8 @@ export const copyWeights: Record<Lang, CopyWeights> = {
     tolaWord: "तोला", mashaWord: "माशा", rattiWord: "रत्ती",
     priceTitle: "क़ीमत (वैकल्पिक)", price: "क़ीमत प्रति ग्राम", value: "क़ीमत",
     tableTitle: "त्वरित संदर्भ",
-    refLine: "1 तोला = 12 माशा · 1 माशा = 8 रत्ती · 1 तोला = 11.664 ग्राम · 1 माशा = 0.972 ग्राम · 1 रत्ती = 0.1215 ग्राम",
+    refLine: "1 तोला = 12 माशा · 1 माशा = 8 रत्ती · 1 तोला = 12.4416 ग्राम · 1 माशा = 1.0368 ग्राम · 1 रत्ती = 0.1296 ग्राम",
     nisabGold: "सोने का निसाब (7.5 तोला)", nisabSilver: "चाँदी का निसाब (52.5 तोला)",
-    note: "तोले का वज़न 11.664 ग्राम आम तौर पर इस्तेमाल होता है। अपने आलिम से तस्दीक़ करवा लें।"
+    note: "मुफ़्ती मुहम्मद सालेह क़ादरी नूरी बरेलवी के फ़तवे के मुताबिक़ 1 तोला = 12.4416 ग्राम। अंग्रेज़ी चाँदी का रुपया (\"रुपये भर\") 11.664 ग्राम है और तोले से अलग है। अपने आलिम से तस्दीक़ करवा लें।"
   }
 };
