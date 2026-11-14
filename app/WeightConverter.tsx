@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
 import type { CopyMore } from "../lib/copyMore";
 import { copyWeights } from "../lib/copyWeights";
-import { gramsToTola, tolaToGrams } from "../lib/weights";
+import { WEIGHT_RULES, gramsToTola, tolaToGrams } from "../lib/weights";
 import type { Lang } from "../lib/heirs";
 import { parseAmount, sanitizeDecimal } from "../lib/numbers";
-import { Field, Choice, Tile, Note, Actions } from "./calcUi";
+import { Field, Choice, Tile, Note, Actions, ResultBox } from "./calcUi";
 
 const num = (n: number, d = 4) => new Intl.NumberFormat("en-IN", { maximumFractionDigits: d }).format(n);
 
@@ -49,8 +48,11 @@ export function WeightConverter({ t, lang, money }: { t: CopyMore; lang: Lang; m
       <Actions t={t} onCalc={() => setGo(true)} onReset={() => { setTola(""); setMasha(""); setRatti(""); setGram(""); setPrice(""); setGo(false); }} />
 
       {grams > 0 && (
-        <section role="status" className="rounded-3xl border border-emerald-900/10 bg-emerald-50/50 p-4 md:p-5">
-          <h4 className="flex items-center gap-2 text-base font-extrabold text-deen"><CheckCircle2 size={18} />{t.result}</h4>
+        <ResultBox t={t} title={w.title}
+          lines={[a?.status === "ok" ? `${w.rGrams}: ${num(grams)} g` : `${w.rParts}: ${parts || "0"}`, ...(b?.status === "ok" ? [`${w.rDecimal}: ${num(b.tolaDecimal)}`] : []), ...(p > 0 ? [`${w.value}: ${money(grams * p)}`] : [])]}
+          how={a?.status === "ok"
+            ? [{ label: w.rGrams, formula: `${[parseAmount(tola) ? `${num(parseAmount(tola))} × ${WEIGHT_RULES.tolaGrams}` : "", parseAmount(masha) ? `${num(parseAmount(masha))} × ${WEIGHT_RULES.mashaGrams}` : "", parseAmount(ratti) ? `${num(parseAmount(ratti))} × ${WEIGHT_RULES.rattiGrams}` : ""].filter(Boolean).join(" + ")} = ${num(grams)} g` }]
+            : [{ label: w.rDecimal, formula: `${num(grams)} g ÷ ${WEIGHT_RULES.tolaGrams} = ${num(b?.tolaDecimal ?? 0)}` }]}>
           <div className="mt-3 grid grid-cols-2 gap-2">
             {a?.status === "ok" && <div className="col-span-2"><Tile strong label={w.rGrams} value={`${num(grams)} g`} /></div>}
             {b?.status === "ok" && (<>
@@ -59,7 +61,7 @@ export function WeightConverter({ t, lang, money }: { t: CopyMore; lang: Lang; m
             </>)}
             {p > 0 && <div className="col-span-2"><Tile label={w.value} value={money(grams * p)} /></div>}
           </div>
-        </section>
+        </ResultBox>
       )}
 
       <div className="space-y-2 rounded-2xl border border-slate-200 p-4">
