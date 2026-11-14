@@ -8,10 +8,11 @@ export type NisabBasis = "silver" | "gold";
 export const ZAKAT_RULES = {
   // Rate of Zakat on zakatable wealth (1/40).
   rate: 0.025,
-  // Commonly cited nisab weights (52.5 tola silver, 7.5 tola gold).
-  // MUST be confirmed by a qualified scholar before launch.
-  nisabSilverGrams: 612.36,
-  nisabGoldGrams: 87.48,
+  // Nisab weights from the fatwa of Mufti Muhammad Saleh Qadri Noori Bareilvi (Muntakhab Fatawe, pp. 86-95):
+  // silver 200 dirham = 52.5 tola = 56 rupee-weights = 653.184 g; gold 20 mithqal = 7.5 tola = 8 rupee-weights = 93.312 g.
+  // MUST still be confirmed by the site's scholar before launch.
+  nisabSilverGrams: 653.184,
+  nisabGoldGrams: 93.312,
   defaultNisabBasis: "silver" as NisabBasis,
   verified: false
 } as const;
