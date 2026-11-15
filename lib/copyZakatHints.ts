@@ -1,0 +1,137 @@
+// lib/copyZakatHints.ts — small helper texts under every Zakat field (4 languages).
+// Only descriptions. No ruling is decided here: items that depend on the scholar say so.
+import type { Lang } from "./heirs";
+
+const en = {
+  uRb: "per bhari / rupay-bhar (11.664 g)",
+  weightIntro: "Fill the unit you know. If you fill more than one, they are added together (for example 2 tola and 3 masha).",
+  bhari: "Bhari",
+  tolaH: "1 tola = 12.4416 g", mashaH: "1 masha = 1.0368 g", rattiH: "1 ratti = 0.1296 g", bhariH: "1 bhari = 11.664 g", gramH: "directly in grams", mgH: "1000 mg = 1 gram",
+  bhariNote: "Here 1 bhari is taken as 11.664 g (the \"rupay-bhar\" of the fatwa). If \"bhari\" means a different weight in your area, check with your scholar or jeweller. This value is not yet confirmed by the scholar.",
+  totalWeight: "Total weight",
+  prizeBonds: "Prize bonds",
+  h: {
+    goldPrice: "Enter today's market price in your area. Choose the unit above (tola / gram / 10 gram / bhari).",
+    silverPrice: "Enter today's market price in your area. Choose the unit above (tola / gram / kg / bhari).",
+    cashHand: "Local and foreign cash, at the rate on the day your zakat year is complete.",
+    cashBank: "Bank balance (leave out the interest part).",
+    investments: "Value of shares and other investments.",
+    prizeBonds: "Face value of prize bonds.",
+    providentFund: "Not in your hands yet. Counting it this year is up to your scholar.",
+    committee: "Your money in a committee/BC that you have not received yet. Counting it is up to your scholar.",
+    loansGiven: "Loans you gave to others and hope to get back. Counting them is up to your scholar.",
+    rawMaterial: "Raw material of a factory or business, at the rate on the day your zakat year is complete.",
+    stock: "Finished goods and shop stock, at the rate on the day your zakat year is complete.",
+    tradePlots: "Property bought with the intention to sell (trade), at the rate on that day.",
+    partnership: "The zakatable part of your share in a business partnership.",
+    loan: "A loan you took and must repay.",
+    installments: "Instalments of a house, shop or goods that you owe now.",
+    committeeDue: "If you have already received the whole committee amount, the instalments still left to pay.",
+    utilities: "Gas, electricity and other bills that came before the year was complete.",
+    dealers: "Money you owe to dealers or suppliers in your business.",
+    salaries: "Salaries you owe to your workers.",
+    lastZakat: "Zakat of earlier years that has not been paid yet."
+  } as Record<string, string>,
+  lines: { prizeBonds: "Prize bonds" } as Record<string, string>
+};
+export type CopyZakatHints = typeof en;
+
+export const copyZakatHints: Record<Lang, CopyZakatHints> = {
+  en,
+  roman: {
+    uRb: "fi bhari / rupay-bhar (11.664 g)",
+    weightIntro: "Jo unit aap jante hain wahi bharein. Ek se zyada bharein to sab jama ho jayenge (jaise 2 tola aur 3 masha).",
+    bhari: "Bhari",
+    tolaH: "1 tola = 12.4416 g", mashaH: "1 masha = 1.0368 g", rattiH: "1 ratti = 0.1296 g", bhariH: "1 bhari = 11.664 g", gramH: "seedha gram mein", mgH: "1000 mg = 1 gram",
+    bhariNote: "Yahan 1 bhari = 11.664 g liya gaya hai (fatwe ka \"rupay-bhar\"). Agar aap ke ilaqe mein \"bhari\" ka wazan alag hai to apne aalim ya sunar se tasdeeq kar lein. Ye qeemat abhi aalim se tasdeeq-shuda nahi hai.",
+    totalWeight: "Kul wazan",
+    prizeBonds: "Prize bonds",
+    h: {
+      goldPrice: "Apne ilaqe ki aaj ki bazari qeemat likhein. Upar unit chunein (tola / gram / 10 gram / bhari).",
+      silverPrice: "Apne ilaqe ki aaj ki bazari qeemat likhein. Upar unit chunein (tola / gram / kilo / bhari).",
+      cashHand: "Mulki aur ghair-mulki naqdi, zakat ka saal mukammal hone ki tareekh ke rate par.",
+      cashBank: "Bank balance (sood ki raqam nikal kar).",
+      investments: "Shares aur digar investment ki maaliyat.",
+      prizeBonds: "Prize bonds ki maaliyat.",
+      providentFund: "Abhi haath mein nahi. Is saal ki zakat mein shamil karna aalim ke hukm par hai.",
+      committee: "Committee/BC mein aap ki jama raqam jo abhi nahi mili. Shamil karna aalim ke hukm par hai.",
+      loansGiven: "Jo qarz aap ne dusron ko diya aur wapsi ki umeed hai. Shamil karna aalim ke hukm par hai.",
+      rawMaterial: "Factory/karobar ka kachcha maal, zakat ka saal mukammal hone ki tareekh ke rate par.",
+      stock: "Tayyar shuda maal, dukan ka stock — zakat ka saal mukammal hone ki tareekh ke rate par.",
+      tradePlots: "Wo property jo bechne (tijarat) ki niyat se khareedi ho — us din ke rate par.",
+      partnership: "Karobari shirakat (partnership) mein aap ke hisse ka zakat ke qabil asasa.",
+      loan: "Liya hua qarz jo wapas karna hai.",
+      installments: "Makan, dukan ya saman ki wo qistein jo ab zimme wajib hain.",
+      committeeDue: "Agar committee ki poori raqam wasool kar chuke hain to jo qistein abhi dene baqi hain.",
+      utilities: "Gas, bijli wagaira ke wo bill jo saal mukammal hone se pehle aa chuke hon.",
+      dealers: "Karobar mein dealers/suppliers ko dene wali raqam.",
+      salaries: "Mulazimeen ki wo tankhwahein jo aap ke zimme wajib hain.",
+      lastZakat: "Guzishta saalon ki wo zakat jo abhi ada nahi hui."
+    },
+    lines: { prizeBonds: "Prize bonds" }
+  },
+  ur: {
+    uRb: "فی بھاری / روپے بھر (۱۱.۶۶۴ گرام)",
+    weightIntro: "جو پیمانہ آپ جانتے ہیں وہی بھریں۔ ایک سے زیادہ بھریں تو سب جمع ہو جائیں گے (مثلاً ۲ تولہ اور ۳ ماشہ)۔",
+    bhari: "بھاری",
+    tolaH: "۱ تولہ = ۱۲.۴۴۱۶ گرام", mashaH: "۱ ماشہ = ۱.۰۳۶۸ گرام", rattiH: "۱ رتی = ۰.۱۲۹۶ گرام", bhariH: "۱ بھاری = ۱۱.۶۶۴ گرام", gramH: "سیدھا گرام میں", mgH: "۱۰۰۰ ملی گرام = ۱ گرام",
+    bhariNote: "یہاں ۱ بھاری = ۱۱.۶۶۴ گرام لیا گیا ہے (فتویٰ کا \"روپے بھر\")۔ اگر آپ کے علاقے میں \"بھاری\" کا وزن مختلف ہے تو اپنے عالم یا سنار سے تصدیق کر لیں۔ یہ قدر ابھی عالم سے تصدیق شدہ نہیں ہے۔",
+    totalWeight: "کل وزن",
+    prizeBonds: "پرائز بانڈز",
+    h: {
+      goldPrice: "اپنے علاقے کی آج کی بازاری قیمت لکھیں۔ اوپر پیمانہ چنیں (تولہ / گرام / ۱۰ گرام / بھاری)۔",
+      silverPrice: "اپنے علاقے کی آج کی بازاری قیمت لکھیں۔ اوپر پیمانہ چنیں (تولہ / گرام / کلو / بھاری)۔",
+      cashHand: "مقامی و غیر ملکی نقدی، زکوٰۃ کا سال مکمل ہونے کی تاریخ کے ریٹ پر۔",
+      cashBank: "بینک بیلنس (سود کی رقم نکال کر)۔",
+      investments: "شیئرز اور دیگر سرمایہ کاری کی مالیت۔",
+      prizeBonds: "پرائز بانڈز کی مالیت۔",
+      providentFund: "ابھی ہاتھ میں نہیں۔ اسے اس سال کی زکوٰۃ میں شامل کرنا عالم کے حکم پر ہے۔",
+      committee: "کمیٹی/بی سی میں آپ کی جمع شدہ رقم جو ابھی نہیں ملی۔ شامل کرنا عالم کے حکم پر ہے۔",
+      loansGiven: "جو قرض آپ نے دوسروں کو دیا اور واپسی کی امید ہے۔ شامل کرنا عالم کے حکم پر ہے۔",
+      rawMaterial: "فیکٹری/کاروبار کا خام مال، زکوٰۃ کا سال مکمل ہونے کی تاریخ کے ریٹ پر۔",
+      stock: "تیار شدہ مال، دکان کا اسٹاک — زکوٰۃ کا سال مکمل ہونے کی تاریخ کے ریٹ پر۔",
+      tradePlots: "وہ پراپرٹی جو بیچنے (تجارت) کی نیت سے خریدی ہو — اُس دن کے ریٹ پر۔",
+      partnership: "کاروباری شراکت (پارٹنرشپ) میں آپ کے حصے کا قابلِ زکوٰۃ اثاثہ۔",
+      loan: "لیا ہوا قرض جو واپس کرنا ہے۔",
+      installments: "مکان، دکان یا سامان کی وہ قسطیں جو اب ذمہ واجب ہیں۔",
+      committeeDue: "اگر کمیٹی کی پوری رقم وصول کر چکے ہیں تو جو قسطیں ابھی دینی باقی ہیں۔",
+      utilities: "گیس، بجلی وغیرہ کے وہ بل جو سال مکمل ہونے سے پہلے آ چکے ہوں۔",
+      dealers: "کاروبار میں ڈیلرز/سپلائرز کو دینے والی رقم۔",
+      salaries: "ملازمین کی وہ تنخواہیں جو آپ کے ذمہ واجب ہیں۔",
+      lastZakat: "گزشتہ سالوں کی وہ زکوٰۃ جو ابھی ادا نہیں ہوئی۔"
+    },
+    lines: { prizeBonds: "پرائز بانڈز" }
+  },
+  hi: {
+    uRb: "प्रति भारी / रुपये-भर (11.664 ग्राम)",
+    weightIntro: "जो पैमाना आप जानते हैं वही भरें। एक से ज़्यादा भरें तो सब जुड़ जाएँगे (जैसे 2 तोला और 3 माशा)।",
+    bhari: "भारी",
+    tolaH: "1 तोला = 12.4416 ग्राम", mashaH: "1 माशा = 1.0368 ग्राम", rattiH: "1 रत्ती = 0.1296 ग्राम", bhariH: "1 भारी = 11.664 ग्राम", gramH: "सीधे ग्राम में", mgH: "1000 मिलीग्राम = 1 ग्राम",
+    bhariNote: "यहाँ 1 भारी = 11.664 ग्राम लिया गया है (फ़तवे का \"रुपये-भर\")। अगर आपके इलाक़े में \"भारी\" का वज़न अलग है तो अपने आलिम या सुनार से तस्दीक़ कर लें। यह मान अभी आलिम से तस्दीक़-शुदा नहीं है।",
+    totalWeight: "कुल वज़न",
+    prizeBonds: "प्राइज़ बॉन्ड",
+    h: {
+      goldPrice: "अपने इलाक़े की आज की बाज़ार क़ीमत लिखें। ऊपर पैमाना चुनें (तोला / ग्राम / 10 ग्राम / भारी)।",
+      silverPrice: "अपने इलाक़े की आज की बाज़ार क़ीमत लिखें। ऊपर पैमाना चुनें (तोला / ग्राम / किलो / भारी)।",
+      cashHand: "स्थानीय और विदेशी नक़दी, ज़कात का साल पूरा होने की तारीख़ के रेट पर।",
+      cashBank: "बैंक बैलेंस (ब्याज की रक़म निकालकर)।",
+      investments: "शेयर और दूसरे निवेश की मालियत।",
+      prizeBonds: "प्राइज़ बॉन्ड की मालियत।",
+      providentFund: "अभी हाथ में नहीं। इसे इस साल की ज़कात में शामिल करना आलिम के हुक्म पर है।",
+      committee: "कमेटी/बी.सी. में आपकी जमा रक़म जो अभी नहीं मिली। शामिल करना आलिम के हुक्म पर है।",
+      loansGiven: "जो क़र्ज़ आपने दूसरों को दिया और वापसी की उम्मीद है। शामिल करना आलिम के हुक्म पर है।",
+      rawMaterial: "फ़ैक्टरी/कारोबार का कच्चा माल, ज़कात का साल पूरा होने की तारीख़ के रेट पर।",
+      stock: "तैयार माल, दुकान का स्टॉक — ज़कात का साल पूरा होने की तारीख़ के रेट पर।",
+      tradePlots: "वह प्रॉपर्टी जो बेचने (तिजारत) की नीयत से ख़रीदी हो — उस दिन के रेट पर।",
+      partnership: "कारोबारी साझेदारी (पार्टनरशिप) में आपके हिस्से का ज़कात के क़ाबिल असासा।",
+      loan: "लिया हुआ क़र्ज़ जो वापस करना है।",
+      installments: "मकान, दुकान या सामान की वे किस्तें जो अब ज़िम्मे वाजिब हैं।",
+      committeeDue: "अगर कमेटी की पूरी रक़म वसूल कर चुके हैं तो जो किस्तें अभी देनी बाक़ी हैं।",
+      utilities: "गैस, बिजली वग़ैरह के वे बिल जो साल पूरा होने से पहले आ चुके हों।",
+      dealers: "कारोबार में डीलर/सप्लायर को देने वाली रक़म।",
+      salaries: "कर्मचारियों की वे तनख़्वाहें जो आपके ज़िम्मे वाजिब हैं।",
+      lastZakat: "पिछले सालों की वह ज़कात जो अभी अदा नहीं हुई।"
+    },
+    lines: { prizeBonds: "प्राइज़ बॉन्ड" }
+  }
+};
