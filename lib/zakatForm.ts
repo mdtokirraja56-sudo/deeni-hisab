@@ -8,22 +8,24 @@
 import { WEIGHT_RULES, tolaToGrams } from "./weights";
 import type { NisabBasis, ZakatInput } from "./zakat";
 
-export type WeightUnit = "tmr" | "g" | "mg";
 export type GoldPriceUnit = "tola" | "g" | "g10" | "rb"; // rb = "rupay bhar" = weight of the English silver rupee (11.664 g)
 export type SilverPriceUnit = "tola" | "g" | "kg" | "rb";
 export type PriceUnit = GoldPriceUnit | SilverPriceUnit;
 
-export interface WeightForm { unit: WeightUnit; tola: string; masha: string; ratti: string; gram: string; mg: string }
-export const emptyWeight = (): WeightForm => ({ unit: "tmr", tola: "", masha: "", ratti: "", gram: "", mg: "" });
+// Every unit has its own box. Whatever is filled in is added together (e.g. 2 tola + 3 masha + 5 gram).
+// "bhari" = "rupay-bhar" = the English silver rupee, 11.664 g (fatwa, Muntakhab Fatawe). The meaning of "bhari"
+// differs by place, so it is shown on screen and the scholar must confirm it (unverified).
+export const BHARI_GRAMS = WEIGHT_RULES.rupeeGrams;
+export interface WeightForm { tola: string; masha: string; ratti: string; bhari: string; gram: string; mg: string }
+export const emptyWeight = (): WeightForm => ({ tola: "", masha: "", ratti: "", bhari: "", gram: "", mg: "" });
 
 const n = (s: string): number => { const v = parseFloat(s); return Number.isFinite(v) && v > 0 ? v : 0; };
 const round = (v: number, d: number) => Math.round(v * 10 ** d) / 10 ** d;
 
 export function weightToGrams(w: WeightForm): number {
-  if (w.unit === "g") return n(w.gram);
-  if (w.unit === "mg") return round(n(w.mg) / 1000, 6);
-  const r = tolaToGrams({ tola: n(w.tola), masha: n(w.masha), ratti: n(w.ratti) });
-  return r.status === "ok" ? r.grams : 0;
+  const t = tolaToGrams({ tola: n(w.tola), masha: n(w.masha), ratti: n(w.ratti) });
+  const fromTmr = t.status === "ok" ? t.grams : 0;
+  return round(fromTmr + n(w.bhari) * BHARI_GRAMS + n(w.gram) + n(w.mg) / 1000, 6);
 }
 
 export function pricePerGram(unit: PriceUnit, price: string): number {
@@ -38,7 +40,7 @@ export function pricePerGram(unit: PriceUnit, price: string): number {
 export interface ZakatForm {
   goldPrice: string; goldPriceUnit: GoldPriceUnit; silverPrice: string; silverPriceUnit: SilverPriceUnit;
   gold: WeightForm; silver: WeightForm;
-  cashHand: string; cashBank: string; investments: string;
+  cashHand: string; cashBank: string; investments: string; prizeBonds: string;
   providentFund: string; committee: string; loansGiven: string;
   incPf: boolean; incCommittee: boolean; incLoans: boolean;
   rawMaterial: string; stock: string; tradePlots: string; partnership: string;
@@ -48,7 +50,7 @@ export interface ZakatForm {
 export const emptyForm = (): ZakatForm => ({
   goldPrice: "", goldPriceUnit: "tola", silverPrice: "", silverPriceUnit: "tola",
   gold: emptyWeight(), silver: emptyWeight(),
-  cashHand: "", cashBank: "", investments: "", providentFund: "", committee: "", loansGiven: "",
+  cashHand: "", cashBank: "", investments: "", prizeBonds: "", providentFund: "", committee: "", loansGiven: "",
   incPf: false, incCommittee: false, incLoans: false,
   rawMaterial: "", stock: "", tradePlots: "", partnership: "",
   loan: "", installments: "", committeeDue: "", utilities: "", dealers: "", salaries: "", lastZakat: ""
@@ -76,7 +78,7 @@ export function buildZakat(f: ZakatForm, nisabBasis: NisabBasis, hawlComplete: b
   const assetLines: FormLine[] = [
     { code: "cashHand", amount: n(f.cashHand) }, { code: "cashBank", amount: n(f.cashBank) },
     { code: "gold", amount: goldValue }, { code: "silver", amount: silverValue },
-    { code: "investments", amount: n(f.investments) },
+    { code: "investments", amount: n(f.investments) }, { code: "prizeBonds", amount: n(f.prizeBonds) },
     ...included,
     { code: "rawMaterial", amount: n(f.rawMaterial) }, { code: "stock", amount: n(f.stock) },
     { code: "tradePlots", amount: n(f.tradePlots) }, { code: "partnership", amount: n(f.partnership) }
@@ -94,7 +96,7 @@ export function buildZakat(f: ZakatForm, nisabBasis: NisabBasis, hawlComplete: b
     goldGrams, silverGrams,
     businessStock: sum(["rawMaterial", "stock", "tradePlots", "partnership"]),
     receivables: sum(["providentFund", "committee", "loansGiven"]),
-    otherZakatable: sum(["investments"]),
+    otherZakatable: sum(["investments", "prizeBonds"]),
     debtsDueNow: liabilityLines.reduce((s, l) => s + l.amount, 0),
     nisabBasis, hawlComplete
   };
