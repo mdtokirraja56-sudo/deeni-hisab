@@ -43,6 +43,16 @@ main[dir="rtl"] { font-family: var(--font-urdu-stack); }
 [dir="rtl"] .tracking-tight { letter-spacing: normal; }
 [dir="rtl"] input { font-family: var(--font-inter), Inter, ui-sans-serif, sans-serif; }
 
+/* Urdu Nastaliq has a small x-height, so on a phone it looks tiny: make every text size bigger in Urdu mode */
+main[dir="rtl"] .text-xs { font-size: 1rem; }
+main[dir="rtl"] .text-sm { font-size: 1.1rem; }
+main[dir="rtl"] .text-base { font-size: 1.2rem; }
+main[dir="rtl"] .text-lg { font-size: 1.4rem; }
+main[dir="rtl"] .text-xl { font-size: 1.6rem; }
+main[dir="rtl"] .text-2xl { font-size: 1.9rem; }
+main[dir="rtl"] .text-\[10px\] { font-size: .9rem; }
+main[dir="rtl"] .text-\[11px\] { font-size: .95rem; }
+
 .shadow-soft { box-shadow: 0 12px 40px rgba(15, 81, 50, .07); }
 input { direction: ltr; text-align: left; }
 
