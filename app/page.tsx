@@ -403,3 +403,6 @@ function HeirGroup({ title, defs, lang, heirs, update, disabled, blockInfo, bloc
     })}</div>}
   </div>;
 }
+import Home from "./HomeApp3";
+export default Home;
+
