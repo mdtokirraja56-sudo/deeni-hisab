@@ -86,3 +86,4 @@ export function MirathSpecial({ lang, gender, heirs, money, distributable }: { l
     </section>
   );
 }
+
