@@ -1,0 +1,8 @@
+/* Phone / app feel */
+html { -webkit-text-size-adjust: 100%; }
+body { overflow-x: clip; }
+button, a, summary, [role="button"], label { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+@media (max-width: 767px) {
+  input, select, textarea { font-size: 18px !important; } /* stops the phone browser from zooming in on a field */
+  button, summary { min-height: 40px; }
+}
