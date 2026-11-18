@@ -28,7 +28,7 @@ const EN: AboutCopy = {
   devName: "Tauqeer Raza Ashrafi",
   devRole: "Developer & Founder",
   affilLabel: "Academic affiliation",
-  affilValue: "Student, Jamia Al-Raza, Bareilly Sharif",
+  affilValue: "Student,: Jamiatur Raza, Bareilly Sharif",
   reviewLabel: "Scholarly review",
   reviewText: "The rules are under review by a qualified Hanafi scholar. Until that review is complete, please have every result confirmed by your own scholar (Aalim) before acting on it.",
   followLabel: "Follow"
