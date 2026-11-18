@@ -1,5 +1,6 @@
 "use client";
 
+import type { Lang } from "../lib/heirs";
 import { copyAbout } from "../lib/copyAbout";
 import { Info, Sparkles, Scale, Coins, Calculator, BookOpen } from "lucide-react";
 import { AccountButton } from "./AccountSheet";
@@ -8,9 +9,41 @@ import { AboutDialog } from "./AboutDialog";
 import { COPYRIGHT, type HomeCtx } from "./homeCore";
 import { LangSwitch } from "./HomeBits";
 
+// "How it works" changes with the selected tool (Mirath / Zakat / More).
+const HOW_TABS: Record<Lang, { zakat: string[]; more: string[] }> = {
+  en: {
+    zakat: ["Enter your cash, gold, silver, trade goods and money others owe you", "Add the debts you must pay now and choose the nisab basis (silver or gold)", "Read the result with its reasons, then confirm with your scholar"],
+    more: ["Pick a calculator: Ushr, Sadaqah al-Fitr, Fidya or Kaffara", "Enter the details it asks for", "Read the result with its reasons, then confirm with your scholar"]
+  },
+  roman: {
+    zakat: ["Naqd raqam, sona, chandi, tijarat ka maal aur logon se milne wali raqam likhein", "Jo qarz abhi dena hai wo likhein aur nisab ka aadhaar (chandi ya sona) chunein", "Wajah ke saath natija padhein, phir apne aalim se tasdeeq karwayein"],
+    more: ["Calculator chunein: Ushr, Sadaqah-e-Fitr, Fidya ya Kaffara", "Jo tafseel maangi jaye wo likhein", "Wajah ke saath natija padhein, phir apne aalim se tasdeeq karwayein"]
+  },
+  ur: {
+    zakat: ["نقد رقم، سونا، چاندی، مالِ تجارت اور لوگوں سے ملنے والی رقم لکھیں", "جو قرض ابھی ادا کرنا ہے وہ لکھیں اور نصاب کی بنیاد (چاندی یا سونا) منتخب کریں", "وجہ کے ساتھ نتیجہ پڑھیں، پھر اپنے عالم سے تصدیق کروائیں"],
+    more: ["کیلکولیٹر منتخب کریں: عُشر، صدقۂ فطر، فدیہ یا کفارہ", "جو تفصیل مانگی جائے وہ لکھیں", "وجہ کے ساتھ نتیجہ پڑھیں، پھر اپنے عالم سے تصدیق کروائیں"]
+  },
+  hi: {
+    zakat: ["नक़द रक़म, सोना, चाँदी, तिजारत का माल और लोगों से मिलने वाली रक़म लिखें", "जो क़र्ज़ अभी देना है वह लिखें और निसाब का आधार (चाँदी या सोना) चुनें", "वजह के साथ नतीजा पढ़ें, फिर अपने आलिम से तस्दीक़ कराएँ"],
+    more: ["कैलकुलेटर चुनें: उश्र, सदक़ा-ए-फ़ित्र, फ़िद्या या कफ़्फ़ारा", "जो तफ़सील माँगी जाए वह लिखें", "वजह के साथ नतीजा पढ़ें, फिर अपने आलिम से तस्दीक़ कराएँ"]
+  }
+};
+
+// Urdu (Nastaliq) has a small x-height: make descriptions bigger; headings keep their size.
+const URDU_SIZES = `
+html main[dir="rtl"] .text-xs { font-size: 1.15rem; }
+html main[dir="rtl"] .text-sm { font-size: 1.25rem; }
+html main[dir="rtl"] .text-base { font-size: 1.35rem; }
+html main[dir="rtl"] .text-\\[10px\\] { font-size: 1.05rem; }
+html main[dir="rtl"] .text-\\[11px\\] { font-size: 1.1rem; }
+`;
+
+
 export function HomeHeader({ c }: { c: HomeCtx }) {
-  const { t, lang, setLang, setAboutOpen, setDemoOpen, t2 } = c;
+  const { t, lang, setLang, setAboutOpen, setDemoOpen, t2, tab } = c;
+  const howSteps = tab === "zakat" ? HOW_TABS[lang].zakat : tab === "more" ? HOW_TABS[lang].more : t2.how;
   return (<>
+<style>{URDU_SIZES}</style>
 <header className="sticky top-0 z-40 border-b border-emerald-900/10 bg-white/90 backdrop-blur-xl print:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3 md:px-8">
           <a href="#" className="flex min-w-0 items-center gap-2 sm:gap-3">
@@ -42,7 +75,7 @@ export function HomeHeader({ c }: { c: HomeCtx }) {
       </section>
 <details className="mx-auto max-w-7xl px-3 pt-4 sm:hidden print:hidden"><summary className="cursor-pointer rounded-2xl bg-white px-4 py-3.5 text-sm font-extrabold text-deen shadow-soft ring-1 ring-slate-900/5">{t2.howTitle}</summary>
         <ol className="mt-3 grid gap-3">
-          {t2.how.map((step, i) => (
+          {howSteps.map((step, i) => (
             <li key={step} className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-soft ring-1 ring-slate-900/5">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-deen text-sm font-black text-white">{i + 1}</span>
               <span className="text-xs font-semibold leading-6 text-slate-700">{step}</span>
@@ -53,7 +86,7 @@ export function HomeHeader({ c }: { c: HomeCtx }) {
 <section aria-label={t2.howTitle} className="mx-auto hidden max-w-7xl px-4 pt-8 sm:block md:px-8 print:hidden">
         <h2 className="mb-3 text-sm font-extrabold text-deen">{t2.howTitle}</h2>
         <ol className="grid gap-3 sm:grid-cols-3">
-          {t2.how.map((step, i) => (
+          {howSteps.map((step, i) => (
             <li key={step} className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-soft ring-1 ring-slate-900/5">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-deen text-sm font-black text-white">{i + 1}</span>
               <span className="text-xs font-semibold leading-6 text-slate-700">{step}</span>
@@ -80,7 +113,7 @@ export function HomeFooter({ c }: { c: HomeCtx }) {
           ))}
         </div>
       </nav>
-<AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} lang={lang} appName={t.title} closeLabel={t.closeBtn} socials={socials}/>
+<div dir="ltr"><AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} lang={lang} appName="DEENI HISAB" closeLabel="Close" socials={socials}/></div>
 {demoOpen && <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/60 p-4 print:hidden" onClick={() => setDemoOpen(false)}><div role="dialog" aria-modal="true" className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl" onClick={e => e.stopPropagation()}><div className="mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-deen"><BookOpen size={24}/></div><h3 className="text-lg font-extrabold text-deen">{t.demo}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{t.demoText}</p><button type="button" onClick={() => setDemoOpen(false)} className="mt-5 w-full rounded-xl bg-deen py-3 text-sm font-bold text-white">{t.closeBtn}</button></div></div>}
   </>);
 }
