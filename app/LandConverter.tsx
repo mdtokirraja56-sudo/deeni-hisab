@@ -34,7 +34,7 @@ export function LandConverter({ t, lang }: { t: CopyMore; lang: Lang }) {
   // Resolve sizes: first the units defined in exact terms, then the "1 parent equals N of this" ones.
   const fac: Record<string, Q> = {};
   for (const u of LOCAL_UNITS) { const r = row(u.id); const x = parseExact(r.size); if (x && (LAND_UNITS as string[]).includes(r.unit)) { const f = localFactor(x, r.unit as LandUnit); if (f) fac[u.id] = f; } }
-  for (const u of LOCAL_UNITS) { const r = row(u.id); const x = parseExact(r.size); if (x && x.n > 0n && r.unit.startsWith("P:")) { const p = fac[r.unit.slice(2)]; if (p && r.unit.slice(2) !== u.id) fac[u.id] = { n: p.n * x.d, d: p.d * x.n }; } }
+  for (const u of LOCAL_UNITS) { const r = row(u.id); const x = parseExact(r.size); if (x && x.n > BigInt("0") && r.unit.startsWith("P:")) { const p = fac[r.unit.slice(2)]; if (p && r.unit.slice(2) !== u.id) fac[u.id] = { n: p.n * x.d, d: p.d * x.n }; } }
   const defined = LOCAL_UNITS.filter((u) => fac[u.id]);
   const exactOnly = LOCAL_UNITS.filter((u) => { const r = row(u.id); const x = parseExact(r.size); return x && (LAND_UNITS as string[]).includes(r.unit) && localFactor(x, r.unit as LandUnit); });
 
@@ -130,4 +130,4 @@ export function LandConverter({ t, lang }: { t: CopyMore; lang: Lang }) {
       <Note tone="warn">{c.note}</Note>
     </div>
   );
-        }
+}
