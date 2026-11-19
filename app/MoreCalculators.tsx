@@ -12,6 +12,8 @@ import { FidyaCalc, KaffaraCalc, MahrCalc, QurbaniCalc, QazaCalc } from "./Extra
 import { copyExtra } from "../lib/copyExtra";
 import { WeightConverter } from "./WeightConverter";
 import { copyWeights } from "../lib/copyWeights";
+import { LandConverter } from "./LandConverter";
+import { copyLand } from "../lib/copyLand";
 
 interface Props {
   lang: Lang;
@@ -146,7 +148,7 @@ function FitrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
 }
 
 /* --------------------------- Main component --------------------------- */
-type Id = "ushr" | "fitr" | "fidya" | "kaffara" | "mahr" | "qurbani" | "qaza" | "weight";
+type Id = "ushr" | "fitr" | "fidya" | "kaffara" | "mahr" | "qurbani" | "qaza" | "weight" | "land";
 
 export function MoreCalculators({ lang, money }: Props) {
   const t = copyMore[lang];
@@ -155,7 +157,7 @@ export function MoreCalculators({ lang, money }: Props) {
   const chips: { id: Id; text: string }[] = [
     { id: "ushr", text: t.chipUshr }, { id: "fitr", text: t.chipFitr },
     { id: "fidya", text: t.chipFidya }, { id: "kaffara", text: t.chipKaffara },
-    { id: "mahr", text: x.chipMahr }, { id: "qurbani", text: x.chipQurbani }, { id: "qaza", text: x.chipQaza }, { id: "weight", text: copyWeights[lang].chip }
+    { id: "mahr", text: x.chipMahr }, { id: "qurbani", text: x.chipQurbani }, { id: "qaza", text: x.chipQaza }, { id: "weight", text: copyWeights[lang].chip }, { id: "land", text: copyLand[lang].chip }
   ];
   const meta: Record<Id, { title: string; sub: string; icon: ReactNode }> = {
     ushr: { title: t.ushrTitle, sub: t.ushrSub, icon: <Sprout size={24} /> },
@@ -165,7 +167,8 @@ export function MoreCalculators({ lang, money }: Props) {
     mahr: { title: x.mahrTitle, sub: x.mahrSub, icon: <Gift size={24} /> },
     qurbani: { title: x.qurbaniTitle, sub: x.qurbaniSub, icon: <Beef size={24} /> },
     qaza: { title: x.qazaTitle, sub: x.qazaSub, icon: <History size={24} /> },
-    weight: { title: copyWeights[lang].title, sub: copyWeights[lang].sub, icon: <Scale size={24} /> }
+    weight: { title: copyWeights[lang].title, sub: copyWeights[lang].sub, icon: <Scale size={24} /> },
+    land: { title: copyLand[lang].title, sub: copyLand[lang].sub, icon: <Scale size={24} /> }
   };
   const m = meta[sub];
 
@@ -190,6 +193,7 @@ export function MoreCalculators({ lang, money }: Props) {
         : sub === "mahr" ? <MahrCalc t={t} x={x} money={money} />
         : sub === "qurbani" ? <QurbaniCalc t={t} x={x} money={money} />
         : sub === "weight" ? <WeightConverter t={t} lang={lang} money={money} />
+        : sub === "land" ? <LandConverter t={t} lang={lang} />
         : <QazaCalc t={t} x={x} />}
     </div>
   );
