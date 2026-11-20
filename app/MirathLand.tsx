@@ -105,4 +105,4 @@ export function LandShareView({ lang, result, heirLabel }: { lang: Lang; result:
       <p className="mt-3 text-[11px] leading-5 text-slate-400">{x.note}</p>
     </section>
   );
-      }
+}
