@@ -58,4 +58,4 @@ export function landOf(t: Extract<LandTotal, { ok: true }>, n: number, d: number
   const parts = [fromBase(q, ONE, 4)];
   const sqft = t.unit === "sqft" ? undefined : fromBase(toBase(q, FACTOR[t.unit]), FACTOR.sqft, 2);
   return { parts, sqft };
-    }
+}
