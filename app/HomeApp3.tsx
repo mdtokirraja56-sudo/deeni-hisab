@@ -12,9 +12,11 @@ import { useHome } from "./homeCore";
 import { HomeHeader, HomeFooter } from "./HomeFrame";
 import { MirathResultScreen, MirathForm } from "./MirathTab";
 import { Field } from "./HomeBits";
+import { useBackNav } from "./useBackNav";
 
 export default function Home() {
   const c = useHome();
+  useBackNav({ tab: c.tab, hasResult: !!c.mirathResult, dialogOpen: c.aboutOpen || c.demoOpen, closeDialog: () => { c.setAboutOpen(false); c.setDemoOpen(false); }, closeResult: () => c.setMirathResult(null), goHome: () => c.setTab("mirath") });
   const { lang, t2, t, tab, setTab, money, mirathResult, nisabBasis, setNisabBasis, setZakatResult, zk, setZ, zError, hawl, setHawl, runZakat, zakatResult, zakatRef, statusText, assetLabel, noteText, printReport } = c;
   return (
     <main className={`min-h-screen bg-cream pb-24 text-slate-800 md:pb-0 ${lang === "hi" ? "font-hindi" : ""}`} dir={lang === "ur" ? "rtl" : "ltr"}>
@@ -106,4 +108,4 @@ export default function Home() {
       <HomeFooter c={c}/>
     </main>
   );
-              }
+}
