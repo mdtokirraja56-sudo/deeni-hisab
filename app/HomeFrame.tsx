@@ -31,12 +31,13 @@ const HOW_TABS: Record<Lang, { zakat: string[]; more: string[] }> = {
 
 // Urdu (Nastaliq) has a small x-height: make descriptions bigger; headings keep their size.
 const URDU_SIZES = `
-html main[dir="rtl"] .text-xs { font-size: 1.15rem; }
 html main[dir="rtl"] .text-xs { font-size: 1.4rem; line-height: 2.1; }
 html main[dir="rtl"] .text-sm { font-size: 1.5rem; line-height: 2.1; }
 html main[dir="rtl"] .text-base { font-size: 1.6rem; line-height: 2.1; }
 html main[dir="rtl"] .text-\\[10px\\] { font-size: 1.3rem; line-height: 2.1; }
 html main[dir="rtl"] .text-\\[11px\\] { font-size: 1.35rem; line-height: 2.1; }
+html main[dir="rtl"] header .text-xs, html main[dir="rtl"] header .text-sm, html main[dir="rtl"] header .text-base, html main[dir="rtl"] header .text-lg { font-size: 1.05rem; line-height: 1.5; }
+html main[dir="rtl"] header button { line-height: 1.5; }
 `;
 
 
