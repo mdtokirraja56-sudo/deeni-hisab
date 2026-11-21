@@ -1,3 +1,7 @@
+import { MAX_COUNT } from "./mirath";
+// Walid aur Walida ki limit nahi: masle mein zyada bhi aa sakte hain. (Limit sirf Shohar 1, Biwiyaan 4, Dada 1.)
+delete MAX_COUNT.father;
+delete MAX_COUNT.mother;
 // lib/heirs.ts
 // The complete list of heirs shown in the Mirath form (data entry only).
 // NOTE: This file only describes WHO can be entered. It contains NO share rules.
