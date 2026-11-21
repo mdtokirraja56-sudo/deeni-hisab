@@ -13,7 +13,7 @@ export interface HeirDef {
   key: string;
   group: HeirGroupId;
   // Highest count the form allows. Only facts that are certain are limited:
-  // one husband, up to four wives, one father, one mother. Everything else is open (99).
+  // one husband, up to four wives, one grandfather. Everything else (father, mother too) is open (99).
   max: number;
   // Heir can exist only for this gender of the deceased.
   onlyFor?: "male" | "female";
@@ -43,8 +43,8 @@ export const HEIRS = [
   { key: "sonsSonsDaughter", group: "descendants", max: 99, label: { en: "Grandson's daughter", roman: "Par-poti (pote ki beti)", ur: "پڑپوتی (پوتے کی بیٹی)", hi: "पड़पोती (पोते की बेटी)" } },
 
   // ---- Ascendants ----
-  { key: "father", group: "ascendants", max: 1, label: { en: "Father", roman: "Walid", ur: "والد", hi: "पिता" } },
-  { key: "mother", group: "ascendants", max: 1, label: { en: "Mother", roman: "Walida", ur: "والدہ", hi: "माता" } },
+  { key: "father", group: "ascendants", max: 99, label: { en: "Father", roman: "Walid", ur: "والد", hi: "पिता" } },
+  { key: "mother", group: "ascendants", max: 99, label: { en: "Mother", roman: "Walida", ur: "والدہ", hi: "माता" } },
   { key: "paternalGrandfather", group: "ascendants", max: 99, label: { en: "Paternal grandfather (father's father)", roman: "Dada (walid ke walid)", ur: "دادا (والد کا والد)", hi: "दादा (पिता के पिता)" } },
   { key: "paternalGreatGrandfather", group: "ascendants", max: 99, label: { en: "Great-grandfather (grandfather's father)", roman: "Par-dada (dada ke walid)", ur: "پردادا (دادا کا والد)", hi: "परदादा (दादा के पिता)" } },
   { key: "paternalGrandmother", group: "ascendants", max: 99, label: { en: "Paternal grandmother (father's mother)", roman: "Dadi (walid ki walida)", ur: "دادی (والد کی والدہ)", hi: "दादी (पिता की माता)" } },
