@@ -13,6 +13,7 @@ import { HomeHeader, HomeFooter } from "./HomeFrame";
 import { MirathResultScreen, MirathForm } from "./MirathTab";
 import { Field } from "./HomeBits";
 import { useBackNav } from "./useBackNav";
+import { tabNotes } from "../lib/tabNotes";
 
 export default function Home() {
   const c = useHome();
@@ -33,7 +34,7 @@ export default function Home() {
           </div>
           <div className="rounded-3xl border border-emerald-900/10 bg-white p-5 shadow-soft">
             <div className="flex items-center gap-2 text-deen"><ShieldCheck size={18}/><span className="text-sm font-extrabold">{t.note}</span></div>
-            <p className="mt-3 text-xs leading-6 text-slate-500">{t.noteText}</p>
+            <p className="mt-3 text-xs leading-6 text-slate-500">{tab === "zakat" || tab === "more" ? tabNotes[tab][lang] : t.noteText}</p>
           </div>
         </aside>
 
