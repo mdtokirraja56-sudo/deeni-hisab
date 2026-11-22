@@ -2,34 +2,40 @@
 
 import type { Lang } from "../lib/heirs";
 
-type Kind = "fitr" | "ushr";
+type Kind = "zakat" | "fitr" | "ushr";
 interface Sec { h?: string; items: string[] }
-interface Pack { title: string; secs: Sec[] }
+interface Pack { title: string; secs: Sec[]; goal: string; goalH: string }
 
 const P: Record<Kind, Record<Lang, Pack>> = {
+  zakat: {
+    roman: { goalH: "Zakat ka maqsad", goal: "Zakat maal ko paak karti hai aur Allah ka muqarrar kiya hua faqeeron ka haq hai. Ye Islam ka rukn hai: saal bhar ke jama maal par (nisab ke baad) 2.5%.", title: "", secs: [] },
+    en: { goalH: "Purpose of Zakat", goal: "Zakat purifies wealth and is the poor's right fixed by Allah. It is a pillar of Islam: 2.5% on savings held for a full year above nisab.", title: "", secs: [] },
+    ur: { goalH: "زکوٰۃ کا مقصد", goal: "زکوٰۃ مال کو پاک کرتی ہے اور اللہ کا مقرر کردہ فقیروں کا حق ہے۔ یہ اسلام کا رکن ہے: سال بھر جمع مال پر (نصاب کے بعد) 2.5%۔", title: "", secs: [] },
+    hi: { goalH: "ज़कात का मक़सद", goal: "ज़कात माल को पाक करती है और अल्लाह का मुक़र्रर किया हुआ फ़क़ीरों का हक़ है। ये इस्लाम का रुक्न है: साल भर जमा माल पर (निसाब के बाद) 2.5%।", title: "", secs: [] }
+  },
   fitr: {
-    roman: { title: "Kitab ke zaroori masail (Faizan-e-Zakat)", secs: [{ items: [
+    roman: { goalH: "Sadqa-e-Fitr ka maqsad", goal: "Ye roze ki kami-kotahi ki talafi karta hai aur Eid ke din faqeeron ko khushi mein shaamil karta hai. Ye maal ki nahi, Ramzan ki ibadat ki zakat hai, isliye har sahib-e-nisab par jaan ke hisab se wajib hai.", title: "Kitab ke zaroori masail (Faizan-e-Zakat)", secs: [{ items: [
       "Wajib us par hai jo azad Musalman ho aur hajat-e-asliya ke ilawa nisab ka maalik ho. Saal guzarna (hawl) aur maal ka barhna shart nahi.",
       "Eid ki subah sadiq se wajib hota hai. Isse pehle ya Eid ke baad bhi de sakte hain, magar Eid ki namaz se pehle dena behtar hai.",
       "Gehun, aata ya sattu: aadha saa (taqriban 2 kg + 50 g). Jau, khajoor ya kishmish: ek saa (taqriban 4 kg + 100 g).",
       "Doosra anaaj (chawal, bajra, makka waghera): unki qeemat us hisab se do jo gehun ya jau ki qeemat ke barabar ho.",
       "Apni taraf se aur apni nabalig aulad ki taraf se dena wajib hai. Baalig aulad aur biwi ki taraf se wajib nahi (agar de den to ijazat se ada ho jayega).",
       "Fitra ki raqam faqeer, miskeen ya qarzdar musta'iq ko di jaye. Sayyid ko aur apne usool-o-furoo (walidain, aulad) ko dena jaiz nahi."] }] },
-    en: { title: "Key rules from the book (Faizan-e-Zakat)", secs: [{ items: [
+    en: { goalH: "Purpose of Sadaqah-e-Fitr", goal: "It makes up for shortcomings in the fasts and includes the poor in the joy of Eid. It is the zakat of the Ramadan worship, not of wealth, so it is due per person on everyone who owns nisab.", title: "Key rules from the book (Faizan-e-Zakat)", secs: [{ items: [
       "Due on every free Muslim who owns nisab beyond basic needs. No full year (hawl) and no growth of wealth is required.",
       "It becomes due at true dawn (subh sadiq) of Eid. It may be paid earlier or later, but paying before the Eid prayer is better.",
       "Wheat, flour or sattu: half a sa' (about 2 kg + 50 g). Barley, dates or raisins: one sa' (about 4 kg + 100 g).",
       "Other grains (rice, millet, maize etc.): pay their value equal to the price of the wheat or barley quantity.",
       "Pay for yourself and your minor children. It is not wajib for adult children or your wife (if you pay with their permission it is valid).",
       "Give it to the poor, needy or indebted who may receive zakat. Not to Sayyids, nor to your parents or children."] }] },
-    ur: { title: "کتاب کے ضروری مسائل (فیضانِ زکوٰۃ)", secs: [{ items: [
+    ur: { goalH: "صدقۂ فطر کا مقصد", goal: "یہ روزوں کی کمی کوتاہی کی تلافی کرتا ہے اور عید کے دن فقیروں کو خوشی میں شامل کرتا ہے۔ یہ مال کی نہیں، رمضان کی عبادت کی زکوٰۃ ہے، اس لیے ہر صاحبِ نصاب پر جان کے حساب سے واجب ہے۔", title: "کتاب کے ضروری مسائل (فیضانِ زکوٰۃ)", secs: [{ items: [
       "واجب اس پر ہے جو آزاد مسلمان ہو اور حاجتِ اصلیہ کے علاوہ نصاب کا مالک ہو۔ سال گزرنا اور مال کا بڑھنا شرط نہیں۔",
       "عید کی صبحِ صادق سے واجب ہوتا ہے۔ پہلے یا بعد میں بھی دے سکتے ہیں مگر عید کی نماز سے پہلے دینا بہتر ہے۔",
       "گیہوں، آٹا یا ستو: آدھا صاع (تقریباً 2 کلو + 50 گرام)۔ جو، کھجور یا کشمش: ایک صاع (تقریباً 4 کلو + 100 گرام)۔",
       "دوسرا اناج (چاول، باجرہ، مکئی وغیرہ): اس کی قیمت اتنی دیں جتنی گیہوں یا جو کی مقدار کی قیمت ہو۔",
       "اپنی اور اپنی نابالغ اولاد کی طرف سے دینا واجب ہے۔ بالغ اولاد اور بیوی کی طرف سے واجب نہیں (اجازت سے دے دیں تو ادا ہو جائے گا)۔",
       "فقیر، مسکین یا مقروض مستحق کو دیں۔ سید کو اور اپنے والدین و اولاد کو دینا جائز نہیں۔"] }] },
-    hi: { title: "किताब के ज़रूरी मसाइल (फ़ैज़ान-ए-ज़कात)", secs: [{ items: [
+    hi: { goalH: "सदक़ा-ए-फ़ित्र का मक़सद", goal: "ये रोज़ों की कमी-कोताही की तलाफ़ी करता है और ईद के दिन फ़क़ीरों को ख़ुशी में शामिल करता है। ये माल की नहीं, रमज़ान की इबादत की ज़कात है, इसलिए हर साहिब-ए-निसाब पर जान के हिसाब से वाजिब है।", title: "किताब के ज़रूरी मसाइल (फ़ैज़ान-ए-ज़कात)", secs: [{ items: [
       "वाजिब उस पर है जो आज़ाद मुसलमान हो और हाजत-ए-असलिया के अलावा निसाब का मालिक हो। साल गुज़रना और माल का बढ़ना शर्त नहीं।",
       "ईद की सुब्ह सादिक़ से वाजिब होता है। पहले या बाद में भी दे सकते हैं, मगर ईद की नमाज़ से पहले देना बेहतर है।",
       "गेहूँ, आटा या सत्तू: आधा साअ (तक़रीबन 2 किलो + 50 ग्राम)। जौ, खजूर या किशमिश: एक साअ (तक़रीबन 4 किलो + 100 ग्राम)।",
@@ -38,7 +44,7 @@ const P: Record<Kind, Record<Lang, Pack>> = {
       "फ़क़ीर, मिस्कीन या मक़रूज़ मुस्तहिक़ को दें। सय्यद को और अपने वालिदैन व औलाद को देना जाइज़ नहीं।"] }] }
   },
   ushr: {
-    roman: { title: "Ushr ke masail (Faizan-e-Zakat, safha 123-139)", secs: [
+    roman: { goalH: "Ushr ka maqsad", goal: "Ushr zameen ki paidawar ki zakat hai: Allah ne jo fasal di usme se faqeeron ka hissa har fasal par nikalna. Ye saal bhar ke maal ki nahi, har kataai ki zakat hai, aur na dene par sakht wa'eed aayi hai.", title: "Ushr ke masail (Faizan-e-Zakat, safha 123-139)", secs: [
       { h: "Kis cheez par ushr hai", items: [
         "Zameen ki wo paidawar jisse nafa maqsood ho: anaaj (gehun, jau, chawal, makka, bajra, moong, chana), phal (aam, kela, anar, amrood, angoor, khajoor), sabzi (aalu, pyaaz, lehsun, palak, gobhi) aur masale. Kam ho ya zyada sab par.",
         "Shahad: agar ushri zameen ka ho to us par bhi ushr hai.",
@@ -61,7 +67,7 @@ const P: Record<Kind, Record<Lang, Pack>> = {
         "Fasal sailaab, aag, pala ya aasmani aafat se tabah ho jaye to ushr saqit hai, jo bacha uska ushr dein. Janwar kha jayein to saqit nahi.",
         "Ushr unhi ko dein jinhe zakat di ja sakti hai."] }
     ] },
-    en: { title: "Ushr rules (Faizan-e-Zakat, pp. 123-139)", secs: [
+    en: { goalH: "Purpose of Ushr", goal: "Ushr is the zakat on the produce of land: the poor's share out of what Allah grew, taken at every harvest. It is not on yearly savings but on each crop, and the Qur'an and Hadith warn strongly against withholding it.", title: "Ushr rules (Faizan-e-Zakat, pp. 123-139)", secs: [
       { h: "What it is due on", items: [
         "Any produce of the land grown for benefit: grains (wheat, barley, rice, maize, millet, gram), fruits (mango, banana, pomegranate, guava, grapes, dates), vegetables (potato, onion, garlic, spinach, cauliflower) and spices. Little or much.",
         "Honey: due as well if the land is ushri.",
@@ -84,7 +90,7 @@ const P: Record<Kind, Record<Lang, Pack>> = {
         "If the crop is destroyed by flood, fire, frost or a natural calamity, ushr falls for that part; pay on what remains. If animals ate it, it does not fall.",
         "Give it only to those who may receive zakat."] }
     ] },
-    ur: { title: "عشر کے مسائل (فیضانِ زکوٰۃ، صفحہ 123 تا 139)", secs: [
+    ur: { goalH: "عشر کا مقصد", goal: "عشر زمین کی پیداوار کی زکوٰۃ ہے: اللہ نے جو فصل دی اس میں سے فقیروں کا حصہ ہر فصل پر نکالنا۔ یہ سال بھر کے مال کی نہیں، ہر کٹائی کی زکوٰۃ ہے، اور نہ دینے پر سخت وعید آئی ہے۔", title: "عشر کے مسائل (فیضانِ زکوٰۃ، صفحہ 123 تا 139)", secs: [
       { h: "کس چیز پر عشر ہے", items: [
         "زمین کی وہ پیداوار جس سے نفع مقصود ہو: اناج (گیہوں، جو، چاول، مکئی، باجرہ، مونگ، چنا)، پھل (آم، کیلا، انار، امرود، انگور، کھجور)، سبزیاں (آلو، پیاز، لہسن، پالک، گوبھی) اور مسالے۔ کم ہو یا زیادہ سب پر۔",
         "شہد: اگر عشری زمین کا ہو تو اس پر بھی عشر ہے۔",
@@ -107,7 +113,7 @@ const P: Record<Kind, Record<Lang, Pack>> = {
         "فصل سیلاب، آگ، پالا یا آسمانی آفت سے تباہ ہو جائے تو عشر ساقط ہے، جو بچا اس کا عشر دیں۔ جانور کھا جائیں تو ساقط نہیں۔",
         "عشر انہی کو دیں جنہیں زکوٰۃ دی جا سکتی ہے۔"] }
     ] },
-    hi: { title: "उश्र के मसाइल (फ़ैज़ान-ए-ज़कात, सफ़्हा 123 से 139)", secs: [
+    hi: { goalH: "उश्र का मक़सद", goal: "उश्र ज़मीन की पैदावार की ज़कात है: अल्लाह ने जो फ़सल दी उसमें से फ़क़ीरों का हिस्सा हर फ़सल पर निकालना। ये साल भर के माल की नहीं, हर कटाई की ज़कात है, और न देने पर सख़्त वईद आई है।", title: "उश्र के मसाइल (फ़ैज़ान-ए-ज़कात, सफ़्हा 123 से 139)", secs: [
       { h: "किस चीज़ पर उश्र है", items: [
         "ज़मीन की वो पैदावार जिससे नफ़ा मक़सूद हो: अनाज (गेहूँ, जौ, चावल, मक्का, बाजरा, मूँग, चना), फल (आम, केला, अनार, अमरूद, अंगूर, खजूर), सब्ज़ियाँ (आलू, प्याज़, लहसुन, पालक, गोभी) और मसाले। कम हो या ज़्यादा सब पर।",
         "शहद: अगर उश्री ज़मीन का हो तो उस पर भी उश्र है।",
@@ -136,16 +142,24 @@ const P: Record<Kind, Record<Lang, Pack>> = {
 export function BookNotes({ kind, lang }: { kind: Kind; lang: Lang }) {
   const p = P[kind][lang];
   return (
-    <details className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
-      <summary className="cursor-pointer text-sm font-extrabold text-deen">{p.title}</summary>
-      {p.secs.map((sec, k) => (
-        <div key={k} className="mt-3">
-          {sec.h && <h5 className="text-xs font-extrabold text-emerald-800">{sec.h}</h5>}
-          <ul className="mt-1 list-disc space-y-2 ps-5 text-xs leading-6 text-slate-600">
-            {sec.items.map((x, i) => <li key={i}>{x}</li>)}
-          </ul>
-        </div>
-      ))}
-    </details>
+    <div className="space-y-3">
+      <div className="rounded-2xl bg-emerald-900 p-4 text-white">
+        <h4 className="text-sm font-extrabold">{p.goalH}</h4>
+        <p className="mt-1 text-xs leading-6 text-emerald-50">{p.goal}</p>
+      </div>
+      {p.secs.length > 0 && (
+        <details className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
+          <summary className="cursor-pointer text-sm font-extrabold text-deen">{p.title}</summary>
+          {p.secs.map((sec, k) => (
+            <div key={k} className="mt-3">
+              {sec.h && <h5 className="text-xs font-extrabold text-emerald-800">{sec.h}</h5>}
+              <ul className="mt-1 list-disc space-y-2 ps-5 text-xs leading-6 text-slate-600">
+                {sec.items.map((x, i) => <li key={i}>{x}</li>)}
+              </ul>
+            </div>
+          ))}
+        </details>
+      )}
+    </div>
   );
 }
