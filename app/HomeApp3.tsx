@@ -3,7 +3,7 @@
 import "./mobile.css";
 import { Target, CheckCircle2, ShieldCheck, Scale, Coins, Calculator, Download } from "lucide-react";
 import { copyMore } from "../lib/copyMore";
-import { ZakatCalculator } from "./ZakatCalculator";
+import { ZakatWizard } from "./ZakatWizard";
 import { MoreCalculators } from "./MoreCalculators";
 import { ZAKAT_RULES } from "../lib/zakat";
 import { PrintHead, HowBlock, ShareRow } from "./calcUi";
@@ -44,7 +44,7 @@ export default function Home() {
             <button type="button" aria-pressed={tab === "more"} onClick={() => setTab("more")} className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-extrabold transition ${tab === "more" ? "bg-deen text-white shadow-md" : "text-slate-500 hover:bg-emerald-50"}`}><Calculator size={18}/>{copyMore[lang].tab}</button>
           </div>
 
-          {tab === "zakat" ? <ZakatCalculator lang={lang} money={money}/> : tab === "more" ? <MoreCalculators lang={lang} money={money}/> : tab === "mirath" && mirathResult ? <MirathResultScreen c={c}/> : tab === "mirath" ? <MirathForm c={c}/> : <div className="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-900/5 md:p-7">
+          {tab === "zakat" ? <ZakatWizard lang={lang} money={money}/> : tab === "more" ? <MoreCalculators lang={lang} money={money}/> : tab === "mirath" && mirathResult ? <MirathResultScreen c={c}/> : tab === "mirath" ? <MirathForm c={c}/> : <div className="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-900/5 md:p-7">
             <div className="mb-6 flex items-center gap-3"><div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-deen"><Coins size={24}/></div><div><h2 className="text-xl font-extrabold text-deen">{t.zakat}</h2><p className="text-xs text-slate-400">{t.zakatSub}</p></div></div>
 
             <h3 className="mb-3 text-sm font-extrabold text-slate-700">{t.zNisabBasis}</h3>
