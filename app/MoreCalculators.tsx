@@ -10,6 +10,8 @@ import type { Lang } from "../lib/heirs";
 import { Field, Choice, Tile, Note, Actions, ResultBox } from "./calcUi";
 import { FidyaCalc, KaffaraCalc, MahrCalc, QurbaniCalc, QazaCalc } from "./ExtraCalculators";
 import { copyExtra } from "../lib/copyExtra";
+import { FitrWizard } from "./FitrWizard";
+import { UshrWizard } from "./UshrWizard";
 import { BookNotes } from "./BookNotes";
 import { WeightConverter } from "./WeightConverter";
 import { copyWeights } from "../lib/copyWeights";
@@ -43,6 +45,7 @@ function UshrCalc({ t, money, lang }: { t: CopyMore; money: (n: number) => strin
 
   return (
     <div className="space-y-5">
+      <BookNotes kind="ushr" lang={lang} />
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={t.ushrQty} value={qty} setValue={touch(setQty)} suffix={unit === "kg" ? "kg" : "qtl"} error={err("quantity")} />
         <Choice value={unit} onChange={touch(setUnit)} label={t.ushrUnit} options={[{ id: "kg", text: t.unitKg }, { id: "quintal", text: t.unitQuintal }]} />
@@ -51,7 +54,6 @@ function UshrCalc({ t, money, lang }: { t: CopyMore; money: (n: number) => strin
       {irr === "mixed" && <Field label={t.paidShare} value={share} setValue={touch(setShare)} suffix="%" hint={t.paidShareHint} error={err("paidSharePercent")} />}
       <Field label={t.ushrPrice} value={price} setValue={touch(setPrice)} prefix="₹" hint={t.ushrPriceHint} error={err("pricePerKg")} />
       <Actions onCalc={run} onReset={clear} t={t} />
-      <BookNotes kind="ushr" lang={lang} />
 
       {res && res.status !== "invalid" && (
         <ResultBox t={t} title={t.ushrTitle}
@@ -105,6 +107,7 @@ function FitrCalc({ t, money, lang }: { t: CopyMore; money: (n: number) => strin
 
   return (
     <div className="space-y-5">
+      <BookNotes kind="fitr" lang={lang} />
       <Field label={t.persons} value={persons} setValue={(v) => { setPersons(digitsOnly(v)); setRes(null); }} hint={t.personsHint} error={err("persons")} />
       <Choice value={grain} onChange={touch(setGrain)} label={t.grain} options={[{ id: "wheat", text: t.gWheat }, { id: "barley", text: t.gBarley }, { id: "dates", text: t.gDates }, { id: "raisins", text: t.gRaisins }]} />
       <div className="space-y-3">
@@ -122,7 +125,6 @@ function FitrCalc({ t, money, lang }: { t: CopyMore; money: (n: number) => strin
         </div>
       </fieldset>
       <Actions onCalc={run} onReset={clear} t={t} />
-      <BookNotes kind="fitr" lang={lang} />
 
       {res && res.status === "ok" && (
         <ResultBox t={t} title={t.fitrTitle}
@@ -189,8 +191,8 @@ export function MoreCalculators({ lang, money }: Props) {
         ))}
       </div>
 
-      {sub === "ushr" ? <UshrCalc t={t} money={money} lang={lang} />
-        : sub === "fitr" ? <FitrCalc t={t} money={money} lang={lang} />
+      {sub === "ushr" ? <UshrWizard lang={lang} money={money} />
+        : sub === "fitr" ? <FitrWizard lang={lang} money={money} />
         : sub === "fidya" ? <FidyaCalc t={t} x={x} money={money} />
         : sub === "kaffara" ? <KaffaraCalc t={t} x={x} money={money} />
         : sub === "mahr" ? <MahrCalc t={t} x={x} money={money} />
