@@ -10,6 +10,7 @@ import type { Lang } from "../lib/heirs";
 import { Field, Choice, Tile, Note, Actions, ResultBox } from "./calcUi";
 import { FidyaCalc, KaffaraCalc, MahrCalc, QurbaniCalc, QazaCalc } from "./ExtraCalculators";
 import { copyExtra } from "../lib/copyExtra";
+import { BookNotes } from "./BookNotes";
 import { WeightConverter } from "./WeightConverter";
 import { copyWeights } from "../lib/copyWeights";
 import { LandConverter } from "./LandConverter";
@@ -24,7 +25,7 @@ const kg = (n: number) => `${new Intl.NumberFormat("en-IN", { maximumFractionDig
 const digitsOnly = (s: string) => sanitizeDecimal(s).replace(/\./g, "");
 
 /* ------------------------------- Ushr ------------------------------- */
-function UshrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
+function UshrCalc({ t, money, lang }: { t: CopyMore; money: (n: number) => string; lang: Lang }) {
   const [qty, setQty] = useState("");
   const [unit, setUnit] = useState<UshrUnit>("kg");
   const [price, setPrice] = useState("");
@@ -50,6 +51,7 @@ function UshrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
       {irr === "mixed" && <Field label={t.paidShare} value={share} setValue={touch(setShare)} suffix="%" hint={t.paidShareHint} error={err("paidSharePercent")} />}
       <Field label={t.ushrPrice} value={price} setValue={touch(setPrice)} prefix="₹" hint={t.ushrPriceHint} error={err("pricePerKg")} />
       <Actions onCalc={run} onReset={clear} t={t} />
+      <BookNotes kind="ushr" lang={lang} />
 
       {res && res.status !== "invalid" && (
         <ResultBox t={t} title={t.ushrTitle}
@@ -82,7 +84,7 @@ function UshrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
 }
 
 /* ------------------------------ Fitr ------------------------------- */
-function FitrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
+function FitrCalc({ t, money, lang }: { t: CopyMore; money: (n: number) => string; lang: Lang }) {
   const [persons, setPersons] = useState("");
   const [grain, setGrain] = useState<FitrGrain>("wheat");
   const [wChoice, setWChoice] = useState<string>(String(FITR_RULES.defaultWheatGrams));
@@ -120,6 +122,7 @@ function FitrCalc({ t, money }: { t: CopyMore; money: (n: number) => string }) {
         </div>
       </fieldset>
       <Actions onCalc={run} onReset={clear} t={t} />
+      <BookNotes kind="fitr" lang={lang} />
 
       {res && res.status === "ok" && (
         <ResultBox t={t} title={t.fitrTitle}
@@ -186,8 +189,8 @@ export function MoreCalculators({ lang, money }: Props) {
         ))}
       </div>
 
-      {sub === "ushr" ? <UshrCalc t={t} money={money} />
-        : sub === "fitr" ? <FitrCalc t={t} money={money} />
+      {sub === "ushr" ? <UshrCalc t={t} money={money} lang={lang} />
+        : sub === "fitr" ? <FitrCalc t={t} money={money} lang={lang} />
         : sub === "fidya" ? <FidyaCalc t={t} x={x} money={money} />
         : sub === "kaffara" ? <KaffaraCalc t={t} x={x} money={money} />
         : sub === "mahr" ? <MahrCalc t={t} x={x} money={money} />
