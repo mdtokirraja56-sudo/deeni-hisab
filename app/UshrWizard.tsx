@@ -175,5 +175,4 @@ export function UshrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
       </section>
     </div>
   );
-    }
-          
+}
