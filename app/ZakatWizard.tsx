@@ -14,6 +14,7 @@ import { buildZakat, emptyForm, emptyWeight, pricePerGram, weightToGrams, type G
 import { sanitizeDecimal } from "../lib/numbers";
 import { Field, Note, ResultBox, Tile } from "./calcUi";
 import { SaveCase } from "./AccountPanel";
+import { BookNotes } from "./BookNotes";
 
 const STORE = "deeni-hisab-zakat-prices";
 const num = (v: number, d = 2) => new Intl.NumberFormat("en-IN", { maximumFractionDigits: d }).format(v);
@@ -155,6 +156,7 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
 
       <section className="space-y-4 rounded-3xl border border-emerald-900/10 bg-white p-4 shadow-soft">
         {step === 0 && (<>
+          <BookNotes kind="zakat" lang={lang} />
           <h3 className="text-base font-extrabold text-deen">{z.s1}</h3>
           <p className="text-xs leading-6 text-slate-500">{z.s1d}</p>
           <Pills<SilverPriceUnit> label={z.silverPrice} value={f.silverPriceUnit} onChange={(u) => set("silverPriceUnit", u)} options={[{ id: "tola", text: z.uTola }, { id: "g", text: z.uGram }, { id: "kg", text: z.uKg }, { id: "rb", text: hz.uRb }]} />
@@ -257,5 +259,4 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
       </section>
     </div>
   );
-                                                       }
-        
+}
