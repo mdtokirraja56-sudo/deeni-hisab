@@ -25,6 +25,7 @@ export default function Home() {
 
       <div className="mx-auto grid max-w-7xl gap-6 px-3 py-4 sm:px-4 sm:py-8 md:grid-cols-[290px_1fr] md:px-8 md:py-10">
         <aside className="order-2 space-y-5 md:order-1">
+          {tab === "mirath" && (
           <div className="rounded-3xl border border-emerald-900/10 bg-white p-5 shadow-soft">
             <div className="flex items-center gap-2 text-deen"><Target size={18}/><span className="text-sm font-extrabold">{t2.missionTitle}</span></div>
             <p className="mt-3 text-xs leading-6 text-slate-600">{t2.missionText}</p>
@@ -32,6 +33,7 @@ export default function Home() {
               {t2.principles.map(p => <li key={p} className="flex items-start gap-2 text-xs font-semibold leading-5 text-slate-700"><CheckCircle2 size={15} className="mt-0.5 shrink-0 text-deen"/><span>{p}</span></li>)}
             </ul>
           </div>
+          )}
           <div className="rounded-3xl border border-emerald-900/10 bg-white p-5 shadow-soft">
             <div className="flex items-center gap-2 text-deen"><ShieldCheck size={18}/><span className="text-sm font-extrabold">{t.note}</span></div>
             <p className="mt-3 text-xs leading-6 text-slate-500">{tab === "zakat" || tab === "more" ? tabNotes[tab][lang] : t.noteText}</p>
