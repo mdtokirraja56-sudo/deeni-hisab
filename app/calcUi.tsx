@@ -1,6 +1,7 @@
 "use client";
 
 import { Letterhead } from "./ResultSheet";
+import { NumWords } from "./NumWords";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AlertTriangle, Calculator, CheckCircle2, ChevronDown, ChevronUp, Download, Info, RotateCcw, Share2 } from "lucide-react";
 import { copyMore, type CopyMore } from "../lib/copyMore";
@@ -20,6 +21,7 @@ export function Field({ label, value, setValue, prefix, suffix, hint, error }: {
         {suffix && <span className="text-xs font-bold text-slate-400">{suffix}</span>}
       </div>
       {error ? <span role="alert" className="mt-1 block text-[11px] font-bold text-red-600">{error}</span> : hint ? <span className="mt-1 block text-[11px] text-slate-400">{hint}</span> : null}
+      <NumWords value={value} />
     </label>
   );
 }
