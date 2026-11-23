@@ -78,9 +78,9 @@ export function LandShareView({ lang, result, heirLabel }: { lang: Lang; result:
     const r = landOf(tot, n, d);
     let ps: { v: string; u: string }[];
     if (tot.kind === "bk") {
-      const all = [{ v: r.parts[0], u: x.bigha }, { v: r.parts[1], u: x.kattha }];
+      const all = [{ v: r.parts[0], u: x.bigha }, { v: r.parts[1], u: x.kattha }, { v: r.parts[2], u: x.dhur }];
       ps = all.filter(p => p.v !== "0");
-      if (!ps.length) ps = [all[1]];
+      if (!ps.length) ps = [all[2]];
     } else {
       ps = [{ v: r.parts[0], u: x.modes[tot.mode] }];
       if (r.sqft) ps.push({ v: "≈ " + r.sqft, u: copyLand[lang].sqft });
