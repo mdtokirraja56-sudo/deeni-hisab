@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { HandCoins } from "lucide-react";
 import type { Lang } from "../lib/heirs";
 import { copyMore } from "../lib/copyMore";
@@ -112,12 +112,13 @@ export function FitrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
   const calcGrain: FitrGrain = grain === "other" ? "wheat" : grain;
   const res = calculateFitr({ persons, grain: calcGrain, wheatGrams: Number(wg), pricePerKg: parseAmount(price), surplusWealth: parseAmount(surplus), silverPricePerGram: parseAmount(silver) });
   const last = 4;
-  const go = (n: number) => { setStep(n); if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const topRef = useRef<HTMLDivElement>(null);
+  const go = (n: number) => { setStep(n); try { topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch { /* ignore */ } };
   const reset = () => { setStep(0); setWajib(true); setSurplus(""); setSilver(""); setSelf(true); setMinors(""); setOthers(""); setGrain("wheat"); setWg("2047"); setPrice(""); };
   const names = T.steps[lang];
 
   return (
-    <div className="space-y-4">
+    <div ref={topRef} className="scroll-mt-24 space-y-4">
       <StepHeader icon={<HandCoins size={22} />} title={x("title")} step={step} names={names} ofText={tr(lang, COMMON.of)} />
       <section className="space-y-4 rounded-3xl border border-emerald-900/10 bg-white p-4 shadow-soft">
         {step === 0 && (<>
@@ -181,5 +182,4 @@ export function FitrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
       </section>
     </div>
   );
-            }
-        
+}
