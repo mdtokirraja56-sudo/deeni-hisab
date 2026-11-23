@@ -42,14 +42,17 @@ const hundredths = (h: bigint) => {
   return fr ? `${whole}.${fr}` : `${whole}`;
 };
 
-/** Land of `n/d` of the whole. bk -> [bigha, kattha]; others -> [value] (+ sq ft hint when exact). */
+/** Land of `n/d` of the whole. bk -> [bigha, kattha, dhur]; others -> [value] (+ sq ft hint when exact). */
 export function landOf(t: Extract<LandTotal, { ok: true }>, n: number, d: number): { parts: string[]; sqft?: string } {
   const f = { n: BigInt(n), d: BigInt(d) };
   if (t.kind === "bk") {
     const q = { n: t.kattha.n * f.n, d: t.kattha.d * f.d };
-    const H = (q.n * HUND * TWO + q.d) / (q.d * TWO); // kattha x100, rounded half up
-    const perBigha = t.r1 * HUND;
-    return { parts: [(H / perBigha).toString(), hundredths(H % perBigha)] };
+    // total in hundredths of a dhur (1 kattha = 20 dhur), rounded half up
+    const DHUR = BigInt("20");
+    const H = (q.n * DHUR * HUND * TWO + q.d) / (q.d * TWO);
+    const perBigha = t.r1 * DHUR * HUND;
+    const rem = H % perBigha;
+    return { parts: [(H / perBigha).toString(), (rem / (DHUR * HUND)).toString(), hundredths(rem % (DHUR * HUND))] };
   }
   const q = { n: t.value.n * f.n, d: t.value.d * f.d };
   const parts = [fromBase(q, ONE, 4)];
