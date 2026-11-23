@@ -1,5 +1,6 @@
 "use client";
 
+import { NumWords } from "./NumWords";
 import { Lang, HeirDef, HeirKey } from "../lib/heirs";
 import { BlockCode } from "../lib/mirath";
 import { ChevronUp, ChevronDown, Minus, Plus } from "lucide-react";
@@ -10,7 +11,7 @@ export function LangSwitch({ lang, setLang, label, className }: { lang: Lang; se
 }
 
 export function Field({ label, value, setValue, prefix, suffix, error, hint }: { label: string; value: string; setValue: (v: string) => void; prefix?: string; suffix?: string; error?: string; hint?: string }) {
-  return <label className="block"><span className="mb-2 block text-xs font-bold text-slate-600">{label}</span><div className={`flex items-center rounded-2xl border bg-slate-50 px-3 transition focus-within:bg-white focus-within:ring-4 ${error ? "border-red-400 focus-within:border-red-500 focus-within:ring-red-500/10" : "border-slate-200 focus-within:border-emerald-700 focus-within:ring-emerald-700/10"}`}>{prefix && <span className="text-sm font-bold text-slate-400">{prefix}</span>}<input inputMode="decimal" value={value} onChange={e => setValue(e.target.value)} aria-invalid={error ? true : undefined} className="min-w-0 w-full bg-transparent px-2 py-3.5 text-sm font-semibold outline-none" placeholder="0"/>{suffix && <span className="text-xs font-bold text-slate-400">{suffix}</span>}</div>{error ? <span role="alert" className="mt-1 block text-[11px] font-bold text-red-600">{error}</span> : hint ? <span className="mt-1 block text-[11px] text-slate-400">{hint}</span> : null}</label>;
+  return <label className="block"><span className="mb-2 block text-xs font-bold text-slate-600">{label}</span><div className={`flex items-center rounded-2xl border bg-slate-50 px-3 transition focus-within:bg-white focus-within:ring-4 ${error ? "border-red-400 focus-within:border-red-500 focus-within:ring-red-500/10" : "border-slate-200 focus-within:border-emerald-700 focus-within:ring-emerald-700/10"}`}>{prefix && <span className="text-sm font-bold text-slate-400">{prefix}</span>}<input inputMode="decimal" value={value} onChange={e => setValue(e.target.value)} aria-invalid={error ? true : undefined} className="min-w-0 w-full bg-transparent px-2 py-3.5 text-sm font-semibold outline-none" placeholder="0"/>{suffix && <span className="text-xs font-bold text-slate-400">{suffix}</span>}</div>{error ? <span role="alert" className="mt-1 block text-[11px] font-bold text-red-600">{error}</span> : hint ? <span className="mt-1 block text-[11px] text-slate-400">{hint}</span> : null}<NumWords value={value} /></label>;
 }
 
 export function HeirGroup({ title, defs, lang, heirs, update, disabled, blockInfo, blockedWord, blockTexts, heirLabel, naText, decLabel, incLabel, open, toggle }: { title: string; defs: HeirDef[]; lang: Lang; heirs: Record<HeirKey, number>; update: (key: HeirKey, delta: number) => void; disabled: (def: HeirDef) => boolean; blockInfo: Partial<Record<HeirKey, BlockInfo>>; blockedWord: string; blockTexts: Record<BlockCode, string>; heirLabel: (key: HeirKey) => string; naText: string; decLabel: string; incLabel: string; open: boolean; toggle: () => void }) {
