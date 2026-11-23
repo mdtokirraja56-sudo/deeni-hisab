@@ -7,6 +7,7 @@ import { copy2, type Copy2 } from "../lib/copy2";
 import { copy3 } from "../lib/copy3";
 import type { HeirKey, Lang } from "../lib/heirs";
 import { MirathSolution } from "./MirathSolution";
+import { Letterhead, ResultSheet } from "./ResultSheet";
 
 interface Props {
   result: MirathResult;
@@ -26,6 +27,8 @@ const REPORT: Record<Lang, { title: string; sub: string; date: string }> = {
   ur: { title: "رپورٹ میراث (ترکے کی تقسیم)", sub: "فقہِ حنفی · سراجیہ", date: "تاریخ" },
   hi: { title: "मीरास (विरासत) रिपोर्ट", sub: "फ़िक़्ह-ए-हनफ़ी · सिराजिय्या", date: "तारीख़" }
 };
+
+const MORE: Record<Lang, string> = { roman: "Tafseel aur wajah", en: "Details and reasons", ur: "تفصیل اور وجہ", hi: "तफ़्सील और वजह" };
 
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
 
@@ -97,6 +100,24 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
         <MirathSolution result={result} t2={t2} t3={t3} money={money} distributable={distributable} heirLabel={heirLabel} />
       ) : (
       <>
+      <div className="mt-4">
+        <ResultSheet d={{
+          lang, title: rp.title,
+          meta: [[t2.stepAsl, String(result.asl)], [t2.stepTashih, String(result.tashih)]],
+          head: [t2.colHeir, t2.colCount, t2.colShare, t2.colAmount],
+          rows: [
+            ...inheriting.map((r) => [heirLabel(r.key), String(r.count), <span key="s" dir="ltr" className="block leading-4">{fracText(r.share)}<span className="block text-[9px] font-semibold text-slate-400">{pct(fracValue(r.share))}</span></span>, hasAmount ? money(fracValue(r.share) * distributable) : "—"]),
+            ...blocked.map((r) => [heirLabel(r.key), String(r.count), t2.statusBlocked, "—"]),
+            ...nothing.map((r) => [heirLabel(r.key), String(r.count), "—", "—"])
+          ],
+          foot: ["Σ", "", <span key="f" dir="ltr">1 = 100%</span>, hasAmount ? money(distributable) : "—"],
+          verdictLabel: hasAmount ? t2.amountBase : t2.stepTashih,
+          verdictValue: hasAmount ? money(distributable) : String(result.tashih),
+          notes: [t2.betaNote]
+        }} />
+      </div>
+      <details className="mt-4 rounded-2xl bg-white p-3 ring-1 ring-slate-900/5 print:hidden">
+      <summary className="cursor-pointer text-sm font-extrabold text-deen">{MORE[lang]}</summary>
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-5">
         {steps.map((s) => (
           <div key={s.label} className="rounded-2xl bg-white p-3 text-center shadow-sm ring-1 ring-slate-900/5">
@@ -177,6 +198,7 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
           ))}
         </ul>
       )}
+      </details>
       </>
       )}
 
@@ -188,14 +210,11 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
 
       {/* Printed / PDF report: always the full solution. Hidden on screen. */}
       <div className="print-area hidden print:block" aria-hidden="true">
-        <div className="mb-4 border-b-2 border-deen pb-3 text-center">
-          <div className="text-xl font-black tracking-wide text-deen">DEENI HISAB | دینی حساب</div>
-          <div className="mt-1 text-base font-extrabold text-slate-800">{rp.title}</div>
-          <div className="mt-1 text-xs text-slate-500">{rp.sub} · {rp.date}: {today}</div>
-        </div>
+        <Letterhead lang={lang} />
+        <div className="mt-2 text-center text-base font-extrabold text-slate-800">{rp.title} · {rp.date}: {today}</div>
         <MirathSolution result={result} t2={t2} t3={t3} money={money} distributable={distributable} heirLabel={heirLabel} />
         <p className="mt-4 border-t border-slate-300 pt-2 text-[11px] leading-5 text-slate-600">{t2.betaNote}</p>
       </div>
     </section>
   );
-                  }
+}
