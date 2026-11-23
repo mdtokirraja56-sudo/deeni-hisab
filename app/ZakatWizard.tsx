@@ -20,6 +20,12 @@ import { ResultSheet } from "./ResultSheet";
 const STORE = "deeni-hisab-zakat-prices";
 const num = (v: number, d = 2) => new Intl.NumberFormat("en-IN", { maximumFractionDigits: d }).format(v);
 
+const PL: Record<Lang, string[]> = {
+  roman: ["Qeemat", "Maal: naqd, sona-chandi, tijarat", "Len-den aur qarz", "Natija"],
+  en: ["Prices", "Wealth: cash, gold-silver, business", "Owed and debts", "Result"],
+  ur: ["قیمت", "مال: نقد، سونا چاندی، تجارت", "لین دین اور قرض", "نتیجہ"],
+  hi: ["क़ीमत", "माल: नक़द, सोना-चाँदी, तिजारत", "लेन-देन और क़र्ज़", "नतीजा"]
+};
 const INFO: Record<Lang, string> = { roman: "Wazahat dekhein", en: "See details", ur: "وضاحت دیکھیں", hi: "वज़ाहत देखें" };
 const POT: Record<Lang, string> = { roman: "Zakat (agar saal poora ho)", en: "Zakat (if the year is complete)", ur: "زکوٰۃ (اگر سال پورا ہو)", hi: "ज़कात (अगर साल पूरा हो)" };
 const HEAD: Record<Lang, string[]> = { roman: ["Tafseel", "Raqam"], en: ["Item", "Amount"], ur: ["تفصیل", "رقم"], hi: ["तफ़्सील", "रक़म"] };
@@ -115,7 +121,9 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
   const err = (field: string) => { const e = res.errors.find((x) => x.field === field); return e ? (e.code === "price_required" ? z.errPrice : z.errNumber) : undefined; };
   const L = (code: string) => z.lines[code] ?? hz.lines[code] ?? code;
   const statusText = { invalid: z.stInvalid, below_nisab: z.stBelow, hawl_incomplete: z.stHawl, due: z.stDue }[res.status];
-  const last = 6;
+  const last = 3;
+  const PAGES = [[0], [1, 2, 3], [4, 5], [6]];
+  const at = (n: number) => PAGES[step].indexOf(n) >= 0;
 
   const live = (which: "gold" | "silver") => {
     const g = weightToGrams(f[which]);
@@ -160,11 +168,11 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
           <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-deen"><Coins size={22} /></div>
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-extrabold text-deen">{z.title}</h2>
-            <p className="text-xs font-bold text-slate-500">{step + 1} {w.of} {last + 1} · {w.steps[step]}</p>
+            <p className="text-xs font-bold text-slate-500">{step + 1} {w.of} {last + 1} · {PL[lang][step]}</p>
           </div>
         </div>
         <div className="mt-3 flex gap-1" dir="ltr" aria-hidden="true">
-          {w.steps.map((_, i) => <div key={i} className={`h-2 flex-1 rounded-full ${i <= step ? "bg-deen" : "bg-slate-200"}`} />)}
+          {PL[lang].map((_, i) => <div key={i} className={`h-2 flex-1 rounded-full ${i <= step ? "bg-deen" : "bg-slate-200"}`} />)}
         </div>
         <div className="mt-3 grid grid-cols-3 gap-2 rounded-2xl bg-emerald-50 p-3 text-[11px] font-bold text-emerald-900">
           <div>{w.assets}<div className="text-sm font-black tabular-nums">{money(res.status === "invalid" ? 0 : res.totalAssets)}</div></div>
@@ -174,7 +182,7 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
       </div>
 
       <section className="space-y-4 rounded-3xl border border-emerald-900/10 bg-white p-4 shadow-soft">
-        {step === 0 && (<>
+        {at(0) && (<>
           <BookNotes kind="zakat" lang={lang} />
           <h3 className="text-base font-extrabold text-deen">{z.s1}</h3>
           <p className="text-xs leading-6 text-slate-500">{z.s1d}</p>
@@ -185,14 +193,15 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
           <Tip label={INFO[lang]}><p>{z.basisNote}</p></Tip>
         </>)}
 
-        {step === 1 && (<>
+        {at(1) && (<>
           <h3 className="text-base font-extrabold text-deen">{z.s3}</h3>
           <p className="text-xs leading-6 text-slate-500">{z.s3d}</p>
           {m("cashHand", z.cashHand)}{m("cashBank", z.cashBank)}{m("investments", z.investments)}{m("prizeBonds", hz.prizeBonds)}
           {hintList([["cashHand", z.cashHand], ["cashBank", z.cashBank], ["investments", z.investments], ["prizeBonds", hz.prizeBonds]])}
         </>)}
 
-        {step === 2 && (<>
+        {at(2) && (<>
+          <hr className="border-slate-200" />
           {gateBox(2)}
           {gate[2] && (<>
             {weightBox("gold", z.gold)}
@@ -201,12 +210,13 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
           </>)}
         </>)}
 
-        {step === 3 && (<>
+        {at(3) && (<>
+          <hr className="border-slate-200" />
           {gateBox(3)}
           {gate[3] && (<>{m("rawMaterial", z.rawMaterial)}{m("stock", z.stock)}{m("tradePlots", z.tradePlots)}{m("partnership", z.partnership)}{hintList([["rawMaterial", z.rawMaterial], ["stock", z.stock], ["tradePlots", z.tradePlots], ["partnership", z.partnership]])}<Tip label={INFO[lang]}><p>{w.tradeNote}</p></Tip></>)}
         </>)}
 
-        {step === 4 && (<>
+        {at(4) && (<>
           {gateBox(4)}
           {gate[4] && (<>
             <Tip label={INFO[lang]}><p>{w.recvNote}</p><p>{z.deferredNote}</p></Tip>
@@ -219,7 +229,8 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
           </>)}
         </>)}
 
-        {step === 5 && (<>
+        {at(5) && (<>
+          <hr className="border-slate-200" />
           {gateBox(5)}
           {gate[5] && (<>
             <Tip label={INFO[lang]}><p>{w.debtNote}</p></Tip>
@@ -227,7 +238,7 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
           </>)}
         </>)}
 
-        {step === 6 && (<>
+        {at(6) && (<>
           <h3 className="text-base font-extrabold text-deen">{w.hawlHead}</h3>
           <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-950">
             <input type="checkbox" checked={hawl} onChange={(e) => setHawl(e.target.checked)} className="mt-1.5 h-5 w-5 shrink-0 accent-[#0f5132]" />
