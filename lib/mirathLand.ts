@@ -4,8 +4,8 @@
 import { parseExact, FACTOR, fromBase, toBase, type LandUnit } from "./land";
 
 export type LandMode = "bk" | "dhur" | "gaz" | "decimal" | "sqft" | "acre" | "sqm";
-export interface LandInput { mode: LandMode; a: string; b: string; r1: string }
-export const DEFAULT_LAND: LandInput = { mode: "bk", a: "", b: "", r1: "20" };
+export interface LandInput { mode: LandMode; a: string; b: string; r1: string; sq: string }
+export const DEFAULT_LAND: LandInput = { mode: "bk", a: "", b: "", r1: "20", sq: "" };
 export const LAND_MODES: LandMode[] = ["bk", "dhur", "gaz", "decimal", "sqft", "acre", "sqm"];
 export const STD_UNIT: Record<Exclude<LandMode, "bk" | "dhur">, LandUnit> = { gaz: "sqyd", decimal: "decimal", sqft: "sqft", acre: "acre", sqm: "sqm" };
 
@@ -16,7 +16,7 @@ const mulI = (x: Q, k: bigint): Q => ({ n: x.n * k, d: x.d });
 const parseQ = (s: string): Q | null => (s.trim() === "" ? { n: Z, d: ONE } : parseExact(s));
 
 export type LandTotal =
-  | { ok: true; kind: "bk"; kattha: Q; r1: bigint }
+  | { ok: true; kind: "bk"; kattha: Q; r1: bigint; sq: Q | null }
   | { ok: true; kind: "std"; unit: LandUnit | null; mode: Exclude<LandMode, "bk">; value: Q }
   | { ok: false; err: "empty" | "num" | "ratio" };
 
@@ -34,7 +34,9 @@ export function landTotal(inp: LandInput): LandTotal {
   if (!/^\d+$/.test(inp.r1.trim())) return { ok: false, err: "ratio" };
   const r1 = BigInt(inp.r1.trim());
   if (r1 === Z) return { ok: false, err: "ratio" };
-  return { ok: true, kind: "bk", kattha: add(mulI(a, r1), b), r1 };
+  const sqIn = parseQ(inp.sq);
+  if (!sqIn) return { ok: false, err: "num" };
+  return { ok: true, kind: "bk", kattha: add(mulI(a, r1), b), r1, sq: sqIn.n === Z ? null : sqIn };
 }
 
 const hundredths = (h: bigint) => {
@@ -43,16 +45,24 @@ const hundredths = (h: bigint) => {
 };
 
 /** Land of `n/d` of the whole. bk -> [bigha, kattha, dhur]; others -> [value] (+ sq ft hint when exact). */
-export function landOf(t: Extract<LandTotal, { ok: true }>, n: number, d: number): { parts: string[]; sqft?: string } {
+export function landOf(t: Extract<LandTotal, { ok: true }>, n: number, d: number): { parts: string[]; sqft?: string; approx?: boolean; modern?: { sqft: string; decimal: string; gaz: string } } {
   const f = { n: BigInt(n), d: BigInt(d) };
   if (t.kind === "bk") {
     const q = { n: t.kattha.n * f.n, d: t.kattha.d * f.d };
-    // total in hundredths of a dhur (1 kattha = 20 dhur), rounded half up
+    // total in whole dhur (1 kattha = 20 dhur), rounded half up; sub-dhur part is only an approximation
     const DHUR = BigInt("20");
-    const H = (q.n * DHUR * HUND * TWO + q.d) / (q.d * TWO);
-    const perBigha = t.r1 * DHUR * HUND;
-    const rem = H % perBigha;
-    return { parts: [(H / perBigha).toString(), (rem / (DHUR * HUND)).toString(), hundredths(rem % (DHUR * HUND))] };
+    const exact = (q.n * DHUR) % q.d === Z;
+    const D = (q.n * DHUR * TWO + q.d) / (q.d * TWO);
+    const perBigha = t.r1 * DHUR;
+    const rem = D % perBigha;
+    const out: { parts: string[]; sqft?: string; approx?: boolean; modern?: { sqft: string; decimal: string; gaz: string } } =
+      { parts: [(D / perBigha).toString(), (rem / DHUR).toString(), (rem % DHUR).toString()], approx: !exact };
+    if (t.sq) {
+      const sqQ = { n: q.n * t.sq.n, d: q.d * t.sq.d }; // sq ft of this share
+      const base = toBase(sqQ, FACTOR.sqft);
+      out.modern = { sqft: fromBase(base, FACTOR.sqft, 0), decimal: fromBase(base, FACTOR.decimal, 2), gaz: fromBase(base, FACTOR.sqyd, 1) };
+    }
+    return out;
   }
   const q = { n: t.value.n * f.n, d: t.value.d * f.d };
   const parts = [fromBase(q, ONE, 4)];
