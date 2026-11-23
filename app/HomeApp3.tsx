@@ -1,6 +1,7 @@
 "use client";
 
 import "./mobile.css";
+import { useEffect } from "react";
 import { Target, CheckCircle2, ShieldCheck, Scale, Coins, Calculator, Download } from "lucide-react";
 import { copyMore } from "../lib/copyMore";
 import { ZakatWizard } from "./ZakatWizard";
@@ -14,11 +15,13 @@ import { MirathResultScreen, MirathForm } from "./MirathTab";
 import { Field } from "./HomeBits";
 import { useBackNav } from "./useBackNav";
 import { tabNotes } from "../lib/tabNotes";
+import { setNumLang } from "../lib/numWords";
 
 export default function Home() {
   const c = useHome();
   useBackNav({ tab: c.tab, hasResult: !!c.mirathResult, dialogOpen: c.aboutOpen || c.demoOpen, closeDialog: () => { c.setAboutOpen(false); c.setDemoOpen(false); }, closeResult: () => c.setMirathResult(null), goHome: () => c.setTab("mirath") });
   const { lang, t2, t, tab, setTab, money, mirathResult, nisabBasis, setNisabBasis, setZakatResult, zk, setZ, zError, hawl, setHawl, runZakat, zakatResult, zakatRef, statusText, assetLabel, noteText, printReport } = c;
+  useEffect(() => { setNumLang(lang); }, [lang]);
   return (
     <main className={`min-h-screen bg-cream pb-24 text-slate-800 md:pb-0 ${lang === "hi" ? "font-hindi" : ""}`} dir={lang === "ur" ? "rtl" : "ltr"}>
       <HomeHeader c={c}/>
