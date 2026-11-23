@@ -1,5 +1,6 @@
 "use client";
 
+import { Letterhead } from "./ResultSheet";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AlertTriangle, Calculator, CheckCircle2, ChevronDown, ChevronUp, Download, Info, RotateCcw, Share2 } from "lucide-react";
 import { copyMore, type CopyMore } from "../lib/copyMore";
@@ -95,10 +96,10 @@ export function PrintHead({ lang, title }: { lang: Lang; title: string }) {
   const h = copyHow[lang];
   const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
   return (
-    <div className="mb-4 hidden border-b-2 border-deen pb-3 text-center print:block">
-      <div className="text-xl font-black tracking-wide text-deen">DEENI HISAB | دینی حساب</div>
-      <div className="mt-1 text-base font-extrabold text-slate-800">{title}</div>
-      <div className="mt-1 text-xs text-slate-500">{h.reportTitle} · {h.date}: {today}</div>
+    <div className="mb-4 hidden print:block">
+      <Letterhead lang={lang} />
+      <div className="mt-2 text-center text-base font-extrabold text-slate-800">{title}</div>
+      <div className="mt-1 text-center text-xs text-slate-500">{h.reportTitle} · {h.date}: {today}</div>
     </div>
   );
 }
