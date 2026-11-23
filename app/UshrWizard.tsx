@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Sprout } from "lucide-react";
 import type { Lang } from "../lib/heirs";
 import { copyMore } from "../lib/copyMore";
@@ -109,13 +109,14 @@ export function UshrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
   const res = calculateUshr({ quantity: net, unit, pricePerKg: parseAmount(price), irrigation: irr, paidSharePercent: parseAmount(paidShare) });
   const last = 4;
   const noUshr = crop === "none";
-  const go = (n: number) => { setStep(n); if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const topRef = useRef<HTMLDivElement>(null);
+  const go = (n: number) => { setStep(n); try { topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch { /* ignore */ } };
   const reset = () => { setStep(0); setCrop("grain"); setLand("own"); setShare("50"); setIrr("rain"); setPaidShare(""); setQty(""); setUnit("kg"); setLost(""); setPrice(""); };
   const names = T.steps[lang];
   const u = unit === "kg" ? "kg" : "qtl";
 
   return (
-    <div className="space-y-4">
+    <div ref={topRef} className="scroll-mt-24 space-y-4">
       <StepHeader icon={<Sprout size={22} />} title={x("title")} step={step} names={names} ofText={tr(lang, COMMON.of)} />
       <section className="space-y-4 rounded-3xl border border-emerald-900/10 bg-white p-4 shadow-soft">
         {step === 0 && (<>
