@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Coins, RotateCcw } from "lucide-react";
 import type { Lang } from "../lib/heirs";
 import { copyMore } from "../lib/copyMore";
@@ -85,7 +85,8 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
   const money$ = (k: keyof ZakatForm) => (v: string) => set(k, sanitizeDecimal(v) as never);
   const setW = (which: "gold" | "silver", patch: Partial<WeightForm>) => set(which, { ...f[which], ...patch });
   const wNum = (which: "gold" | "silver", k: keyof WeightForm) => (v: string) => setW(which, { [k]: sanitizeDecimal(v) });
-  const go = (n: number) => { setStep(n); try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch { /* ignore */ } };
+  const topRef = useRef<HTMLDivElement>(null);
+  const go = (n: number) => { setStep(n); try { topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch { /* ignore */ } };
 
   // Prices stay on this phone only (same storage key as the older Zakat screen).
   useEffect(() => {
@@ -162,7 +163,7 @@ export function ZakatWizard({ lang, money }: { lang: Lang; money: (n: number) =>
   const resultLines = [statusText, ...built.assetLines.map((l) => `${L(l.code)}: ${money(l.amount)}`), ...built.liabilityLines.map((l) => `− ${L(l.code)}: ${money(l.amount)}`), `${z.rTotal}: ${money(res.totalAssets)}`, `${z.rNet}: ${money(res.netWealth)}`, `${z.rNisab}: ${money(res.nisabValue)}`, ...(res.status === "due" ? [`${w.base}: ${money(k.base)}`, ...(k.afw > 0 ? [`${w.afw}: ${money(k.afw)}`] : [])] : []), `${res.status === "hawl_incomplete" ? POT[lang] : z.rDue}: ${money(res.status === "hawl_incomplete" ? amount : due)}`];
 
   return (
-    <div className="space-y-4">
+    <div ref={topRef} className="scroll-mt-24 space-y-4">
       <div className="rounded-3xl bg-white p-4 shadow-soft ring-1 ring-slate-900/5">
         <div className="flex items-center gap-3">
           <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-deen"><Coins size={22} /></div>
