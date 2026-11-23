@@ -8,6 +8,7 @@ import { copy3 } from "../lib/copy3";
 import type { HeirKey, Lang } from "../lib/heirs";
 import { MirathSolution } from "./MirathSolution";
 import { Letterhead, ResultSheet } from "./ResultSheet";
+import { useLandFmt } from "./MirathLand";
 
 interface Props {
   result: MirathResult;
@@ -28,6 +29,8 @@ const REPORT: Record<Lang, { title: string; sub: string; date: string }> = {
   hi: { title: "मीरास (विरासत) रिपोर्ट", sub: "फ़िक़्ह-ए-हनफ़ी · सिराजिय्या", date: "तारीख़" }
 };
 
+const ZM: Record<Lang, string> = { roman: "Zameen", en: "Land", ur: "زمین", hi: "ज़मीन" };
+const EACH: Record<Lang, string> = { roman: "har ek", en: "each", ur: "ہر ایک", hi: "हर एक" };
 const MORE: Record<Lang, string> = { roman: "Tafseel aur wajah", en: "Details and reasons", ur: "تفصیل اور وجہ", hi: "तफ़्सील और वजह" };
 
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
@@ -69,6 +72,7 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
   const nothing = result.rows.filter((r) => r.status === "nothing_left");
   const blocked = result.rows.filter((r) => r.status === "blocked");
   const hasAmount = distributable > 0;
+  const land = useLandFmt(lang);
 
   const blockText = (r: HeirRow) => {
     const names = r.blockedBy.map(heirLabel).join(" / ");
@@ -104,13 +108,26 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
         <ResultSheet d={{
           lang, title: rp.title,
           meta: [[t2.stepAsl, String(result.asl)], [t2.stepTashih, String(result.tashih)]],
-          head: [t2.colHeir, t2.colCount, t2.colShare, t2.colAmount],
+          head: [t2.colHeir, t2.colShare, ...(hasAmount || land ? [[hasAmount ? t2.colAmount : "", land ? ZM[lang] : ""].filter(Boolean).join(" / ")] : [])],
           rows: [
-            ...inheriting.map((r) => [heirLabel(r.key), String(r.count), <span key="s" dir="ltr" className="block leading-4">{fracText(r.share)}<span className="block text-[9px] font-semibold text-slate-400">{pct(fracValue(r.share))}</span></span>, hasAmount ? money(fracValue(r.share) * distributable) : "—"]),
-            ...blocked.map((r) => [heirLabel(r.key), String(r.count), t2.statusBlocked, "—"]),
-            ...nothing.map((r) => [heirLabel(r.key), String(r.count), "—", "—"])
+            ...inheriting.map((r) => {
+              const ph = r.perHeadShare;
+              return [
+                <span key="n">{heirLabel(r.key)}{r.count > 1 ? ` ×${r.count}` : ""}</span>,
+                <span key="s" dir="ltr" className="block leading-4">{fracText(r.share)}<span className="block text-[9px] font-semibold text-slate-400">{pct(fracValue(r.share))}</span></span>,
+                ...(hasAmount || land ? [(
+                  <div key="c" className="space-y-0.5">
+                    {hasAmount && <div className="font-bold tabular-nums">{money(fracValue(r.share) * distributable)}</div>}
+                    {land && <div className="text-[10px] font-semibold text-slate-600">{land.fmt(r.share.n, r.share.d, true)}</div>}
+                    {r.count > 1 && <div className="text-[9px] font-normal text-slate-400">{land ? land.each : EACH[lang]}: {hasAmount ? money(fracValue(ph) * distributable) : ""}{hasAmount && land ? " · " : ""}{land ? land.fmt(ph.n, ph.d, true) : null}</div>}
+                  </div>
+                )] : [])
+              ];
+            }),
+            ...blocked.map((r) => [heirLabel(r.key), t2.statusBlocked, ...(hasAmount || land ? ["—"] : [])]),
+            ...nothing.map((r) => [heirLabel(r.key), "—", ...(hasAmount || land ? ["—"] : [])])
           ],
-          foot: ["Σ", "", <span key="f" dir="ltr">1 = 100%</span>, hasAmount ? money(distributable) : "—"],
+          foot: ["Σ", <span key="f" dir="ltr">1 = 100%</span>, ...(hasAmount || land ? [<div key="t">{hasAmount ? money(distributable) : null}{land ? <div className="text-[10px] font-semibold">{land.fmt(1, 1, true)}</div> : null}</div>] : [])],
           verdictLabel: hasAmount ? t2.amountBase : t2.stepTashih,
           verdictValue: hasAmount ? money(distributable) : String(result.tashih),
           notes: [t2.betaNote]
