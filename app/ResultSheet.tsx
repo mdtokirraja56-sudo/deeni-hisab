@@ -66,7 +66,7 @@ export function ResultSheet({ d }: { d: SheetData }) {
         <tbody>
           {d.rows.map((r, i) => (
             <tr key={i} className={`border-b border-slate-200 ${i % 2 ? "bg-slate-50/70" : ""}`}>
-              {r.map((c, j) => <td key={j} className={`px-1 py-2 align-middle ${j === 0 ? "text-start font-bold text-slate-800" : "text-center font-semibold tabular-nums text-slate-700 whitespace-nowrap"}`}>{c}</td>)}
+              {r.map((c, j) => <td key={j} className={`px-1 py-2 align-middle ${j === 0 ? "text-start font-bold text-slate-800" : `text-center font-semibold tabular-nums text-slate-700 ${typeof c === "string" ? "whitespace-nowrap" : ""}`}`}>{c}</td>)}
             </tr>
           ))}
           {d.foot && (
