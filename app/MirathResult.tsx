@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { AlertTriangle, CheckCircle2, Download, Info, RotateCcw } from "lucide-react";
 import { fracText, fracValue, type HeirRow, type MirathResult } from "../lib/mirath";
 import { copy2, type Copy2 } from "../lib/copy2";
@@ -36,8 +35,7 @@ const MORE: Record<Lang, string> = { roman: "Tafseel aur wajah", en: "Details an
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
 
 export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel }: Props) {
-  const [view, setView] = useState<"brief" | "full">("brief");
-  // The language is found from the text object that was passed in, so page.tsx needs no change.
+    // The language is found from the text object that was passed in, so page.tsx needs no change.
   const lang = ((Object.keys(copy2) as Lang[]).find((l) => copy2[l] === t2) ?? "ur") as Lang;
   const t3 = copy3[lang];
   const rp = REPORT[lang];
@@ -87,24 +85,7 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
     { label: t2.stepTashih, value: String(result.tashih) }
   ];
 
-  return (
-    <section aria-label={t2.resultTitle} className="mt-6 rounded-3xl border border-emerald-900/10 bg-emerald-50/40 p-4 md:p-6">
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="flex items-center gap-2 text-lg font-extrabold text-deen"><CheckCircle2 size={20} />{t2.resultTitle}</h3>
-        <span className="rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold text-amber-900">{t2.betaTag}</span>
-      </div>
-      <p className="mt-2 rounded-xl bg-amber-50 p-3 text-[11px] leading-5 text-amber-900">{t2.betaNote}</p>
-
-      <div role="group" aria-label={t3.viewLabel} className="mt-4 grid grid-cols-2 gap-1 rounded-2xl bg-white p-1 shadow-sm ring-1 ring-slate-900/5 print:hidden">
-        <button type="button" aria-pressed={view === "brief"} onClick={() => setView("brief")} className={`rounded-xl px-3 py-3 text-sm font-extrabold transition ${view === "brief" ? "bg-deen text-white shadow" : "text-slate-500 hover:bg-emerald-50"}`}>{t3.briefTab}</button>
-        <button type="button" aria-pressed={view === "full"} onClick={() => setView("full")} className={`rounded-xl px-3 py-3 text-sm font-extrabold transition ${view === "full" ? "bg-deen text-white shadow" : "text-slate-500 hover:bg-emerald-50"}`}>{t3.fullTab}</button>
-      </div>
-
-      {view === "full" ? (
-        <MirathSolution result={result} t2={t2} t3={t3} money={money} distributable={distributable} heirLabel={heirLabel} />
-      ) : (
-      <>
-      <div className="mt-4">
+  const sheetEl = (
         <ResultSheet d={{
           lang, title: rp.title,
           meta: [[t2.stepAsl, String(result.asl)], [t2.stepTashih, String(result.tashih)]],
@@ -118,7 +99,7 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
                 ...(hasAmount || land ? [(
                   <div key="c" className="space-y-0.5">
                     {hasAmount && <div className="font-bold tabular-nums">{money(fracValue(r.share) * distributable)}</div>}
-                    {land && <div className="text-[10px] font-semibold text-slate-600">{land.fmt(r.share.n, r.share.d, true)}</div>}
+                    {land && <div className="text-[11px] font-semibold text-slate-700">{land.fmt(r.share.n, r.share.d, true)}</div>}
                     {r.count > 1 && <div className="text-[9px] font-normal text-slate-400">{land ? land.each : EACH[lang]}: {hasAmount ? money(fracValue(ph) * distributable) : ""}{hasAmount && land ? " · " : ""}{land ? land.fmt(ph.n, ph.d, true) : null}</div>}
                   </div>
                 )] : [])
@@ -132,7 +113,11 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
           verdictValue: hasAmount ? money(distributable) : String(result.tashih),
           notes: [t2.betaNote]
         }} />
-      </div>
+  );
+  return (
+    <section aria-label={t2.resultTitle} className="rounded-3xl border border-emerald-900/10 bg-emerald-50/40 p-3 md:p-6">
+      <>
+      <div className="mt-2 print:hidden">{sheetEl}</div>
       <details className="mt-4 rounded-2xl bg-white p-3 ring-1 ring-slate-900/5 print:hidden">
       <summary className="cursor-pointer text-sm font-extrabold text-deen">{MORE[lang]}</summary>
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-5">
@@ -216,8 +201,11 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
         </ul>
       )}
       </details>
+      <details className="mt-3 rounded-2xl bg-white p-3 ring-1 ring-slate-900/5 print:hidden">
+        <summary className="cursor-pointer text-sm font-extrabold text-deen">{t3.fullTab}</summary>
+        <div className="mt-3"><MirathSolution result={result} t2={t2} t3={t3} money={money} distributable={distributable} heirLabel={heirLabel} /></div>
+      </details>
       </>
-      )}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 print:hidden">
         <button type="button" onClick={onPrint} className="flex items-center justify-center gap-2 rounded-2xl border border-deen/20 bg-white px-5 py-3 text-sm font-extrabold text-deen transition hover:bg-emerald-50"><Download size={17} />{printLabel}</button>
@@ -228,9 +216,8 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
       {/* Printed / PDF report: always the full solution. Hidden on screen. */}
       <div className="print-area hidden print:block" aria-hidden="true">
         <Letterhead lang={lang} />
-        <div className="mt-2 text-center text-base font-extrabold text-slate-800">{rp.title} · {rp.date}: {today}</div>
-        <MirathSolution result={result} t2={t2} t3={t3} money={money} distributable={distributable} heirLabel={heirLabel} />
-        <p className="mt-4 border-t border-slate-300 pt-2 text-[11px] leading-5 text-slate-600">{t2.betaNote}</p>
+        <div className="mt-2 mb-3 text-center text-sm font-bold text-slate-600"><bdi dir="ltr">{today}</bdi></div>
+        {sheetEl}
       </div>
     </section>
   );
