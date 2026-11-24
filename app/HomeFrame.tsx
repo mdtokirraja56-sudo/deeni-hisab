@@ -31,13 +31,21 @@ const HOW_TABS: Record<Lang, { zakat: string[]; more: string[] }> = {
 
 // Urdu (Nastaliq) has a small x-height: make descriptions bigger; headings keep their size.
 const URDU_SIZES = `
+html main[dir="rtl"] .text-xs { font-size: 1.22rem; line-height: 2; }
+html main[dir="rtl"] .text-sm { font-size: 1.3rem; line-height: 2; }
+html main[dir="rtl"] .text-base { font-size: 1.38rem; line-height: 2; }
+html main[dir="rtl"] .text-\\[10px\\] { font-size: 1.12rem; line-height: 2; }
+html main[dir="rtl"] .text-\\[11px\\] { font-size: 1.18rem; line-height: 2; }
+@media (min-width: 768px) {
 html main[dir="rtl"] .text-xs { font-size: 1.4rem; line-height: 2.1; }
 html main[dir="rtl"] .text-sm { font-size: 1.5rem; line-height: 2.1; }
 html main[dir="rtl"] .text-base { font-size: 1.6rem; line-height: 2.1; }
 html main[dir="rtl"] .text-\\[10px\\] { font-size: 1.3rem; line-height: 2.1; }
 html main[dir="rtl"] .text-\\[11px\\] { font-size: 1.35rem; line-height: 2.1; }
+}
 html main[dir="rtl"] header .text-xs, html main[dir="rtl"] header .text-sm, html main[dir="rtl"] header .text-base, html main[dir="rtl"] header .text-lg { font-size: 1.05rem; line-height: 1.5; }
 html main[dir="rtl"] header button { line-height: 1.5; }
+html main[dir="rtl"] nav .text-\\[11px\\] { font-size: 1.05rem; line-height: 1.5; }
 `;
 
 
@@ -65,12 +73,12 @@ export function HomeHeader({ c }: { c: HomeCtx }) {
       </header>
 <section className="relative overflow-hidden bg-deen text-white">
         <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full border border-white/10"/><div className="absolute -right-20 bottom-[-8rem] h-96 w-96 rounded-full border border-white/10"/>
-        <div className="relative mx-auto max-w-7xl px-4 py-6 text-center sm:py-12 md:px-8 md:py-16">
+        <div className="relative mx-auto max-w-7xl px-4 py-4 text-center sm:py-12 md:px-8 md:py-16">
           <div className="mx-auto mb-5 hidden sm:inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold text-emerald-50"><Sparkles size={14}/> {t.chip}</div>
-          <p className="mb-2 font-urdu text-xl text-amber-100 sm:mb-3 md:text-2xl">{t.bismillah}</p>
-          <p className="mb-3 font-urdu text-sm text-emerald-100 sm:mb-6">{t.durood}</p>
+          <p className="mb-1 font-urdu text-lg text-amber-100 sm:mb-3 md:text-2xl">{t.bismillah}</p>
+          <p className="mb-2 font-urdu text-xs text-emerald-100 sm:mb-6">{t.durood}</p>
           <img src="/deeni-hisab-logo.webp" alt="DEENI HISAB | دینی حساب" width={320} height={320} className="mx-auto mb-6 hidden h-60 w-60 rounded-full drop-shadow-[0_18px_40px_rgba(0,0,0,0.45)] sm:block sm:h-72 sm:w-72 md:h-80 md:w-80"/>
-          <h1 className={`text-3xl font-bold leading-tight sm:text-4xl md:text-6xl ${lang === "hi" ? "font-hindi" : "font-urdu"}`}>{t.title}</h1>
+          <h1 className={`text-2xl font-bold leading-tight sm:text-4xl md:text-6xl ${lang === "hi" ? "font-hindi" : "font-urdu"}`}>{t.title}</h1>
           <p className="mt-2 text-sm text-emerald-100 sm:mt-4 md:text-base">{t.subtitle}</p>
           <p className="mx-auto mt-3 hidden max-w-2xl text-xs leading-6 text-emerald-100/80 sm:block md:text-sm">{t.intro}</p>
         </div>
@@ -107,9 +115,9 @@ export function HomeFooter({ c }: { c: HomeCtx }) {
 <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-40 border-t border-emerald-900/10 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(15,81,50,.08)] backdrop-blur-xl md:hidden print:hidden">
         <div className="mx-auto grid max-w-md grid-cols-3">
           {([["mirath", t.mirath, Scale], ["zakat", t.zakat, Coins], ["more", copyMore[lang].tab, Calculator]] as const).map(([id, text, Icon]) => (
-            <button key={id} type="button" aria-pressed={tab === id} onClick={() => { setTab(id); window.scrollTo({ top: 0, behavior: "auto" }); }} className={`relative flex min-w-0 flex-col items-center gap-0.5 px-1 pb-2 pt-2.5 text-[11px] font-extrabold transition active:scale-95 ${tab === id ? "text-deen" : "text-slate-400"}`}>
+            <button key={id} type="button" aria-pressed={tab === id} onClick={() => { setTab(id); window.scrollTo({ top: 0, behavior: "auto" }); }} className={`relative flex min-w-0 flex-col items-center gap-0.5 px-1 pb-1.5 pt-2 text-[11px] font-extrabold transition active:scale-95 ${tab === id ? "text-deen" : "text-slate-400"}`}>
               {tab === id && <span aria-hidden className="absolute inset-x-6 top-0 h-1 rounded-b-full bg-deen"/>}
-              <span className={`grid h-7 w-12 place-items-center rounded-full transition ${tab === id ? "bg-emerald-50" : ""}`}><Icon size={20}/></span>
+              <span className={`grid h-6 w-11 place-items-center rounded-full transition ${tab === id ? "bg-emerald-50" : ""}`}><Icon size={18}/></span>
               <span className="w-full truncate text-center">{text}</span>
             </button>
           ))}
