@@ -17,13 +17,11 @@ export function MirathResultScreen({ c }: { c: HomeCtx }) {
   return (<>
 <div className="space-y-5">
             <div className="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-900/5">
-              <div className="bg-deen px-5 py-9 text-center text-white">
-                <h2 className="text-2xl font-extrabold md:text-3xl">{RT[lang].title}</h2>
-                <p className="mt-2 text-sm text-emerald-100">{t2.stepTashih}: {mirathResult.tashih}{mirathResult.mazrub > 1 ? ` (${mirathResult.baseNumber} × ${mirathResult.mazrub})` : ""}</p>
-              </div>
-              <div className="p-4 md:p-7 print:p-0">
-                <button type="button" onClick={() => setMirathResult(null)} className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-deen/20 bg-white px-5 py-3 text-sm font-extrabold text-deen transition hover:bg-emerald-50 print:hidden"><ChevronDown size={17} className="rotate-90"/>{RT[lang].back}</button>
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+              <div className="p-3 md:p-7 print:p-0">
+                <button type="button" onClick={() => setMirathResult(null)} className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-deen/20 bg-white px-4 py-2 text-sm font-extrabold text-deen transition hover:bg-emerald-50 print:hidden"><ChevronDown size={17} className="rotate-90"/>{RT[lang].back}</button>
+                <div ref={mirathRef} className="scroll-mt-36"><MirathResultView result={mirathResult} t2={t2} money={money} distributable={remainingForHeirs} heirLabel={heirLabel} onPrint={printReport} onReset={resetMirath} printLabel={t.report}/>
+                <SaveCase lang={lang} kind="mirath" title={t.mirath} lines={[`${t.estate}: ${money(estateNum)}`, `${t.remaining}: ${money(remainingForHeirs)}`, ...mirathResult.rows.filter(r => r.status === "inherits").map(r => `${heirLabel(r.key)} ×${r.count}: ${fracText(r.share)} (${r.parts}/${mirathResult.tashih}) = ${money(remainingForHeirs * (r.share.n / r.share.d))}`)]}/></div>
+                <details className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950 print:hidden"><summary className="cursor-pointer text-sm font-extrabold">{t.sumEstate}</summary>
                   <p className="text-xs">{t.sumEstate}: {money(estateNum)} · {t.gold}: {gold || "0"} · {t.silver}: {silver || "0"} · {heirTotal} {t.sumHeirs}</p>
                   <ul className="mt-3 space-y-1.5 text-xs">
                     <li className="flex justify-between gap-3"><span>{t.netAfterDebts}</span><span className="font-bold tabular-nums">{money(netEstate)}</span></li>
@@ -33,9 +31,7 @@ export function MirathResultScreen({ c }: { c: HomeCtx }) {
                   </ul>
                   {costsNum > estateNum && <p className="mt-2 text-xs font-bold text-red-700">{t.costsExceed}</p>}
                   {parseAmount(bequest) > bequestCap && <p className="mt-2 text-xs font-bold text-red-700">{t.bequestOver}</p>}
-                </div>
-                <div ref={mirathRef} className="scroll-mt-36"><MirathResultView result={mirathResult} t2={t2} money={money} distributable={remainingForHeirs} heirLabel={heirLabel} onPrint={printReport} onReset={resetMirath} printLabel={t.report}/>
-                <SaveCase lang={lang} kind="mirath" title={t.mirath} lines={[`${t.estate}: ${money(estateNum)}`, `${t.remaining}: ${money(remainingForHeirs)}`, ...mirathResult.rows.filter(r => r.status === "inherits").map(r => `${heirLabel(r.key)} ×${r.count}: ${fracText(r.share)} (${r.parts}/${mirathResult.tashih}) = ${money(remainingForHeirs * (r.share.n / r.share.d))}`)]}/></div>
+                </details>
                 <LandShareView lang={lang} result={mirathResult} heirLabel={heirLabel}/>
               </div>
             </div>
