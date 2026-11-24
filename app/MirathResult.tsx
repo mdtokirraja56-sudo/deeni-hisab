@@ -32,6 +32,39 @@ const ZM: Record<Lang, string> = { roman: "Zameen", en: "Land", ur: "زمین", 
 const EACH: Record<Lang, string> = { roman: "har ek", en: "each", ur: "ہر ایک", hi: "हर एक" };
 const MORE: Record<Lang, string> = { roman: "Tafseel aur wajah", en: "Details and reasons", ur: "تفصیل اور وجہ", hi: "तफ़्सील और वजह" };
 
+// Fixed-share name (nisf, rubu ...) or asaba, shown under each heir's fraction to make the table easier to read.
+const TERM: Record<string, Record<Lang, string>> = {
+  "1/2": { ur: "نصف", roman: "Nisf", hi: "निस्फ़", en: "Nisf (½)" },
+  "1/4": { ur: "ربع", roman: "Rub'", hi: "रुब'", en: "Rub' (¼)" },
+  "1/8": { ur: "ثمن", roman: "Sumun", hi: "सुमुन", en: "Sumun (⅛)" },
+  "2/3": { ur: "ثلثان", roman: "Sulusan", hi: "सुलुसान", en: "Thulthan (⅔)" },
+  "1/3": { ur: "ثلث", roman: "Sulus", hi: "सुलुस", en: "Thulth (⅓)" },
+  "1/6": { ur: "سدس", roman: "Sudus", hi: "सुदुस", en: "Sudus (⅙)" },
+  rem3: { ur: "ثلثِ باقی", roman: "Sulus-e-baqi", hi: "सुलुस-ए-बाक़ी", en: "Third of remainder" },
+  asaba: { ur: "عصبہ", roman: "Asaba", hi: "असबा", en: "Asaba (residuary)" },
+  radd: { ur: "رد", roman: "radd", hi: "रद्द", en: "radd" }
+};
+const CODE_FRAC: Record<string, string> = {
+  husband_half: "1/2", husband_quarter: "1/4", wife_quarter: "1/4", wife_eighth: "1/8",
+  female_desc_half: "1/2", female_desc_two_thirds: "2/3", female_desc_sixth: "1/6",
+  father_sixth_male_desc: "1/6", father_sixth_plus_asaba: "1/6", mother_sixth_children: "1/6", mother_sixth_siblings: "1/6",
+  mother_third: "1/3", grandmother_sixth: "1/6", uterine_sixth: "1/6", uterine_third: "1/3",
+  sister_half: "1/2", sister_two_thirds: "2/3", cons_sister_sixth: "1/6"
+};
+const ASABA_CODES = new Set(["male_desc_asaba", "asaba_with_male", "father_asaba", "father_sixth_plus_asaba", "sister_asaba_daughter", "asaba_remainder"]);
+function termOf(r: { reasons: { code: string; fard?: string }[]; radd: boolean }, lang: Lang): string {
+  const out: string[] = [];
+  for (const x of r.reasons) {
+    if (x.code === "mother_third_remainder") { out.push(TERM.rem3[lang]); continue; }
+    const f = CODE_FRAC[x.code] ?? (x.fard && TERM[x.fard] ? x.fard : "");
+    if (f && TERM[f] && !out.includes(TERM[f][lang])) out.push(TERM[f][lang]);
+  }
+  if (r.reasons.some((x) => ASABA_CODES.has(x.code))) out.push(TERM.asaba[lang]);
+  let t = out.join(" + ");
+  if (t && r.radd) t += ` (${TERM.radd[lang]})`;
+  return t;
+}
+
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
 
 export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel }: Props) {
@@ -95,7 +128,7 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
               const ph = r.perHeadShare;
               return [
                 <span key="n">{heirLabel(r.key)}{r.count > 1 ? ` ×${r.count}` : ""}</span>,
-                <span key="s" dir="ltr" className="block leading-4">{fracText(r.share)}<span className="block text-[9px] font-semibold text-slate-400 print:hidden">{pct(fracValue(r.share))}</span></span>,
+                <span key="s" dir="ltr" className="block leading-4">{fracText(r.share)}{termOf(r, lang) ? <span className="mt-0.5 block text-[11px] font-extrabold leading-5 text-deen">{termOf(r, lang)}</span> : null}<span className="block text-[9px] font-semibold text-slate-400 print:hidden">{pct(fracValue(r.share))}</span></span>,
                 ...(hasAmount || land ? [(
                   <div key="c" className="space-y-0.5">
                     {hasAmount && <div className="font-bold tabular-nums">{money(fracValue(r.share) * distributable)}</div>}
