@@ -95,7 +95,7 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
               const ph = r.perHeadShare;
               return [
                 <span key="n">{heirLabel(r.key)}{r.count > 1 ? ` ×${r.count}` : ""}</span>,
-                <span key="s" dir="ltr" className="block leading-4">{fracText(r.share)}<span className="block text-[9px] font-semibold text-slate-400">{pct(fracValue(r.share))}</span></span>,
+                <span key="s" dir="ltr" className="block leading-4">{fracText(r.share)}<span className="block text-[9px] font-semibold text-slate-400 print:hidden">{pct(fracValue(r.share))}</span></span>,
                 ...(hasAmount || land ? [(
                   <div key="c" className="space-y-0.5">
                     {hasAmount && <div className="font-bold tabular-nums">{money(fracValue(r.share) * distributable)}</div>}
@@ -216,7 +216,6 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
       {/* Printed / PDF report: always the full solution. Hidden on screen. */}
       <div className="print-area hidden print:block" aria-hidden="true">
         <Letterhead lang={lang} />
-        <div className="mt-2 mb-3 text-center text-sm font-bold text-slate-600"><bdi dir="ltr">{today}</bdi></div>
         {sheetEl}
       </div>
     </section>
