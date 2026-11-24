@@ -94,7 +94,7 @@ export function useLandFmt(lang: Lang): { fmt: (n: number, d: number, compact?: 
     let ps: { v: string; u: string }[];
     if (tot.kind === "bk") {
       const all = [{ v: r.parts[0], u: x.bigha }, { v: r.parts[1], u: x.kattha }, { v: (r.approx ? "≈ " : "") + r.parts[2], u: x.dhur }];
-      ps = all.filter(p => p.v !== "0" && p.v !== "≈ 0");
+      ps = all.filter(p => p.v !== "0");
       if (!ps.length) ps = [all[2]];
     } else {
       ps = [{ v: r.parts[0], u: x.modes[tot.mode] }];
@@ -119,7 +119,7 @@ export function LandShareView({ lang, result, heirLabel }: { lang: Lang; result:
     let ps: { v: string; u: string }[];
     if (tot.kind === "bk") {
       const all = [{ v: r.parts[0], u: x.bigha }, { v: r.parts[1], u: x.kattha }, { v: (r.approx ? "≈ " : "") + r.parts[2], u: x.dhur }];
-      ps = all.filter(p => p.v !== "0" && p.v !== "≈ 0");
+      ps = all.filter(p => p.v !== "0");
       if (!ps.length) ps = [all[2]];
     } else {
       ps = [{ v: r.parts[0], u: x.modes[tot.mode] }];
