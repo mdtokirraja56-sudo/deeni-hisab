@@ -49,14 +49,20 @@ export function landOf(t: Extract<LandTotal, { ok: true }>, n: number, d: number
   const f = { n: BigInt(n), d: BigInt(d) };
   if (t.kind === "bk") {
     const q = { n: t.kattha.n * f.n, d: t.kattha.d * f.d };
-    // total in whole dhur (1 kattha = 20 dhur), rounded half up; sub-dhur part is only an approximation
+    // exact: whole dhur + a true fraction (e.g. 13 1/3 dhur) - nothing is rounded away
     const DHUR = BigInt("20");
-    const exact = (q.n * DHUR) % q.d === Z;
-    const D = (q.n * DHUR * TWO + q.d) / (q.d * TWO);
+    const tn = q.n * DHUR;               // total dhur = tn / q.d
+    const D = tn / q.d;                  // whole dhur (floor)
+    let fn = tn % q.d, fd = q.d;         // leftover fraction of one dhur
+    const g = (x: bigint, y: bigint): bigint => (y === Z ? x : g(y, x % y));
+    if (fn !== Z) { const k = g(fn, fd); fn /= k; fd /= k; }
+    const VULG: Record<string, string> = { "1/2": "½", "1/3": "⅓", "2/3": "⅔", "1/4": "¼", "3/4": "¾", "1/5": "⅕", "2/5": "⅖", "3/5": "⅗", "4/5": "⅘", "1/6": "⅙", "5/6": "⅚", "1/8": "⅛", "3/8": "⅜", "5/8": "⅝", "7/8": "⅞" };
+    const fracTxt = fn === Z ? "" : (VULG[`${fn}/${fd}`] ?? ` ${fn}/${fd}`);
     const perBigha = t.r1 * DHUR;
     const rem = D % perBigha;
+    const dhurTxt = (rem % DHUR).toString() + fracTxt;
     const out: { parts: string[]; sqft?: string; approx?: boolean; modern?: { sqft: string; decimal: string; gaz: string } } =
-      { parts: [(D / perBigha).toString(), (rem / DHUR).toString(), (rem % DHUR).toString()], approx: !exact };
+      { parts: [(D / perBigha).toString(), (rem / DHUR).toString(), dhurTxt], approx: false };
     if (t.sq) {
       const sqQ = { n: q.n * t.sq.n, d: q.d * t.sq.d }; // sq ft of this share
       const base = toBase(sqQ, FACTOR.sqft);
