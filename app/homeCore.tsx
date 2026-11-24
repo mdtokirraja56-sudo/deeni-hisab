@@ -123,7 +123,10 @@ export function useHome() {
   
     // As soon as a result is made, bring it into view (the page header is sticky, so the target has a top margin).
     useEffect(() => {
-      if (mirathResult) window.scrollTo({ top: 0, behavior: "auto" });
+      if (!mirathResult) return;
+      // go straight to the result sheet (not the top of the page)
+      const id = window.setTimeout(() => { try { mirathRef.current?.scrollIntoView({ behavior: "auto", block: "start" }); } catch { /* ignore */ } }, 60);
+      return () => window.clearTimeout(id);
     }, [mirathResult]);
     useEffect(() => {
       if (zakatResult) zakatRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -196,4 +199,3 @@ export function useHome() {
 }
 
 export type HomeCtx = ReturnType<typeof useHome>;
-      
