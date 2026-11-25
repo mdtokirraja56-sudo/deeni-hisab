@@ -18,6 +18,7 @@ interface Props {
   onPrint: () => void;
   onReset: () => void;
   printLabel: string;
+  kafirSon?: number; // count of non-Muslim sons entered (shown as "as if absent")
   gold?: string;   // grams of gold in the estate (text from the form)
   silver?: string; // grams of silver
 }
@@ -67,6 +68,14 @@ function termOf(r: { reasons: { code: string; fard?: string }[]; radd: boolean }
   return t;
 }
 
+const KAFIR_LABEL: Record<Lang, string> = { ur: "ابنِ کافر", roman: "Ibn-e-Kafir", hi: "इब्न-ए-काफ़िर", en: "Non-Muslim son" };
+const KAFIR_CELL: Record<Lang, string> = { ur: "وارث نہیں (کأن لم یکن)", roman: "Waaris nahi (ka-an lam yakun)", hi: "वारिस नहीं (क-अन लम यकुन)", en: "Not an heir (as if absent)" };
+const KAFIR_NOTE: Record<Lang, string> = {
+  ur: "ابنِ کافر کو ایسا سمجھا گیا ہے جیسے وہ ہے ہی نہیں (کأن لم یکن): وہ خود وارث نہیں اور دوسرے ورثاء کے حصے بھی کم نہیں کرتا۔ حوالہ: السراجیہ مع برکات السراج، باب العول، ص ۵۳ (اسی پر فتویٰ ہے)۔",
+  roman: "Ibn-e-Kafir ko aisa samjha gaya hai jaise wo hai hi nahi (ka-an lam yakun): wo khud waaris nahi aur doosre warison ke hisse bhi kam nahi karta. Hawala: As-Sirajiya ma'a Barakat as-Siraj, Bab al-Awl, p. 53 (isi par fatwa hai).",
+  hi: "इब्न-ए-काफ़िर को ऐसा समझा गया है जैसे वह है ही नहीं (क-अन लम यकुन): वह ख़ुद वारिस नहीं और दूसरे वारिसों के हिस्से भी कम नहीं करता। हवाला: अस-सिराजिया मअ बरकातिस-सिराज, बाबुल-अवल, पृ. 53 (इसी पर फ़तवा है)।",
+  en: "The non-Muslim son is treated as if he did not exist (ka-an lam yakun): he is not an heir and does not reduce anyone else's share. Reference: As-Sirajiya with Barakat as-Siraj, Bab al-Awl, p. 53 (the fatwa follows this)."
+};
 const METAL: Record<"gold" | "silver", Record<Lang, string>> = {
   gold: { ur: "سونا", roman: "Sona", hi: "सोना", en: "Gold" },
   silver: { ur: "چاندی", roman: "Chandi", hi: "चाँदी", en: "Silver" }
@@ -79,7 +88,7 @@ const METAL_NOTE: Record<Lang, string> = {
 };
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
 
-export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel, gold, silver }: Props) {
+export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel, gold, silver, kafirSon = 0 }: Props) {
     // The language is found from the text object that was passed in, so page.tsx needs no change.
   const lang = ((Object.keys(copy2) as Lang[]).find((l) => copy2[l] === t2) ?? "ur") as Lang;
   const t3 = copy3[lang];
@@ -163,12 +172,13 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
               ];
             }),
             ...blocked.map((r) => [heirLabel(r.key), t2.statusBlocked, ...(showCol ? ["—"] : [])]),
-            ...nothing.map((r) => [heirLabel(r.key), "—", ...(showCol ? ["—"] : [])])
+            ...nothing.map((r) => [heirLabel(r.key), "—", ...(showCol ? ["—"] : [])]),
+            ...(kafirSon > 0 ? [[`${KAFIR_LABEL[lang]}${kafirSon > 1 ? ` ×${kafirSon}` : ""}`, KAFIR_CELL[lang], ...(showCol ? ["—"] : [])]] : [])
           ],
           foot: ["Σ", <span key="f" dir="ltr">1 = 100%</span>, ...(showCol ? [<div key="t">{hasAmount ? money(distributable) : null}{land ? <div className="text-[10px] font-semibold">{land.fmt(1, 1, true)}</div> : null}{hasMetal ? <div dir="ltr" className="text-[10px] font-semibold">{metalText(1, 1)}</div> : null}</div>] : [])],
           verdictLabel: hasAmount ? t2.amountBase : t2.stepTashih,
           verdictValue: hasAmount ? money(distributable) : String(result.tashih),
-          notes: [t2.betaNote, ...(hasMetal ? [METAL_NOTE[lang]] : [])]
+          notes: [t2.betaNote, ...(kafirSon > 0 ? [KAFIR_NOTE[lang]] : []), ...(hasMetal ? [METAL_NOTE[lang]] : [])]
         }} />
   );
   return (
