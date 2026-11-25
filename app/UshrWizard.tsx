@@ -6,6 +6,7 @@ import type { Lang } from "../lib/heirs";
 import { copyMore } from "../lib/copyMore";
 import { calculateUshr, type Irrigation, type UshrUnit } from "../lib/ushr";
 import { parseAmount, sanitizeDecimal } from "../lib/numbers";
+import { ResultSheet } from "./ResultSheet";
 import { Field, Note, ResultBox, Tile } from "./calcUi";
 import { SaveCase } from "./AccountPanel";
 import { BookNotes } from "./BookNotes";
@@ -17,10 +18,10 @@ type Land = "own" | "batai" | "rent" | "thika";
 const T = {
   title: { roman: "Ushr (Fasal ki zakat)", en: "Ushr (zakat on crops)", ur: "عشر (فصل کی زکوٰۃ)", hi: "उश्र (फ़सल की ज़कात)" },
   steps: {
-    roman: ["Kya paida hua", "Zameen kiski", "Paani", "Paidawar", "Natija"],
-    en: ["What grew", "Whose land", "Water", "Produce", "Result"],
-    ur: ["کیا پیدا ہوا", "زمین کس کی", "پانی", "پیداوار", "نتیجہ"],
-    hi: ["क्या पैदा हुआ", "ज़मीन किसकी", "पानी", "पैदावार", "नतीजा"]
+    roman: ["Fasal aur zameen", "Paani aur paidawar", "Natija"],
+    en: ["Crop & land", "Water & produce", "Result"],
+    ur: ["فصل اور زمین", "پانی اور پیداوار", "نتیجہ"],
+    hi: ["फ़सल व ज़मीन", "पानी व पैदावार", "नतीजा"]
   } as Record<Lang, string[]>,
   aim: {
     roman: "Maqsad: zameen ki paidawar ki zakat. Ye Zakat se alag hai: ismein nisab aur saal guzarna shart nahi, har fasal par wajib hai.",
@@ -36,10 +37,10 @@ const T = {
   honey: { roman: "Shahad", en: "Honey", ur: "شہد", hi: "शहद" },
   none: { roman: "Lakdi / ghaas / bans / darakht", en: "Wood / grass / bamboo / trees", ur: "لکڑی / گھاس / بانس / درخت", hi: "लकड़ी / घास / बाँस / दरख़्त" },
   noneNote: {
-    roman: "In cheezon par ushr wajib nahi (kitab p.127-129). Sirf wo zameen jo ghaas ya lakdi ke liye hi chhodi ho, uska ushr hai: Aalim se poochh lein.",
-    en: "Ushr is not due on these (book pp.127-129). Only land left purely for grass or wood is different: ask your scholar.",
-    ur: "ان چیزوں پر عشر واجب نہیں (کتاب ص 127 تا 129)۔ صرف وہ زمین جو گھاس یا لکڑی ہی کے لیے چھوڑی ہو اس کا حکم الگ ہے: عالم سے پوچھ لیں۔",
-    hi: "इन चीज़ों पर उश्र वाजिब नहीं (किताब स. 127 से 129)। सिर्फ़ वो ज़मीन जो घास या लकड़ी ही के लिए छोड़ी हो उसका हुक्म अलग है: आलिम से पूछ लें।"
+    roman: "In cheezon par ushr wajib nahi - Sirf wo zameen jo ghaas ya lakdi ke liye hi chhodi ho, uska ushr hai: Aalim se poochh lein.",
+    en: "Ushr is not due on these - Only land left purely for grass or wood is different: ask your scholar.",
+    ur: "ان چیزوں پر عشر واجب نہیں - صرف وہ زمین جو گھاس یا لکڑی ہی کے لیے چھوڑی ہو اس کا حکم الگ ہے: عالم سے پوچھ لیں۔",
+    hi: "इन चीज़ों पर उश्र वाजिब नहीं - सिर्फ़ वो ज़मीन जो घास या लकड़ी ही के लिए छोड़ी हो उसका हुक्म अलग है: आलिम से पूछ लें।"
   },
   landQ: { roman: "Zameen kis tarah ki hai?", en: "What kind of land is it?", ur: "زمین کس طرح کی ہے؟", hi: "ज़मीन किस तरह की है?" },
   own: { roman: "Meri apni", en: "My own", ur: "میری اپنی", hi: "मेरी अपनी" },
@@ -88,6 +89,7 @@ const T = {
   r5: { roman: "5% (beeswan)", en: "5% (one twentieth)", ur: "5% (بیسواں)", hi: "5% (बीसवाँ)" }
 } satisfies Record<string, L4 | Record<Lang, string[]>>;
 
+const HEAD: Record<Lang, string[]> = { roman: ["Tafseel", "Miqdar"], en: ["Item", "Value"], ur: ["تفصیل", "مقدار"], hi: ["तफ़सील", "मिक़दार"] };
 const kgf = (n: number) => `${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 3 }).format(n)} kg`;
 
 export function UshrWizard({ lang, money }: { lang: Lang; money: (n: number) => string }) {
@@ -107,7 +109,7 @@ export function UshrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
   const pct = land === "batai" ? parseAmount(share) : 100;
   const net = Math.max(0, (parseAmount(qty) - parseAmount(lost)) * (pct / 100));
   const res = calculateUshr({ quantity: net, unit, pricePerKg: parseAmount(price), irrigation: irr, paidSharePercent: parseAmount(paidShare) });
-  const last = 4;
+  const last = 2;
   const noUshr = crop === "none";
   const topRef = useRef<HTMLDivElement>(null);
   const go = (n: number) => { setStep(n); try { topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch { /* ignore */ } };
@@ -124,32 +126,28 @@ export function UshrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
           <Pills<Crop> label={x("cropQ")} value={crop} onChange={setCrop}
             options={[{ id: "grain", text: x("grain") }, { id: "fruit", text: x("fruit") }, { id: "veg", text: x("veg") }, { id: "spice", text: x("spice") }, { id: "honey", text: x("honey") }, { id: "none", text: x("none") }]} />
           {noUshr && <Note tone="warn">{x("noneNote")}</Note>}
-        </>)}
-
-        {step === 1 && (<>
+        
           <Pills<Land> label={x("landQ")} value={land} onChange={setLand}
             options={[{ id: "own", text: x("own") }, { id: "batai", text: x("batai") }, { id: "rent", text: x("rent") }, { id: "thika", text: x("thika") }]} />
           {land === "batai" && <Field label={x("share")} value={share} setValue={(v) => setShare(sanitizeDecimal(v))} suffix="%" />}
           <Note>{x("landNote")}</Note>
         </>)}
 
-        {step === 2 && (<>
+        {step === 1 && (<>
           <Pills<Irrigation> label={x("waterQ")} value={irr} onChange={setIrr}
             options={[{ id: "rain", text: x("rain") }, { id: "paid", text: x("paid") }, { id: "mixed", text: x("mixed") }]} />
           {irr === "mixed" && (<><Field label={x("paidShare")} value={paidShare} setValue={(v) => setPaidShare(sanitizeDecimal(v))} suffix="%" /><Note>{x("equal")}</Note></>)}
-        </>)}
-
-        {step === 3 && (<>
+        
           <Field label={x("qty")} value={qty} setValue={(v) => setQty(sanitizeDecimal(v))} suffix={u} />
           <Pills<UshrUnit> label={x("unit")} value={unit} onChange={setUnit} options={[{ id: "kg", text: x("kg") }, { id: "quintal", text: x("qtl") }]} />
           <Field label={x("lost")} value={lost} setValue={(v) => setLost(sanitizeDecimal(v))} suffix={u} hint={x("lostHint")} />
           <Field label={x("price")} value={price} setValue={(v) => setPrice(sanitizeDecimal(v))} prefix="₹" />
         </>)}
 
-        {step === 4 && (noUshr
+        {step === 2 && (noUshr
           ? <Note tone="warn">{x("noneNote")}</Note>
           : res.status === "invalid"
-            ? <div role="alert" className="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800"><p>{x("fill")}</p><button type="button" onClick={() => go(3)} className="rounded-xl bg-red-700 px-4 py-2 text-xs font-extrabold text-white">{tr(lang, COMMON.back)}</button></div>
+            ? <div role="alert" className="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800"><p>{x("fill")}</p><button type="button" onClick={() => go(1)} className="rounded-xl bg-red-700 px-4 py-2 text-xs font-extrabold text-white">{tr(lang, COMMON.back)}</button></div>
             : res.status === "needs_ruling"
               ? <Note tone="warn">{x("equal")}</Note>
               : <>
@@ -160,13 +158,18 @@ export function UshrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
                     { label: x("dueQty"), formula: `${kgf(res.produceKg)} × ${res.rate === 0.1 ? "1/10" : "1/20"} = ${kgf(res.ushrKg)}` },
                     ...(res.hasPrice ? [{ label: x("dueVal"), formula: `${kgf(res.ushrKg)} × ₹${parseAmount(price)} = ${money(res.ushrValue)}` }] : [])
                   ]}>
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <Tile label={x("yours")} value={kgf(res.produceKg)} />
-                    <Tile label={x("rate")} value={res.rate === 0.1 ? x("r10") : x("r5")} />
-                    <Tile strong label={x("dueQty")} value={kgf(res.ushrKg)} />
-                    {res.hasPrice ? <Tile strong label={x("dueVal")} value={money(res.ushrValue)} /> : <Tile label={x("remain")} value={kgf(res.remainingKg)} />}
-                  </div>
-                  <div className="mt-3 space-y-2"><Note>{x("nonisab")}</Note><Note>{x("when")}</Note></div>
+                  <ResultSheet d={{
+                    lang, title: x("title"), head: HEAD[lang],
+                    rows: [
+                      [x("yours"), kgf(res.produceKg)],
+                      [x("rate"), res.rate === 0.1 ? x("r10") : x("r5")],
+                      [x("dueQty"), kgf(res.ushrKg)],
+                      ...(res.hasPrice ? [[x("dueVal"), money(res.ushrValue)]] : [[x("remain"), kgf(res.remainingKg)]])
+                    ],
+                    verdictLabel: res.hasPrice ? x("dueVal") : x("dueQty"),
+                    verdictValue: res.hasPrice ? money(res.ushrValue) : kgf(res.ushrKg),
+                    notes: [x("nonisab"), x("when")]
+                  }} />
                   <SaveCase lang={lang} kind="other" title={x("title")} lines={[`${x("dueQty")}: ${kgf(res.ushrKg)}`]} />
                 </ResultBox>
                 <BookNotes kind="ushr" lang={lang} />
