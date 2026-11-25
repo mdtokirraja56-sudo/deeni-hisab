@@ -45,6 +45,8 @@ export const HEIRS = [
   { key: "sonsDaughter", group: "descendants", max: 99, label: { en: "Son's daughter (granddaughter)", roman: "Poti (bete ki beti)", ur: "پوتی (بیٹے کی بیٹی)", hi: "पोती (बेटे की बेटी)" } },
   { key: "sonsSonsSon", group: "descendants", max: 99, label: { en: "Grandson's son", roman: "Par-pota (pote ka beta)", ur: "پڑپوتا (پوتے کا بیٹا)", hi: "पड़पोता (पोते का बेटा)" } },
   { key: "sonsSonsDaughter", group: "descendants", max: 99, label: { en: "Grandson's daughter", roman: "Par-poti (pote ki beti)", ur: "پڑپوتی (پوتے کی بیٹی)", hi: "पड़पोती (पोते की बेटी)" } },
+  // Non-Muslim son: shown so the user can enter him, but he is treated as "ka-an lam yakun" (as if absent), per Sirajiya (Barakat as-Siraj), Bab al-Awl, p. 53.
+  { key: "kafirSon", group: "descendants", max: 99, label: { en: "Non-Muslim son (Ibn Kafir)", roman: "Ibn-e-Kafir (gair-Muslim beta)", ur: "ابنِ کافر (غیر مسلم بیٹا)", hi: "इब्न-ए-काफ़िर (ग़ैर-मुस्लिम बेटा)" } },
 
   // ---- Ascendants ----
   { key: "father", group: "ascendants", max: 99, label: { en: "Father", roman: "Walid", ur: "والد", hi: "पिता" } },
