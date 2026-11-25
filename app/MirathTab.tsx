@@ -12,7 +12,7 @@ import { Field, HeirGroup } from "./HomeBits";
 import { LandInputCard, LandShareView } from "./MirathLand";
 
 export function MirathResultScreen({ c }: { c: HomeCtx }) {
-  const { lang, t2, mirathResult, setMirathResult, t, money, estateNum, gold, silver, heirTotal, netEstate, bequestCap, bequestCounted, remainingForHeirs, costsNum, bequest, mirathRef, heirLabel, printReport, resetMirath } = c;
+  const { lang, t2, mirathResult, setMirathResult, t, money, estateNum, gold, silver, heirTotal, netEstate, bequestCap, bequestCounted, remainingForHeirs, costsNum, bequest, mirathRef, heirLabel, printReport, resetMirath, heirs } = c;
   if (!mirathResult) return null;
   return (<>
 <div className="space-y-5">
