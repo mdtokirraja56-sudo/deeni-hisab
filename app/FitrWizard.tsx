@@ -7,6 +7,7 @@ import { copyMore } from "../lib/copyMore";
 import { calculateFitr, FITR_RULES, type FitrGrain } from "../lib/fitr";
 import { parseAmount, sanitizeDecimal } from "../lib/numbers";
 import { Field, Note, ResultBox, Tile } from "./calcUi";
+import { ResultSheet } from "./ResultSheet";
 import { SaveCase } from "./AccountPanel";
 import { BookNotes } from "./BookNotes";
 import { COMMON, Pills, StepHeader, StepNav, YesNo, tr, type L4 } from "./StepKit";
@@ -14,10 +15,10 @@ import { COMMON, Pills, StepHeader, StepNav, YesNo, tr, type L4 } from "./StepKi
 const T = {
   title: { roman: "Sadqa-e-Fitr", en: "Sadaqah al-Fitr", ur: "صدقۂ فطر", hi: "सदक़ा-ए-फ़ित्र" },
   steps: {
-    roman: ["Wajib hai?", "Kiske liye", "Kya denge", "Qeemat", "Natija"],
-    en: ["Is it due?", "For whom", "What to give", "Price", "Result"],
-    ur: ["واجب ہے؟", "کس کی طرف سے", "کیا دیں گے", "قیمت", "نتیجہ"],
-    hi: ["वाजिब है?", "किसकी तरफ़ से", "क्या देंगे", "क़ीमत", "नतीजा"]
+    roman: ["Wajib aur kiske liye", "Kya aur qeemat", "Natija"],
+    en: ["Due & for whom", "Grain & price", "Result"],
+    ur: ["واجب اور کس کی طرف سے", "کیا اور قیمت", "نتیجہ"],
+    hi: ["वाजिब व किसकी तरफ़ से", "क्या व क़ीमत", "नतीजा"]
   } as Record<Lang, string[]>,
   aim: {
     roman: "Maqsad: Ramzan ke roze ki kotahiyon ki talafi aur gareebon ki Eid. Ye Zakat se alag hai: ismein saal guzarna shart nahi.",
@@ -91,6 +92,7 @@ const T = {
   nisabNo: { roman: "Aapka maal nisab se kam hai: fitra wajib nahi.", en: "Your wealth is below nisab: fitra is not wajib.", ur: "آپ کا مال نصاب سے کم ہے: فطرہ واجب نہیں۔", hi: "आपका माल निसाब से कम है: फ़ित्रा वाजिब नहीं।" }
 } satisfies Record<string, L4 | Record<Lang, string[]>>;
 
+const HEAD: Record<Lang, string[]> = { roman: ["Tafseel", "Miqdar"], en: ["Item", "Value"], ur: ["تفصیل", "مقدار"], hi: ["तफ़सील", "मिक़दार"] };
 const kg = (n: number) => `${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 3 }).format(n)} kg`;
 const ints = (s: string) => sanitizeDecimal(s).replace(/\./g, "");
 
@@ -111,7 +113,7 @@ export function FitrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
   const persons = (self ? 1 : 0) + (parseInt(minors || "0", 10) || 0) + (parseInt(others || "0", 10) || 0);
   const calcGrain: FitrGrain = grain === "other" ? "wheat" : grain;
   const res = calculateFitr({ persons, grain: calcGrain, wheatGrams: Number(wg), pricePerKg: parseAmount(price), surplusWealth: parseAmount(surplus), silverPricePerGram: parseAmount(silver) });
-  const last = 4;
+  const last = 2;
   const topRef = useRef<HTMLDivElement>(null);
   const go = (n: number) => { setStep(n); try { topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); } catch { /* ignore */ } };
   const reset = () => { setStep(0); setWajib(true); setSurplus(""); setSilver(""); setSelf(true); setMinors(""); setOthers(""); setGrain("wheat"); setWg("2047"); setPrice(""); };
@@ -132,9 +134,7 @@ export function FitrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
               <Field label={x("silver")} value={silver} setValue={(v) => setSilver(sanitizeDecimal(v))} prefix="₹" />
             </div>
           </details>
-        </>)}
-
-        {step === 1 && (<>
+        
           <YesNo q={x("selfQ")} on={self} set={setSelf} yes={x("yes")} no={x("no")} />
           <Field label={x("minors")} value={minors} setValue={(v) => setMinors(ints(v))} />
           <Field label={x("others")} value={others} setValue={(v) => setOthers(ints(v))} />
@@ -142,22 +142,20 @@ export function FitrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
           <p className="text-xs font-bold text-slate-500">{persons} {x("people")}</p>
         </>)}
 
-        {step === 2 && (<>
+        {step === 1 && (<>
           <Pills<FitrGrain | "other"> label={x("grain")} value={grain} onChange={setGrain}
             options={[{ id: "wheat", text: x("gWheat") }, { id: "barley", text: x("gBarley") }, { id: "dates", text: x("gDates") }, { id: "raisins", text: x("gRaisins") }, { id: "other", text: x("gOther") }]} />
           <Pills<string> label={x("wLabel")} value={wg} onChange={setWg}
             options={[{ id: String(FITR_RULES.weightOptions[1]), text: x("w2047") }, { id: String(FITR_RULES.weightOptions[0]), text: x("w1633") }]} />
           <Note>{x("wNote")}</Note>
           {grain === "other" && <Note tone="warn">{x("otherNote")}</Note>}
-        </>)}
-
-        {step === 3 && (<>
+        
           <Field label={x("price")} value={price} setValue={(v) => setPrice(sanitizeDecimal(v))} prefix="₹" />
           {res.status === "ok" && <div className="grid grid-cols-2 gap-2"><Tile label={x("qty")} value={kg(res.gramsPerPerson / 1000)} /><Tile label={x("perP")} value={money(res.amountPerPerson)} /></div>}
         </>)}
 
-        {step === 4 && (res.status !== "ok"
-          ? <div role="alert" className="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800"><p>{x("fill")}</p><button type="button" onClick={() => go(3)} className="rounded-xl bg-red-700 px-4 py-2 text-xs font-extrabold text-white">{tr(lang, COMMON.back)}</button></div>
+        {step === 2 && (res.status !== "ok"
+          ? <div role="alert" className="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800"><p>{x("fill")}</p><button type="button" onClick={() => go(1)} className="rounded-xl bg-red-700 px-4 py-2 text-xs font-extrabold text-white">{tr(lang, COMMON.back)}</button></div>
           : <>
             <ResultBox t={cm} title={x("title")}
               lines={[`${x("qty")}: ${kg(res.gramsPerPerson / 1000)}`, `${x("perP")}: ${money(res.amountPerPerson)}`, `${x("tot")} (${persons} ${x("people")}): ${money(res.total)}`]}
@@ -166,13 +164,19 @@ export function FitrWizard({ lang, money }: { lang: Lang; money: (n: number) => 
                 { label: x("perP"), formula: `${res.gramsPerPerson / 1000} kg × ₹${parseAmount(price)} = ${money(res.amountPerPerson)}` },
                 { label: x("tot"), formula: `${money(res.amountPerPerson)} × ${persons} = ${money(res.total)}` }
               ]}>
-              <div className="mt-3 grid grid-cols-2 gap-2"><Tile label={x("qty")} value={kg(res.gramsPerPerson / 1000)} /><Tile label={x("perP")} value={money(res.amountPerPerson)} /></div>
-              <div className="mt-2"><Tile strong label={`${x("tot")} (${persons} ${x("people")})`} value={money(res.total)} /></div>
-              <div className="mt-3 space-y-2">
-                {res.nisab === "reached" && <Note>{x("nisabOk")}</Note>}
-                {res.nisab === "not_reached" && <Note tone="warn">{x("nisabNo")}</Note>}
-                <Note>{x("timing")}</Note>
-              </div>
+              <ResultSheet d={{
+                lang, title: x("title"), head: HEAD[lang],
+                rows: [
+                  [x("grain"), grain === "other" ? x("gOther") : x(grain === "wheat" ? "gWheat" : grain === "barley" ? "gBarley" : grain === "dates" ? "gDates" : "gRaisins")],
+                  [x("qty"), kg(res.gramsPerPerson / 1000)],
+                  [x("price"), `₹${parseAmount(price)} / kg`],
+                  [x("perP"), money(res.amountPerPerson)],
+                  [x("people"), String(persons)]
+                ],
+                verdictLabel: x("tot"), verdictValue: money(res.total),
+                status: res.nisab === "reached" ? x("nisabOk") : res.nisab === "not_reached" ? x("nisabNo") : undefined,
+                notes: [x("timing")]
+              }} />
               <SaveCase lang={lang} kind="other" title={x("title")} lines={[`${x("tot")}: ${money(res.total)}`]} />
             </ResultBox>
             <BookNotes kind="fitr" lang={lang} />
