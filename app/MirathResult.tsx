@@ -18,6 +18,8 @@ interface Props {
   onPrint: () => void;
   onReset: () => void;
   printLabel: string;
+  gold?: string;   // grams of gold in the estate (text from the form)
+  silver?: string; // grams of silver
 }
 
 // Small texts for the printed report header (4 languages)
@@ -65,9 +67,19 @@ function termOf(r: { reasons: { code: string; fard?: string }[]; radd: boolean }
   return t;
 }
 
+const METAL: Record<"gold" | "silver", Record<Lang, string>> = {
+  gold: { ur: "سونا", roman: "Sona", hi: "सोना", en: "Gold" },
+  silver: { ur: "چاندی", roman: "Chandi", hi: "चाँदी", en: "Silver" }
+};
+const METAL_NOTE: Record<Lang, string> = {
+  ur: "سونا اور چاندی بھی انہی حصوں کے مطابق تقسیم کیے گئے ہیں۔ قرض یا وصیت سونے چاندی سے ادا ہونی ہو تو عالم سے پوچھ لیں۔",
+  roman: "Sona aur chandi bhi inhi hisson ke mutabiq taqseem kiye gaye hain. Qarz ya wasiyat sone-chandi se ada honi ho to Aalim se poochh lein.",
+  hi: "सोना और चाँदी भी इन्हीं हिस्सों के मुताबिक़ तक़सीम किए गए हैं। क़र्ज़ या वसीयत सोने-चाँदी से अदा होनी हो तो आलिम से पूछ लें।",
+  en: "Gold and silver are divided by the same shares. If debts or a bequest are to be paid from gold or silver, ask a scholar."
+};
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
 
-export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel }: Props) {
+export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel, gold, silver }: Props) {
     // The language is found from the text object that was passed in, so page.tsx needs no change.
   const lang = ((Object.keys(copy2) as Lang[]).find((l) => copy2[l] === t2) ?? "ur") as Lang;
   const t3 = copy3[lang];
@@ -104,6 +116,17 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
   const blocked = result.rows.filter((r) => r.status === "blocked");
   const hasAmount = distributable > 0;
   const land = useLandFmt(lang);
+  const numOf = (v?: string) => { const n = parseFloat(String(v ?? "").replace(/,/g, "")); return Number.isFinite(n) && n > 0 ? n : 0; };
+  const goldG = numOf(gold), silverG = numOf(silver);
+  const hasMetal = goldG > 0 || silverG > 0;
+  const showCol = hasAmount || !!land || hasMetal;
+  const g3 = (x: number) => (Math.round(x * 1000) / 1000).toString();
+  const metalText = (n: number, d: number) => {
+    const f = n / d; const parts: string[] = [];
+    if (goldG > 0) parts.push(`${METAL.gold[lang]}: ${g3(goldG * f)} g`);
+    if (silverG > 0) parts.push(`${METAL.silver[lang]}: ${g3(silverG * f)} g`);
+    return parts.join(" · ");
+  };
 
   const blockText = (r: HeirRow) => {
     const names = r.blockedBy.map(heirLabel).join(" / ");
@@ -122,29 +145,30 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
         <ResultSheet d={{
           lang, title: rp.title,
           meta: [[t2.stepAsl, String(result.asl)], [t2.stepTashih, String(result.tashih)]],
-          head: [t2.colHeir, t2.colShare, ...(hasAmount || land ? [[hasAmount ? t2.colAmount : "", land ? ZM[lang] : ""].filter(Boolean).join(" / ")] : [])],
+          head: [t2.colHeir, t2.colShare, ...(showCol ? [[hasAmount ? t2.colAmount : "", land ? ZM[lang] : "", hasMetal ? [goldG > 0 ? METAL.gold[lang] : "", silverG > 0 ? METAL.silver[lang] : ""].filter(Boolean).join("/") : ""].filter(Boolean).join(" / ")] : [])],
           rows: [
             ...inheriting.map((r) => {
               const ph = r.perHeadShare;
               return [
                 <span key="n">{heirLabel(r.key)}{r.count > 1 ? ` ×${r.count}` : ""}</span>,
                 <span key="s" dir="ltr" className="block leading-4">{fracText(r.share)}{termOf(r, lang) ? <span className="mt-0.5 block text-[11px] font-extrabold leading-5 text-deen">{termOf(r, lang)}</span> : null}<span className="block text-[9px] font-semibold text-slate-400 print:hidden">{pct(fracValue(r.share))}</span></span>,
-                ...(hasAmount || land ? [(
+                ...(showCol ? [(
                   <div key="c" className="space-y-0.5">
                     {hasAmount && <div className="font-bold tabular-nums">{money(fracValue(r.share) * distributable)}</div>}
                     {land && <div className="text-[11px] font-semibold text-slate-700">{land.fmt(r.share.n, r.share.d, true)}</div>}
-                    {r.count > 1 && <div className="text-[9px] font-normal text-slate-400">{land ? land.each : EACH[lang]}: {hasAmount ? money(fracValue(ph) * distributable) : ""}{hasAmount && land ? " · " : ""}{land ? land.fmt(ph.n, ph.d, true) : null}</div>}
+                    {hasMetal && <div dir="ltr" className="text-[11px] font-semibold text-amber-800">{metalText(r.share.n, r.share.d)}</div>}
+                    {r.count > 1 && <div className="text-[9px] font-normal text-slate-400">{land ? land.each : EACH[lang]}: {hasAmount ? money(fracValue(ph) * distributable) : ""}{hasAmount && land ? " · " : ""}{land ? land.fmt(ph.n, ph.d, true) : null}{hasMetal ? ((hasAmount || land) ? " · " : "") + metalText(ph.n, ph.d) : null}</div>}
                   </div>
                 )] : [])
               ];
             }),
-            ...blocked.map((r) => [heirLabel(r.key), t2.statusBlocked, ...(hasAmount || land ? ["—"] : [])]),
-            ...nothing.map((r) => [heirLabel(r.key), "—", ...(hasAmount || land ? ["—"] : [])])
+            ...blocked.map((r) => [heirLabel(r.key), t2.statusBlocked, ...(showCol ? ["—"] : [])]),
+            ...nothing.map((r) => [heirLabel(r.key), "—", ...(showCol ? ["—"] : [])])
           ],
-          foot: ["Σ", <span key="f" dir="ltr">1 = 100%</span>, ...(hasAmount || land ? [<div key="t">{hasAmount ? money(distributable) : null}{land ? <div className="text-[10px] font-semibold">{land.fmt(1, 1, true)}</div> : null}</div>] : [])],
+          foot: ["Σ", <span key="f" dir="ltr">1 = 100%</span>, ...(showCol ? [<div key="t">{hasAmount ? money(distributable) : null}{land ? <div className="text-[10px] font-semibold">{land.fmt(1, 1, true)}</div> : null}{hasMetal ? <div dir="ltr" className="text-[10px] font-semibold">{metalText(1, 1)}</div> : null}</div>] : [])],
           verdictLabel: hasAmount ? t2.amountBase : t2.stepTashih,
           verdictValue: hasAmount ? money(distributable) : String(result.tashih),
-          notes: [t2.betaNote]
+          notes: [t2.betaNote, ...(hasMetal ? [METAL_NOTE[lang]] : [])]
         }} />
   );
   return (
