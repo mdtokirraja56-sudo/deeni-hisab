@@ -3,24 +3,33 @@
 import { ChevronDown, Landmark, CircleHelp, ChevronUp, HeartHandshake, AlertTriangle, Calculator, RotateCcw } from "lucide-react";
 import { parseAmount, sanitizeDecimal } from "../lib/numbers";
 import { MirathResultView } from "./MirathResult";
+import { MirathIkhtilaf } from "./MirathIkhtilaf";
+import { bothQauls, masudAllowed } from "../lib/ikhtilaf";
 import { SaveCase } from "./AccountSheet";
 import { fracText } from "../lib/mirath";
-import { HEIR_GROUPS, HEIR_DEFS } from "../lib/heirs";
+import { HEIR_GROUPS, HEIR_DEFS, type Lang } from "../lib/heirs";
 import { MirathSpecial } from "./MirathSpecial";
 import { RT, type HomeCtx } from "./homeCore";
 import { Field, HeirGroup } from "./HomeBits";
 import { LandInputCard, LandShareView } from "./MirathLand";
 
+const KAFIR_OPT: Record<Lang, { title: string; fatwa: string; masud: string; hint: string }> = {
+  ur: { title: "ابنِ کافر کا حکم: کس قول پر حساب ہو؟", fatwa: "جمہور / فتویٰ: ابنِ کافر کأن لم یکن (گویا ہے ہی نہیں)", masud: "قولِ ابنِ مسعود رضی اللہ عنہ: وارث نہیں مگر حجبِ نقصان کرتا ہے", hint: "حوالہ: السراجیہ مع برکات السراج، باب العول، ص ۵۳، حاشیہ ۱۷۔ فتویٰ پہلے قول پر ہے۔ ابنِ مسعود کے قول میں ابنِ کافر بیوی/شوہر اور ماں کا حصہ گھٹاتا ہے، اس سے بعض مسئلے ۲۴ سے ۳۱ تک عول ہوتے ہیں۔" },
+  roman: { title: "Ibn-e-Kafir ka hukm: kis qaul par hisaab ho?", fatwa: "Jumhoor / fatwa: Ibn-e-Kafir ka-an lam yakun (goya hai hi nahi)", masud: "Qaul-e-Ibn-e-Mas'ud (RA): waaris nahi, magar hajb-e-nuqsan karta hai", hint: "Hawala: As-Sirajiya ma'a Barakat as-Siraj, Bab al-Awl, p. 53, hashiya 17. Fatwa pehle qaul par hai. Ibn-e-Mas'ud ke qaul mein Ibn-e-Kafir biwi/shohar aur maa ka hissa ghatata hai, is se kuch masle 24 se 31 tak awl hote hain." },
+  hi: { title: "इब्न-ए-काफ़िर का हुक्म: किस क़ौल पर हिसाब हो?", fatwa: "जमहूर / फ़तवा: इब्न-ए-काफ़िर क-अन लम यकुन (गोया है ही नहीं)", masud: "क़ौल-ए-इब्न-ए-मसऊद (र.अ.): वारिस नहीं, मगर हज्ब-ए-नुक़सान करता है", hint: "हवाला: अस-सिराजिया मअ बरकातिस-सिराज, बाबुल-अवल, पृ. 53, हाशिया 17। फ़तवा पहले क़ौल पर है। इब्न-ए-मसऊद के क़ौल में इब्न-ए-काफ़िर बीवी/शौहर और माँ का हिस्सा घटाता है, इससे कुछ मसअले 24 से 31 तक अवल होते हैं।" },
+  en: { title: "Non-Muslim son: which opinion to apply?", fatwa: "Majority / fatwa: the non-Muslim son is treated as if absent (ka-an lam yakun)", masud: "Ibn Mas'ud's opinion (RA): not an heir, but reduces others' shares (hajb nuqsan)", hint: "Reference: As-Sirajiya with Barakat as-Siraj, Bab al-Awl, p. 53, footnote 17. The fatwa follows the first opinion. In Ibn Mas'ud's view the non-Muslim son reduces a spouse's and the mother's share, so some cases go from 24 to 31 (awl)." }
+};
 export function MirathResultScreen({ c }: { c: HomeCtx }) {
-  const { lang, t2, mirathResult, setMirathResult, t, money, estateNum, gold, silver, heirTotal, netEstate, bequestCap, bequestCounted, remainingForHeirs, costsNum, bequest, mirathRef, heirLabel, printReport, resetMirath, heirs } = c;
+  const { lang, t2, mirathResult, setMirathResult, t, money, estateNum, gold, silver, heirTotal, netEstate, bequestCap, bequestCounted, remainingForHeirs, costsNum, bequest, mirathRef, heirLabel, printReport, resetMirath, heirs, ibnMasud, pickQaul, gender } = c;
   if (!mirathResult) return null;
   return (<>
 <div className="space-y-5">
             <div className="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-900/5">
               <div className="p-3 md:p-7 print:p-0">
                 <button type="button" onClick={() => setMirathResult(null)} className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl border border-deen/20 bg-white px-4 py-2 text-sm font-extrabold text-deen transition hover:bg-emerald-50 print:hidden"><ChevronDown size={17} className="rotate-90"/>{RT[lang].back}</button>
-                <div ref={mirathRef} className="scroll-mt-[4.5rem]"><MirathResultView result={mirathResult} t2={t2} money={money} distributable={remainingForHeirs} heirLabel={heirLabel} onPrint={printReport} onReset={resetMirath} printLabel={t.report} gold={gold} silver={silver} kafirSon={heirs.kafirSon || 0}/>
+                <div ref={mirathRef} className="scroll-mt-[4.5rem]"><MirathResultView result={mirathResult} t2={t2} money={money} distributable={remainingForHeirs} heirLabel={heirLabel} onPrint={printReport} onReset={resetMirath} printLabel={t.report} gold={gold} silver={silver} kafirSon={heirs.kafirSon || 0} masud={ibnMasud}/>
                 <SaveCase lang={lang} kind="mirath" title={t.mirath} lines={[`${t.estate}: ${money(estateNum)}`, `${t.remaining}: ${money(remainingForHeirs)}`, ...mirathResult.rows.filter(r => r.status === "inherits").map(r => `${heirLabel(r.key)} ×${r.count}: ${fracText(r.share)} (${r.parts}/${mirathResult.tashih}) = ${money(remainingForHeirs * (r.share.n / r.share.d))}`)]}/></div>
+                {(() => { const bq = bothQauls(gender, heirs as any); return bq ? <div className="mt-3"><MirathIkhtilaf lang={lang} both={bq} masudPicked={ibnMasud && !!bq.masud} pick={pickQaul} heirLabel={heirLabel as any} /></div> : null; })()}
                 <details className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-950 print:hidden"><summary className="cursor-pointer text-sm font-extrabold">{t.sumEstate}</summary>
                   <p className="text-xs">{t.sumEstate}: {money(estateNum)} · {t.gold}: {gold || "0"} · {t.silver}: {silver || "0"} · {heirTotal} {t.sumHeirs}</p>
                   <ul className="mt-3 space-y-1.5 text-xs">
@@ -40,7 +49,7 @@ export function MirathResultScreen({ c }: { c: HomeCtx }) {
 }
 
 export function MirathForm({ c }: { c: HomeCtx }) {
-  const { t, estate, setEstate, gold, setGold, silver, setSilver, funeral, setFuneral, debtsEst, setDebtsEst, bequest, setBequest, lang, gender, chooseGender, setShowDeductions, showDeductions, heirTotal, heirs, updateHeir, heirDisabled, blockInfo, t2, heirLabel, openGroups, setOpenGroups, alertMsg, reviewCase, resetMirath, money, remainingForHeirs } = c;
+  const { ibnMasud, setIbnMasud, t, estate, setEstate, gold, setGold, silver, setSilver, funeral, setFuneral, debtsEst, setDebtsEst, bequest, setBequest, lang, gender, chooseGender, setShowDeductions, showDeductions, heirTotal, heirs, updateHeir, heirDisabled, blockInfo, t2, heirLabel, openGroups, setOpenGroups, alertMsg, reviewCase, resetMirath, money, remainingForHeirs } = c;
   return (<>
 <div className="space-y-5">
             <div className="rounded-3xl bg-white p-5 shadow-soft ring-1 ring-slate-900/5 md:p-7">
@@ -73,6 +82,13 @@ export function MirathForm({ c }: { c: HomeCtx }) {
                 <p className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 text-xs leading-6 text-emerald-900">{t.heirNote}</p>
                 {HEIR_GROUPS.map(g => <HeirGroup key={g.id} title={g.title[lang]} defs={HEIR_DEFS.filter(d => d.group === g.id)} lang={lang} heirs={heirs} update={updateHeir} disabled={heirDisabled} blockInfo={blockInfo} blockedWord={t2.blockedWord} blockTexts={t2.blocks} heirLabel={heirLabel} naText={t.notApplicable} decLabel={t.dec} incLabel={t.inc} open={openGroups[g.id]} toggle={() => setOpenGroups(prev => ({ ...prev, [g.id]: !prev[g.id] }))}/>)}
               </div>
+              {(heirs.kafirSon || 0) > 0 && <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 print:hidden">
+                <div className="text-xs font-extrabold text-amber-900">{KAFIR_OPT[lang].title}</div>
+                <div role="radiogroup" className="mt-2 grid gap-2">
+                  {([false, true] as const).map((m) => <button type="button" role="radio" aria-checked={ibnMasud === m} key={String(m)} disabled={m && !masudAllowed(heirs as any)} onClick={() => setIbnMasud(m)} className={`rounded-xl border px-3 py-2 text-start text-xs font-bold leading-5 transition ${m && !masudAllowed(heirs as any) ? "opacity-40" : ""} ${ibnMasud === m ? "border-deen bg-white text-deen ring-1 ring-deen/30" : "border-amber-200 bg-white/60 text-slate-600"}`}>{m ? KAFIR_OPT[lang].masud : KAFIR_OPT[lang].fatwa}</button>)}
+                </div>
+                <p className="mt-2 text-[10px] leading-4 text-amber-800">{KAFIR_OPT[lang].hint}</p>
+              </div>}
               {alertMsg && <div role="alert" className="sticky bottom-20 z-30 mt-4 flex items-start gap-2 md:bottom-3 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm font-bold leading-6 text-red-800 shadow-lg"><AlertTriangle size={18} className="mt-0.5 shrink-0"/><span>{alertMsg}</span></div>}
               <div className="mt-7 grid gap-3 sm:grid-cols-2 print:hidden">
                 <button type="button" onClick={reviewCase} className="flex items-center justify-center gap-2 rounded-2xl bg-deen px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-emerald-900/20 transition hover:bg-emerald-800"><Calculator size={18}/>{t2.divide}</button>
