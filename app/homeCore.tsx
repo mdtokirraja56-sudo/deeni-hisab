@@ -1,5 +1,6 @@
 "use client";
 
+import { masudAllowed } from "../lib/ikhtilaf";
 import { useState, useRef, useMemo, useEffect } from "react";
 import { Lang, HEIR_GROUPS, initialHeirs, HeirKey, HEIR_DEFS, HeirDef } from "../lib/heirs";
 import { NisabBasis, ZAKAT_RULES, ZakatResult, ZakatInput, calculateZakat } from "../lib/zakat";
@@ -72,6 +73,7 @@ export function useHome() {
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => Object.fromEntries(HEIR_GROUPS.map(g => [g.id, g.defaultOpen])));
     const [gender, setGender] = useState<"male" | "female">("male");
     const [heirs, setHeirs] = useState(initialHeirs);
+    const [ibnMasud, setIbnMasud] = useState(false); // Ibn Mas'ud option for a non-Muslim son (default: fatwa, ka-an lam yakun)
     const [showDeductions, setShowDeductions] = useState(false);
     const [zk, setZk] = useState(initialZakat);
     const [nisabBasis, setNisabBasis] = useState<NisabBasis>(ZAKAT_RULES.defaultNisabBasis);
@@ -158,8 +160,9 @@ export function useHome() {
       setMirathResult(null);
     };
     const heirDisabled = (def: HeirDef) => def.onlyFor !== undefined && def.onlyFor !== gender;
-    const reviewCase = () => setMirathResult(calculateMirath(gender, heirs as Counts));
-    const resetMirath = () => { setHeirs(initialHeirs); setMirathResult(null); setAlertMsg(""); };
+    const reviewCase = () => setMirathResult(calculateMirath(gender, heirs as Counts, { motherWithGrandfather: "whole", mahroomHajb: ibnMasud && masudAllowed(heirs as any) }));
+    const pickQaul = (masud: boolean) => { setIbnMasud(masud); setMirathResult(calculateMirath(gender, heirs as Counts, { motherWithGrandfather: "whole", mahroomHajb: masud && masudAllowed(heirs as any) })); };
+    const resetMirath = () => { setHeirs(initialHeirs); setIbnMasud(false); setMirathResult(null); setAlertMsg(""); };
   
     const printReport = () => window.print();
   
@@ -195,7 +198,7 @@ export function useHome() {
     const remainingForHeirs = netEstate - bequestCounted;
     const socials = SOCIAL_LINKS.filter(s => s.url);
 
-  return { lang, setLang, tab, setTab, estate, setEstate, gold, setGold, silver, setSilver, funeral, setFuneral, debtsEst, setDebtsEst, bequest, setBequest, openGroups, setOpenGroups, gender, setGender, heirs, setHeirs, showDeductions, setShowDeductions, zk, setZk, nisabBasis, setNisabBasis, hawl, setHawl, zakatResult, setZakatResult, mirathResult, setMirathResult, alertMsg, setAlertMsg, demoOpen, setDemoOpen, aboutOpen, setAboutOpen, landSys, setLandSys, landMajor, setLandMajor, landMinor, setLandMinor, landRatio, setLandRatio, ratioNum, landTotal, landText, mirathRef, zakatRef, t, t2, heirLabel, blockInfo, money, heirTotal, updateHeir, chooseGender, heirDisabled, reviewCase, resetMirath, printReport, setZ, runZakat, zError, assetLabel, statusText, noteText, estateNum, costsNum, netEstate, bequestCap, bequestCounted, remainingForHeirs, socials };
+  return { pickQaul, ibnMasud, setIbnMasud, lang, setLang, tab, setTab, estate, setEstate, gold, setGold, silver, setSilver, funeral, setFuneral, debtsEst, setDebtsEst, bequest, setBequest, openGroups, setOpenGroups, gender, setGender, heirs, setHeirs, showDeductions, setShowDeductions, zk, setZk, nisabBasis, setNisabBasis, hawl, setHawl, zakatResult, setZakatResult, mirathResult, setMirathResult, alertMsg, setAlertMsg, demoOpen, setDemoOpen, aboutOpen, setAboutOpen, landSys, setLandSys, landMajor, setLandMajor, landMinor, setLandMinor, landRatio, setLandRatio, ratioNum, landTotal, landText, mirathRef, zakatRef, t, t2, heirLabel, blockInfo, money, heirTotal, updateHeir, chooseGender, heirDisabled, reviewCase, resetMirath, printReport, setZ, runZakat, zError, assetLabel, statusText, noteText, estateNum, costsNum, netEstate, bequestCap, bequestCounted, remainingForHeirs, socials };
 }
 
 export type HomeCtx = ReturnType<typeof useHome>;
