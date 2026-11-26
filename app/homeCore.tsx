@@ -162,7 +162,14 @@ export function useHome() {
     const heirDisabled = (def: HeirDef) => def.onlyFor !== undefined && def.onlyFor !== gender;
     const reviewCase = () => setMirathResult(calculateMirath(gender, heirs as Counts, { motherWithGrandfather: "whole", mahroomHajb: ibnMasud && masudAllowed(heirs as any) }));
     const pickQaul = (masud: boolean) => { setIbnMasud(masud); setMirathResult(calculateMirath(gender, heirs as Counts, { motherWithGrandfather: "whole", mahroomHajb: masud && masudAllowed(heirs as any) })); };
-    const resetMirath = () => { setHeirs(initialHeirs); setIbnMasud(false); setMirathResult(null); setAlertMsg(""); };
+    // "New masla": clear everything entered (heirs, estate, gold/silver, deductions, land) and go back to the top of the form.
+    const resetMirath = () => {
+      setHeirs(initialHeirs); setIbnMasud(false); setMirathResult(null); setAlertMsg("");
+      setEstate("0"); setGold("0"); setSilver("0"); setFuneral(""); setDebtsEst(""); setBequest(""); setShowDeductions(false);
+      setLandMajor(""); setLandMinor("");
+      setOpenGroups(Object.fromEntries(HEIR_GROUPS.map(g => [g.id, g.defaultOpen])));
+      setTimeout(() => { try { window.scrollTo({ top: 0, behavior: "auto" }); } catch { /* ignore */ } }, 60);
+    };
   
     const printReport = () => window.print();
   
