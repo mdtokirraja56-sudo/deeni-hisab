@@ -26,15 +26,18 @@ export function HeirGroup({ title, defs, lang, heirs, update, disabled, blockInf
       const blk = off ? null : blockInfo[key] ?? null;
       const blockedNow = blk !== null;
       const cannotAdd = off || (blockedNow && heirs[key] === 0);
-      return <div key={key} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-3 ${off || (blockedNow && heirs[key] === 0) ? "border-slate-100 bg-slate-100/70 opacity-60" : blockedNow ? "border-amber-200 bg-amber-50/70" : "border-slate-100 bg-slate-50/80"}`}>
+      // Tap anywhere on the card: 0 -> 1 selects, 1 -> 0 deselects. With 2 or more, use the - / + buttons (no accidental reset).
+      const tapCard = () => { if (off) return; if (heirs[key] === 0) { if (!cannotAdd) update(key, 1); } else if (heirs[key] === 1) update(key, -1); };
+      const selected = heirs[key] > 0 && !off;
+      return <div key={key} role="button" tabIndex={off ? -1 : 0} aria-pressed={selected} aria-disabled={off || undefined} onClick={tapCard} onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && e.target === e.currentTarget) { e.preventDefault(); tapCard(); } }} className={`flex select-none items-center justify-between gap-3 rounded-2xl border px-3 py-3 transition ${off ? "cursor-not-allowed" : "cursor-pointer"} ${off || (blockedNow && heirs[key] === 0) ? "border-slate-100 bg-slate-100/70 opacity-60" : selected ? "border-deen bg-emerald-50 ring-1 ring-deen/30" : blockedNow ? "border-amber-200 bg-amber-50/70" : "border-slate-100 bg-slate-50/80"}`}>
         <span className="text-sm font-semibold text-slate-700">{label}
           {off && <span className="block text-[10px] font-normal text-slate-400">{naText}</span>}
           {blk && <span className="block text-[10px] font-normal leading-4 text-amber-800">{blockedWord} — {blockTexts[blk.code]}{blk.by.length > 0 ? ` (${blk.by.slice(0, 2).map(heirLabel).join(" / ")})` : ""}</span>}
         </span>
         <div className="flex shrink-0 items-center gap-2">
-          <button type="button" disabled={off || heirs[key] <= 0} onClick={() => update(key, -1)} aria-label={`${decLabel}: ${label}`} className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-deen hover:text-deen disabled:cursor-not-allowed disabled:opacity-40"><Minus size={14}/></button>
+          <button type="button" disabled={off || heirs[key] <= 0} onClick={(e) => { e.stopPropagation(); update(key, -1); }} aria-label={`${decLabel}: ${label}`} className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-deen hover:text-deen disabled:cursor-not-allowed disabled:opacity-40"><Minus size={14}/></button>
           <span className="w-6 text-center text-sm font-extrabold tabular-nums text-deen">{heirs[key]}</span>
-          <button type="button" disabled={cannotAdd} onClick={() => update(key, 1)} aria-label={`${incLabel}: ${label}`} className="grid h-8 w-8 place-items-center rounded-lg bg-deen text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"><Plus size={14}/></button>
+          <button type="button" disabled={cannotAdd} onClick={(e) => { e.stopPropagation(); update(key, 1); }} aria-label={`${incLabel}: ${label}`} className="grid h-8 w-8 place-items-center rounded-lg bg-deen text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"><Plus size={14}/></button>
         </div>
       </div>;
     })}</div>}
