@@ -18,6 +18,7 @@ interface Props {
   onPrint: () => void;
   onReset: () => void;
   printLabel: string;
+  masud?: boolean; // Ibn Mas'ud option applied (hajb nuqsan)
   kafirSon?: number; // count of non-Muslim sons entered (shown as "as if absent")
   gold?: string;   // grams of gold in the estate (text from the form)
   silver?: string; // grams of silver
@@ -76,6 +77,13 @@ const KAFIR_NOTE: Record<Lang, string> = {
   hi: "इब्न-ए-काफ़िर को ऐसा समझा गया है जैसे वह है ही नहीं (क-अन लम यकुन): वह ख़ुद वारिस नहीं और दूसरे वारिसों के हिस्से भी कम नहीं करता। हवाला: अस-सिराजिया मअ बरकातिस-सिराज, बाबुल-अवल, पृ. 53 (इसी पर फ़तवा है)।",
   en: "The non-Muslim son is treated as if he did not exist (ka-an lam yakun): he is not an heir and does not reduce anyone else's share. Reference: As-Sirajiya with Barakat as-Siraj, Bab al-Awl, p. 53 (the fatwa follows this)."
 };
+const MASUD_CELL: Record<Lang, string> = { ur: "وارث نہیں (حجبِ نقصان)", roman: "Waaris nahi (hajb-e-nuqsan)", hi: "वारिस नहीं (हज्ब-ए-नुक़सान)", en: "Not an heir (reduces shares)" };
+const MASUD_NOTE: Record<Lang, string> = {
+  ur: "یہ حساب قولِ ابنِ مسعود رضی اللہ عنہ پر ہے: ابنِ کافر خود وارث نہیں مگر بیوی/شوہر اور ماں کا حصہ گھٹا دیتا ہے (حجبِ نقصان) اور کسی کو محروم نہیں کرتا۔ فتویٰ اس پر نہیں؛ فتویٰ ابنِ کافر کو کأن لم یکن ماننے پر ہے۔ حوالہ: السراجیہ مع برکات السراج، باب العول، ص ۵۳، حاشیہ ۱۷۔",
+  roman: "Ye hisaab Qaul-e-Ibn-e-Mas'ud (RA) par hai: Ibn-e-Kafir khud waaris nahi magar biwi/shohar aur maa ka hissa ghata deta hai (hajb-e-nuqsan) aur kisi ko mehroom nahi karta. Fatwa is par nahi; fatwa Ibn-e-Kafir ko ka-an lam yakun manne par hai. Hawala: As-Sirajiya ma'a Barakat as-Siraj, Bab al-Awl, p. 53, hashiya 17.",
+  hi: "यह हिसाब क़ौल-ए-इब्न-ए-मसऊद (र.अ.) पर है: इब्न-ए-काफ़िर ख़ुद वारिस नहीं मगर बीवी/शौहर और माँ का हिस्सा घटा देता है (हज्ब-ए-नुक़सान) और किसी को महरूम नहीं करता। फ़तवा इस पर नहीं; फ़तवा इब्न-ए-काफ़िर को क-अन लम यकुन मानने पर है। हवाला: अस-सिराजिया मअ बरकातिस-सिराज, बाबुल-अवल, पृ. 53, हाशिया 17।",
+  en: "This result follows Ibn Mas'ud's opinion (RA): the non-Muslim son is not an heir but reduces the spouse's and the mother's share (hajb nuqsan) and bars no one. The fatwa does not follow this; the fatwa treats him as if he did not exist. Reference: As-Sirajiya with Barakat as-Siraj, Bab al-Awl, p. 53, footnote 17."
+};
 const METAL: Record<"gold" | "silver", Record<Lang, string>> = {
   gold: { ur: "سونا", roman: "Sona", hi: "सोना", en: "Gold" },
   silver: { ur: "چاندی", roman: "Chandi", hi: "चाँदी", en: "Silver" }
@@ -88,7 +96,7 @@ const METAL_NOTE: Record<Lang, string> = {
 };
 const pct = (v: number) => `${(Math.round(v * 10000) / 100).toString()}%`;
 
-export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel, gold, silver, kafirSon = 0 }: Props) {
+export function MirathResultView({ result, t2, money, distributable, heirLabel, onPrint, onReset, printLabel, gold, silver, kafirSon = 0, masud = false }: Props) {
     // The language is found from the text object that was passed in, so page.tsx needs no change.
   const lang = ((Object.keys(copy2) as Lang[]).find((l) => copy2[l] === t2) ?? "ur") as Lang;
   const t3 = copy3[lang];
@@ -173,12 +181,12 @@ export function MirathResultView({ result, t2, money, distributable, heirLabel, 
             }),
             ...blocked.map((r) => [heirLabel(r.key), t2.statusBlocked, ...(showCol ? ["—"] : [])]),
             ...nothing.map((r) => [heirLabel(r.key), "—", ...(showCol ? ["—"] : [])]),
-            ...(kafirSon > 0 ? [[`${KAFIR_LABEL[lang]}${kafirSon > 1 ? ` ×${kafirSon}` : ""}`, KAFIR_CELL[lang], ...(showCol ? ["—"] : [])]] : [])
+            ...(kafirSon > 0 ? [[`${KAFIR_LABEL[lang]}${kafirSon > 1 ? ` ×${kafirSon}` : ""}`, (masud ? MASUD_CELL : KAFIR_CELL)[lang], ...(showCol ? ["—"] : [])]] : [])
           ],
           foot: ["Σ", <span key="f" dir="ltr">1 = 100%</span>, ...(showCol ? [<div key="t">{hasAmount ? money(distributable) : null}{land ? <div className="text-[10px] font-semibold">{land.fmt(1, 1, true)}</div> : null}{hasMetal ? <div dir="ltr" className="text-[10px] font-semibold">{metalText(1, 1)}</div> : null}</div>] : [])],
           verdictLabel: hasAmount ? t2.amountBase : t2.stepTashih,
           verdictValue: hasAmount ? money(distributable) : String(result.tashih),
-          notes: [t2.betaNote, ...(kafirSon > 0 ? [KAFIR_NOTE[lang]] : []), ...(hasMetal ? [METAL_NOTE[lang]] : [])]
+          notes: [t2.betaNote, ...(kafirSon > 0 ? [masud ? MASUD_NOTE[lang] : KAFIR_NOTE[lang]] : []), ...(hasMetal ? [METAL_NOTE[lang]] : [])]
         }} />
   );
   return (
