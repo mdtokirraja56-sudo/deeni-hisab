@@ -41,6 +41,7 @@ export interface MirathOptions {
   // "whole"     = 1/3 of the whole estate (Abu Hanifa & Muhammad).
   // "remainder" = 1/3 of what is left after the spouse (Abu Yusuf).
   motherWithGrandfather: "whole" | "remainder";
+    mahroomHajb?: boolean;
 }
 export const DEFAULT_OPTIONS: MirathOptions = { motherWithGrandfather: "whole" };
 
@@ -157,7 +158,8 @@ function core(gender: Gender, c: Counts, opts: MirathOptions): Core {
   const maleLevel = M.findIndex((x) => x > 0); // -1 = none
   const hasMaleDesc = maleLevel >= 0;
   const hasFemaleDesc = Fm.some((x) => x > 0);
-  const hasDesc = hasMaleDesc || hasFemaleDesc;
+    const hasDescReal = hasMaleDesc || hasFemaleDesc;
+  const hasDesc = hasDescReal || (!!opts.mahroomHajb && n(K("kafirSon")) > 0);
   const firstDescKey = (): HeirKey[] => { for (const [m, f] of LEVELS) { if (n(m) > 0) return [m]; if (n(f) > 0) return [f]; } return []; };
 
   if (hasMaleDesc) {
@@ -241,7 +243,7 @@ function core(gender: Gender, c: Counts, opts: MirathOptions): Core {
   }
   // full sister with a brother or with daughters is asaba; a lone full sister / consanguine sisters rely on fixed shares
   // uterine siblings: blocked by any descendant or any male ascendant
-  if (hasDesc) { block(ub, firstDescKey(), "descendants"); block(us, firstDescKey(), "descendants"); }
+  if (hasDescReal) { block(ub, firstDescKey(), "descendants"); block(us, firstDescKey(), "descendants"); }
   else if (upMale) { block(ub, [upMale], "intermediary"); block(us, [upMale], "intermediary"); }
 
   // ---- distant relatives ----
