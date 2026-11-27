@@ -24,12 +24,13 @@ export interface BookText {
   rel: { istiqama: string; mumathala: string; muwafaqa: (g: string) => string; mubayana: string; mudakhala: (g: string) => string };
   frac: (f: string | null) => string; milaan: string; tarkaCol: string; total: string; first: string; dies: string;
   rules: string[]; rulesTitle: string;
-  namesTitle: string; namesHint: string; namePh: string; firstDead: string; firstDeadPh: string;
+  sameNote: string; sameGender: (n: string) => string; namesTitle: string; namesHint: string; namePh: string; firstDead: string; firstDeadPh: string;
   radd: (r: { A: string; sp: string; baqi: string; B: string; Bp: string; rel: string; zSp: string; zOt: string; total: string }) => string;
   raddRel: { tamathul: string; tawafuq: string; tabayun: string };
 }
 export const BK: Record<Lang, BookText> = {
   ur: {
+    sameNote: '✓ یہ پہلے سے موجود وہی وارث ہے (نیا نہیں بنے گا)', sameGender: (n: string) => `«${n}» نام کا وارث پہلے سے موجود ہے مگر اس رشتے کی جنس مختلف ہے؛ نام بدل دیں یا صحیح رشتہ چنیں۔`,
     namesTitle: 'سب کے نام (اختیاری)', namesHint: 'کسی کا بھی نام لکھ دیں؛ نتیجے میں یہی نام آئے گا۔ نہ لکھیں تو رشتہ لکھا آئے گا۔', namePh: 'نام', firstDead: 'پہلی میت کا نام', firstDeadPh: 'پہلی میت (نام)',
     radd: (r) => `مسئلہ ردیہ: زوج کا مسئلہ ${r.A} (اسے ${r.sp}، باقی ${r.baqi})؛ من یردعلیہ کا مسئلہ ${r.B} رد سے ${r.Bp}۔ ${r.baqi} اور ${r.Bp} کے درمیان ${r.rel}، لہٰذا زوج کے سہام ×${r.zSp} اور باقی ورثاء کے ×${r.zOt} ← تصحیح ${r.total}`,
     raddRel: { tamathul: "تماثل", tawafuq: "توافق", tabayun: "تباین" },
@@ -40,6 +41,7 @@ export const BK: Record<Lang, BookText> = {
     rules: ["پہلے میت اول کے مسئلے کی تصحیح کریں اور اس کے ورثہ کو سہام دیں۔", "پھر میت ثانی کے مسئلے کی تصحیح کریں؛ میت ثانی کا حصہ جو میت اول سے ملا اسے ما في اليد کہتے ہیں۔", "ما في اليد اور تصحیح ثانی میں نسبت دیکھیں: تماثل ہو تو کچھ ضرب نہیں؛ توافق ہو تو تصحیح ثانی کے وفق کو تصحیح اول میں ضرب دیں؛ تباین ہو تو کل تصحیح ثانی کو تصحیح اول میں ضرب دیں۔", "جس مسئلے کی تصحیح (یا اس کے وفق) کو ضرب دی، اسی کے ورثہ کے سہام کو ما في اليد (یا اس کے وفق) میں ضرب دیں؛ پچھلے مسئلوں کے ورثہ کے سہام کو مضروب میں ضرب دیں۔", "تیسرا، چوتھا مسئلہ ہو تو مبلغ کو پہلے مسئلے کی جگہ سمجھیں اور یہی عمل دہرائیں۔"],
   },
   hi: {
+    sameNote: '✓ यह पहले से मौजूद वही वारिस है (नया नहीं बनेगा)', sameGender: (n: string) => `«${n}» नाम का वारिस पहले से है मगर इस रिश्ते की जिंस अलग है; नाम बदलें या सही रिश्ता चुनें।`,
     namesTitle: 'सबके नाम (ज़रूरी नहीं)', namesHint: 'किसी का भी नाम लिख दें; नतीजे में यही नाम आएगा। न लिखें तो रिश्ता लिखा आएगा।', namePh: 'नाम', firstDead: 'पहली मय्यित का नाम', firstDeadPh: 'पहली मय्यित (नाम)',
     radd: (r) => `मसअला रद्दिया: ज़ौज का मसअला ${r.A} (उसे ${r.sp}, बाक़ी ${r.baqi}); मन यरुद्द अलैहि का मसअला ${r.B}, रद्द से ${r.Bp}। ${r.baqi} और ${r.Bp} के दरमियान ${r.rel}, इसलिए ज़ौज के सिहाम ×${r.zSp} और बाक़ी वारिसों के ×${r.zOt} ← तस्हीह ${r.total}`,
     raddRel: { tamathul: "तमासुल", tawafuq: "तवाफ़ुक़", tabayun: "तबायुन" },
@@ -50,6 +52,7 @@ export const BK: Record<Lang, BookText> = {
     rules: ["पहले मय्यित अव्वल के मसअले की तस्हीह करें और उसके वारिसों को सिहाम दें।", "फिर मय्यित सानी के मसअले की तस्हीह करें; मय्यित सानी का जो हिस्सा मय्यित अव्वल से मिला उसे मा फ़ी यदिही कहते हैं।", "मा फ़ी यदिही और तस्हीह-ए-सानी में निस्बत देखें: तमासुल हो तो कुछ ज़र्ब नहीं; तवाफ़ुक़ हो तो तस्हीह-ए-सानी के वफ़्क़ को तस्हीह-ए-अव्वल में ज़र्ब दें; तबायुन हो तो पूरी तस्हीह-ए-सानी को तस्हीह-ए-अव्वल में ज़र्ब दें।", "जिस मसअले की तस्हीह (या वफ़्क़) को ज़र्ब दी, उसी के वारिसों के सिहाम को मा फ़ी यदिही (या उसके वफ़्क़) में ज़र्ब दें; पिछले मसअलों के वारिसों के सिहाम को मज़रूब में ज़र्ब दें।", "तीसरा, चौथा मसअला हो तो मब्लग़ को पहले मसअले की जगह समझें और यही अमल दोहराएँ।"],
   },
   roman: {
+    sameNote: '✓ Yeh pehle se maujood wahi waris hai (naya nahi banega)', sameGender: (n: string) => `«${n}» naam ka waris pehle se hai magar is rishte ki jins mukhtalif hai; naam badlein ya sahi rishta chunein.`,
     namesTitle: 'Sab ke naam (ikhtiyari)', namesHint: 'Kisi ka bhi naam likh dein; nateeje mein wahi naam aayega. Na likhein to rishta likha aayega.', namePh: 'Naam', firstDead: 'Pehli mayyit ka naam', firstDeadPh: 'Pehli mayyit (naam)',
     radd: (r) => `Masla raddiya: zauj ka masla ${r.A} (use ${r.sp}, baqi ${r.baqi}); man yuradd alayhi ka masla ${r.B}, radd se ${r.Bp}. ${r.baqi} aur ${r.Bp} ke darmiyan ${r.rel}, lihaza zauj ke siham ×${r.zSp} aur baqi warison ke ×${r.zOt} → tashih ${r.total}`,
     raddRel: { tamathul: "tamasul", tawafuq: "tawafuq", tabayun: "tabayun" },
@@ -60,6 +63,7 @@ export const BK: Record<Lang, BookText> = {
     rules: ["Pehle mayyit awwal ke masle ki tashih karein aur uske warison ko siham dein.", "Phir mayyit sani ke masle ki tashih karein; mayyit sani ka jo hissa mayyit awwal se mila use ma fi yadihi kehte hain.", "Ma fi yadihi aur tashih-e-sani mein nisbat dekhein: tamasul ho to kuch zarb nahi; tawafuq ho to tashih-e-sani ke wafq ko tashih-e-awwal mein zarb dein; tabayun ho to poori tashih-e-sani ko tashih-e-awwal mein zarb dein.", "Jis masle ki tashih (ya wafq) ko zarb di, usi ke warison ke siham ko ma fi yadihi (ya uske wafq) mein zarb dein; pichhle maslon ke warison ke siham ko mazroob mein zarb dein.", "Teesra, chautha masla ho to mablagh ko pehle masle ki jagah samjhein aur yehi amal dohrayein."],
   },
   en: {
+    sameNote: '✓ This is the same heir already in the case (not a new person)', sameGender: (n: string) => `An heir named “${n}” already exists but the gender of this relation differs; change the name or the relation.`,
     namesTitle: "Everyone's names (optional)", namesHint: 'Type any name; it will be used in the result. If left empty, the relation is shown.', namePh: 'Name', firstDead: 'Name of the first deceased', firstDeadPh: 'First deceased (name)',
     radd: (r) => `Radd masala: the spouse's own masala ${r.A} (he gets ${r.sp}, remainder ${r.baqi}); the masala of those who receive radd is ${r.B}, reduced to ${r.Bp}. Between ${r.baqi} and ${r.Bp}: ${r.rel}; so the spouse's parts ×${r.zSp} and the others' ×${r.zOt} → tasheeh ${r.total}`,
     raddRel: { tamathul: "equal", tawafuq: "common factor", tabayun: "no common factor" },
