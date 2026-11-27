@@ -9,6 +9,7 @@ import { SaveCase } from "./AccountSheet";
 import { fracText } from "../lib/mirath";
 import { HEIR_GROUPS, HEIR_DEFS, type Lang } from "../lib/heirs";
 import { MirathSpecial } from "./MirathSpecial";
+import { MunasakhaPanel } from "./MunasakhaPanel";
 import { RT, type HomeCtx } from "./homeCore";
 import { Field, HeirGroup } from "./HomeBits";
 import { LandInputCard, LandShareView } from "./MirathLand";
@@ -95,6 +96,7 @@ export function MirathForm({ c }: { c: HomeCtx }) {
                 <button type="button" onClick={resetMirath} className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50"><RotateCcw size={18}/>{t2.reset}</button>
               </div>
               <MirathSpecial lang={lang} gender={gender} heirs={heirs} money={money} distributable={remainingForHeirs}/>
+              <MunasakhaPanel c={c}/>
             </div>
           </div>
   </>);
