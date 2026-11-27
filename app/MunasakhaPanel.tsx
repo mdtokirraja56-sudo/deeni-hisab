@@ -32,6 +32,8 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
   const [links, setLinks] = useState<Record<string, string>>({});
   const [openG, setOpenG] = useState<Record<string, boolean>>(() => Object.fromEntries(HEIR_GROUPS.map((g) => [g.id, g.defaultOpen])));
   const [err, setErr] = useState("");
+  const [custom, setCustom] = useState<Record<string, string>>({});
+  const [firstName, setFirstName] = useState("");
   const [tarka, setTarka] = useState("");
   const [unit, setUnit] = useState("");
 
@@ -44,7 +46,7 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
   const sig = JSON.stringify(heirs) + gender;
   useEffect(() => { setSteps([]); setExtra([]); setDraft(null); setErr(""); }, [sig]);
 
-  const persons = useMemo(() => [...first.persons, ...extra], [first, extra]);
+  const persons = useMemo(() => [...first.persons, ...extra].map((p) => (custom[p.id]?.trim() ? { ...p, name: custom[p.id].trim() } : p)), [first, extra, custom]);
   const masalas: MasalaDef[] = useMemo(() => [{ dead: null, gender, members: first.members }, ...steps.map((s) => ({ dead: s.dead, gender: s.gender, members: s.members }))], [first, steps, gender]);
   const res = useMemo(() => (first.members.length ? computeMunasakha(masalas, persons) : null), [masalas, persons, first]);
   const nameOf = (id: string) => persons.find((p) => p.id === id)?.name ?? id;
@@ -107,7 +109,7 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
           const label = (p: { key: HeirKey; asaba: boolean; fard: string | null; code: string | null }) => p.code === "mother_third_remainder" ? bk.thirdOfRest : p.asaba ? bk.asabaW : bk.frac(p.fard);
           return <div key={s.index} className="mt-3 rounded-2xl border border-slate-300 bg-white p-3 text-xs text-slate-700 print:mt-1 print:break-inside-avoid print:p-1.5">
             <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2 border-b-2 border-deen pb-1 text-deen">
-              <span className="text-sm font-extrabold">{bk.batn(s.index)}: {bk.first} {s.dead ? nameOf(s.dead) : ""} <span className="font-bold">· {bk.masala} {s.asl}{s.awl ? ` → ${s.awl}` : ""}{String(s.tasheeh) !== String(s.asl) ? ` → ${String(s.tasheeh)}` : ""}</span></span>
+              <span className="text-sm font-extrabold">{bk.batn(s.index)}: {bk.first} {s.dead ? nameOf(s.dead) : firstName} <span className="font-bold">· {bk.masala} {s.asl}{s.awl ? ` → ${s.awl}` : ""}{String(s.tasheeh) !== String(s.asl) ? ` → ${String(s.tasheeh)}` : ""}</span></span>
               <span className="text-center text-xs font-bold">{s.index > 1 ? `( ${relTxt} )` : ""}</span>
               <span className="text-xs font-bold" dir="ltr" style={{ textAlign: lang === "ur" ? "left" : "right" }}>{s.index > 1 ? <>{nameOf(s.dead!)} {bk.maa} {String(s.mafiyad)}</> : res.steps.length > 1 ? res.steps.map((x) => String(x.mablagh)).filter((v, i, a) => i === 0 || v !== a[i - 1]).join(" → ") : ""}</span>
             </div>
@@ -137,6 +139,13 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
         <input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder={t.tarkaUnit} className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-xs outline-none focus:border-emerald-700" />
       </div>
     </div>}
+    {res && res.ok && !draft && <details className="mt-4 rounded-2xl border border-slate-200 bg-white p-3 print:hidden"><summary className="cursor-pointer text-sm font-extrabold text-slate-800">{bk.namesTitle}</summary>
+      <p className="mt-1 text-[11px] leading-5 text-slate-500">{bk.namesHint}</p>
+      <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={bk.firstDead} className="min-w-0 rounded-xl border border-emerald-200 bg-emerald-50/50 px-3 py-3 text-sm font-semibold outline-none focus:border-emerald-700" />
+        {persons.map((p) => <label key={p.id} className="block"><span className="block text-[10px] font-bold text-slate-400">{heirLabel(p.key)}</span><input value={custom[p.id] ?? ""} onChange={(e) => setCustom((c) => ({ ...c, [p.id]: e.target.value }))} placeholder={bk.namePh} className="w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold outline-none focus:border-emerald-700" /></label>)}
+      </div>
+    </details>}
     {res && res.ok && !draft && <div className="mt-4 print:hidden">
       <div className="text-sm font-extrabold text-slate-800">{t.who}</div>
       <p className="text-[11px] text-slate-500">{t.whoHint}</p>
@@ -165,6 +174,8 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
       </div>}
       <div className="mt-4 text-xs font-extrabold text-slate-700">{t.newHeirs}</div>
       <div className="mt-2 space-y-4">{HEIR_GROUPS.map((g) => <HeirGroup key={g.id} title={g.title[lang]} defs={KEYS.filter((d) => d.group === g.id)} lang={lang} heirs={fullCounts} update={update} disabled={disabled} blockInfo={{}} blockedWord={t2.blockedWord} blockTexts={t2.blocks} heirLabel={heirLabel} naText={t.na} decLabel={t.dec} incLabel={t.inc} open={!!openG[g.id]} toggle={() => setOpenG((p) => ({ ...p, [g.id]: !p[g.id] }))} />)}</div>
+      {KEYS.some((d) => (newCounts[d.key] || 0) > 0) && <div className="mt-4"><div className="text-xs font-extrabold text-slate-700">{bk.namesTitle}</div>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">{KEYS.flatMap((d) => Array.from({ length: newCounts[d.key] || 0 }, (_, i) => { const id = `p${steps.length + 2}_${d.key}_${i + 1}`; return <label key={id} className="block"><span className="block text-[10px] font-bold text-slate-400">{heirLabel(d.key as HeirKey)}{(newCounts[d.key] || 0) > 1 ? ` ${i + 1}` : ""}</span><input value={custom[id] ?? ""} onChange={(e) => setCustom((c) => ({ ...c, [id]: e.target.value }))} placeholder={bk.namePh} className="w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold outline-none focus:border-emerald-700" /></label>; }))}</div></div>}
       {err && <p role="alert" className="mt-3 rounded-xl bg-red-50 p-3 text-xs font-bold leading-5 text-red-800">{err}</p>}
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <button type="button" onClick={submit} className="rounded-2xl bg-deen px-5 py-3 text-sm font-extrabold text-white">{t.calc}</button>
@@ -172,5 +183,4 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
       </div>
     </div>}
   </section>;
-      }
-        
+}
