@@ -73,6 +73,7 @@ export function useHome() {
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => Object.fromEntries(HEIR_GROUPS.map(g => [g.id, g.defaultOpen])));
     const [gender, setGender] = useState<"male" | "female">("male");
     const [heirs, setHeirs] = useState(initialHeirs);
+    const [munOn, setMunOn] = useState(false);
     const [ibnMasud, setIbnMasud] = useState(false); // Ibn Mas'ud option for a non-Muslim son (default: fatwa, ka-an lam yakun)
     const [showDeductions, setShowDeductions] = useState(false);
     const [zk, setZk] = useState(initialZakat);
@@ -164,7 +165,7 @@ export function useHome() {
     const pickQaul = (masud: boolean) => { setIbnMasud(masud); setMirathResult(calculateMirath(gender, heirs as Counts, { motherWithGrandfather: "whole", mahroomHajb: masud && masudAllowed(heirs as any) })); };
     // "New masla": clear everything entered (heirs, estate, gold/silver, deductions, land) and go back to the top of the form.
     const resetMirath = () => {
-      setHeirs(initialHeirs); setIbnMasud(false); setMirathResult(null); setAlertMsg("");
+      setHeirs(initialHeirs); setIbnMasud(false); setMunOn(false); setMirathResult(null); setAlertMsg("");
       setEstate("0"); setGold("0"); setSilver("0"); setFuneral(""); setDebtsEst(""); setBequest(""); setShowDeductions(false);
       setLandMajor(""); setLandMinor("");
       setOpenGroups(Object.fromEntries(HEIR_GROUPS.map(g => [g.id, g.defaultOpen])));
@@ -205,7 +206,7 @@ export function useHome() {
     const remainingForHeirs = netEstate - bequestCounted;
     const socials = SOCIAL_LINKS.filter(s => s.url);
 
-  return { pickQaul, ibnMasud, setIbnMasud, lang, setLang, tab, setTab, estate, setEstate, gold, setGold, silver, setSilver, funeral, setFuneral, debtsEst, setDebtsEst, bequest, setBequest, openGroups, setOpenGroups, gender, setGender, heirs, setHeirs, showDeductions, setShowDeductions, zk, setZk, nisabBasis, setNisabBasis, hawl, setHawl, zakatResult, setZakatResult, mirathResult, setMirathResult, alertMsg, setAlertMsg, demoOpen, setDemoOpen, aboutOpen, setAboutOpen, landSys, setLandSys, landMajor, setLandMajor, landMinor, setLandMinor, landRatio, setLandRatio, ratioNum, landTotal, landText, mirathRef, zakatRef, t, t2, heirLabel, blockInfo, money, heirTotal, updateHeir, chooseGender, heirDisabled, reviewCase, resetMirath, printReport, setZ, runZakat, zError, assetLabel, statusText, noteText, estateNum, costsNum, netEstate, bequestCap, bequestCounted, remainingForHeirs, socials };
+  return { munOn, setMunOn, pickQaul, ibnMasud, setIbnMasud, lang, setLang, tab, setTab, estate, setEstate, gold, setGold, silver, setSilver, funeral, setFuneral, debtsEst, setDebtsEst, bequest, setBequest, openGroups, setOpenGroups, gender, setGender, heirs, setHeirs, showDeductions, setShowDeductions, zk, setZk, nisabBasis, setNisabBasis, hawl, setHawl, zakatResult, setZakatResult, mirathResult, setMirathResult, alertMsg, setAlertMsg, demoOpen, setDemoOpen, aboutOpen, setAboutOpen, landSys, setLandSys, landMajor, setLandMajor, landMinor, setLandMinor, landRatio, setLandRatio, ratioNum, landTotal, landText, mirathRef, zakatRef, t, t2, heirLabel, blockInfo, money, heirTotal, updateHeir, chooseGender, heirDisabled, reviewCase, resetMirath, printReport, setZ, runZakat, zError, assetLabel, statusText, noteText, estateNum, costsNum, netEstate, bequestCap, bequestCounted, remainingForHeirs, socials };
 }
 
 export type HomeCtx = ReturnType<typeof useHome>;
