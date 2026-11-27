@@ -69,7 +69,7 @@ function solve(m: MasalaDef) {
       const A = sf[1], spn = sf[0], baqi = A - spn;
       let L = BigInt(1); const fr = others.map((y: any) => fq(y.reasons.find((q: any) => q.fard)?.fard || "0/1"));
       for (const f of fr) L = (L * f[1]) / gcd(L, f[1]);
-      const sh = fr.map((f) => (f[0] * L) / f[1]); let Bp = BigInt(0); for (const v of sh) Bp += v;
+      const sh = fr.map((f: [bigint, bigint]) => (f[0] * L) / f[1]); let Bp = BigInt(0); for (const v of sh) Bp += v;
       if (baqi > BigInt(0) && Bp > BigInt(0) && spn > BigInt(0)) {
         const g = gcd(baqi, Bp); const rel = baqi === Bp ? "tamathul" : g > BigInt(1) ? "tawafuq" : "tabayun";
         const zSp = Bp / g, zOt = baqi / g; const total = A * zSp;
@@ -119,4 +119,4 @@ export function computeMunasakha(masalas: MasalaDef[], persons: Person[]): MunRe
     noChange = final.every((f) => f.parts * s1 === m1.get(f.id)! * T);
   }
   return { ok: true, steps, persons, mablagh: T, final, ikhtisar: G, reduced: T / G, noChange };
-                    }
+}
