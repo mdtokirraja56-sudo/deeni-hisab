@@ -51,6 +51,15 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
   const res = useMemo(() => (first.members.length ? computeMunasakha(masalas, persons) : null), [masalas, persons, first]);
   const nameOf = (id: string) => persons.find((p) => p.id === id)?.name ?? id;
   // The book writes, under each heir, his siham, then the product after this masala's multiplier, then after every later multiplier (e.g. 2 / 4 / 16).
+  // A person who dies in a later batn keeps only his boxed share in this batn (the book ends his line where he dies); living heirs carry the full multiplier line.
+  const diesLater = (k: number, id: string) => !!(res && res.ok && res.steps.some((x) => x.index > k && x.dead === id));
+  const boxOf = (st: any, p: { id: string; parts: bigint; asaba: boolean; fard: string | null }): string[] => {
+    const rd = st.radd as any;
+    if (!p.asaba && p.fard) { const [a, b] = p.fard.split("/"); const n = BigInt(a), d = BigInt(b || "1");
+      if (rd) { if (st.per[0] && p.fard && rd.sp !== undefined && st.per.some((q: any) => q.id === p.id && (q.key === "husband" || q.key === "wives"))) return [String(rd.sp), String(rd.A)]; return [String((n * rd.B) / d), String(rd.B)]; }
+      return [String(n), String(d)]; }
+    return [String(p.parts), String(st.tasheeh)];
+  };
   const chainOf = (k: number, parts: bigint): string[] => {
     const st = res && res.ok ? res.steps : []; const out = [String(parts)]; let v = parts;
     if (k > 1 && st[k - 1] && st[k - 1].zarbSecond! !== BigInt(1)) { v = v * st[k - 1].zarbSecond!; out.push(String(v)); }
@@ -75,7 +84,18 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
     const members: { id: string; key: HeirKey }[] = []; const fresh: Person[] = [];
     for (const [pid, key] of Object.entries(links)) if (key) members.push({ id: pid, key: key as HeirKey });
     const stepNo = steps.length + 2;
-    for (const d of KEYS) { const n = newCounts[d.key] || 0; for (let i = 1; i <= n; i++) { const id = `p${stepNo}_${d.key}_${i}`; fresh.push({ id, key: d.key as HeirKey, gender: genderOfKey(d.key), name: `${heirLabel(d.key as HeirKey)}${n > 1 ? ` ${i}` : ""} (${t.stepWord} ${stepNo})` }); members.push({ id, key: d.key as HeirKey }); } }
+    const alive = new Set(cur.map((x) => x.id));
+    const norm = (x: string) => x.trim().replace(/\s+/g, " ").toLowerCase();
+    for (const d of KEYS) { const n = newCounts[d.key] || 0; for (let i = 1; i <= n; i++) {
+      const id = `p${stepNo}_${d.key}_${i}`; const typed = (custom[id] || "").trim();
+      const same = typed ? persons.find((q) => q.id !== draft && alive.has(q.id) && norm(q.name) === norm(typed)) : undefined;
+      if (same) { // same name as a living heir already in the masala = the same person (linked, not a new person)
+        if (same.gender !== genderOfKey(d.key)) { setErr(bk.sameGender(typed)); return; }
+        if (!members.some((m) => m.id === same.id)) members.push({ id: same.id, key: d.key as HeirKey });
+        continue;
+      }
+      fresh.push({ id, key: d.key as HeirKey, gender: genderOfKey(d.key), name: `${heirLabel(d.key as HeirKey)}${n > 1 ? ` ${i}` : ""} (${t.stepWord} ${stepNo})` }); members.push({ id, key: d.key as HeirKey });
+    } }
     const trial = computeMunasakha([...masalas, { dead: draft, gender: deadGender, members }], [...persons, ...fresh]);
     if (!trial.ok) { setErr(t.halt[trial.halt!]); return; }
     setSteps((s) => [...s, { dead: draft, gender: deadGender, members }]); setExtra((e) => [...e, ...fresh]); setDraft(null); setErr("");
@@ -118,7 +138,10 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
             <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2">{s.per.map((p) => <div key={p.id} className="rounded-xl border border-slate-200 bg-emerald-50/50 p-2 text-center">
               <div className="font-extrabold">{nameOf(p.id)}</div>
               <div className="text-[11px] text-slate-500">{label(p)}{p.fard && !p.asaba && p.code !== "mother_third_remainder" ? <span dir="ltr"> ({p.fard})</span> : null}</div>
-              <div className="mx-auto mt-1 inline-flex min-w-[44px] flex-col rounded-lg border-2 border-deen px-2 font-extrabold text-deen" dir="ltr">{chainOf(s.index, p.parts).map((v, i, a) => <span key={i} className={`block text-center ${i < a.length - 1 ? "border-b border-deen" : ""}`}>{v}</span>)}</div></div>)}</div>
+              {diesLater(s.index, p.id)
+                ? <div className="mx-auto mt-1 inline-flex min-w-[40px] flex-col rounded-lg border-2 border-deen px-2 font-extrabold text-deen" dir="ltr">{boxOf(s, p).map((v, i, a) => <span key={i} className={`block text-center ${i < a.length - 1 ? "border-b border-deen" : ""}`}>{v}</span>)}</div>
+                : <div className="mx-auto mt-1 inline-flex min-w-[40px] flex-col font-extrabold text-deen" dir="ltr">{chainOf(s.index, p.parts).map((v, i, a) => <span key={i} className={`block text-center ${i < a.length - 1 ? "border-b border-deen/60" : ""}`}>{v}</span>)}</div>}
+            </div>)}</div>
           </div>;
         })}
         <div className="mt-3 rounded-2xl border border-slate-300 bg-white p-3 text-center print:mt-1 print:break-inside-avoid">
@@ -174,13 +197,4 @@ export function MunasakhaPanel({ c }: { c: HomeCtx }) {
       </div>}
       <div className="mt-4 text-xs font-extrabold text-slate-700">{t.newHeirs}</div>
       <div className="mt-2 space-y-4">{HEIR_GROUPS.map((g) => <HeirGroup key={g.id} title={g.title[lang]} defs={KEYS.filter((d) => d.group === g.id)} lang={lang} heirs={fullCounts} update={update} disabled={disabled} blockInfo={{}} blockedWord={t2.blockedWord} blockTexts={t2.blocks} heirLabel={heirLabel} naText={t.na} decLabel={t.dec} incLabel={t.inc} open={!!openG[g.id]} toggle={() => setOpenG((p) => ({ ...p, [g.id]: !p[g.id] }))} />)}</div>
-      {KEYS.some((d) => (newCounts[d.key] || 0) > 0) && <div className="mt-4"><div className="text-xs font-extrabold text-slate-700">{bk.namesTitle}</div>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">{KEYS.flatMap((d) => Array.from({ length: newCounts[d.key] || 0 }, (_, i) => { const id = `p${steps.length + 2}_${d.key}_${i + 1}`; return <label key={id} className="block"><span className="block text-[10px] font-bold text-slate-400">{heirLabel(d.key as HeirKey)}{(newCounts[d.key] || 0) > 1 ? ` ${i + 1}` : ""}</span><input value={custom[id] ?? ""} onChange={(e) => setCustom((c) => ({ ...c, [id]: e.target.value }))} placeholder={bk.namePh} className="w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-semibold outline-none focus:border-emerald-700" /></label>; }))}</div></div>}
-      {err && <p role="alert" className="mt-3 rounded-xl bg-red-50 p-3 text-xs font-bold leading-5 text-red-800">{err}</p>}
-      <div className="mt-4 grid gap-2 sm:grid-cols-2">
-        <button type="button" onClick={submit} className="rounded-2xl bg-deen px-5 py-3 text-sm font-extrabold text-white">{t.calc}</button>
-        <button type="button" onClick={() => { setDraft(null); setErr(""); }} className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-600">{t.cancel}</button>
-      </div>
-    </div>}
-  </section>;
-}
+      {KEYS.some((d) => (newCounts[d.key] || 0) > 0) && <div className="mt-4"><div className="text-xs font-extrabold text-slate-700">{bk.namesTitle}
